@@ -1,13 +1,86 @@
-# Roblox Game (Phase 1-2)
+# Potion Lab — Roblox Game (Phase 1-2)
+
+An idle tycoon where players grow magical ingredients, brew potions at a cauldron, and upgrade their lab. Built with Single-Script Architecture and Rojo.
+
+## Getting Started
+
+### Prerequisites
+
+1. **Roblox Studio** — [Download](https://www.roblox.com/create)
+2. **Aftman** (toolchain manager) — install then run:
+   ```sh
+   aftman init
+   aftman add rojo-rbx/rojo
+   aftman install
+   ```
+3. Or install **Rojo** directly:
+   ```sh
+   # via cargo
+   cargo install rojo
+   # or download from https://github.com/rojo-rbx/rojo/releases
+   ```
+4. Install the **Rojo plugin** in Roblox Studio (Plugins → Manage Plugins → search "Rojo")
+
+### Running the game
+
+```sh
+cd roblox/
+rojo serve default.project.json
+```
+
+Then in Roblox Studio:
+1. Open a new place
+2. Click the Rojo plugin → "Connect" (localhost:34872)
+3. Files sync automatically — hit Play to test
+
+### Project structure
+
+```
+roblox/
+├── default.project.json          Rojo config (maps src/ → Roblox services)
+├── src/
+│   ├── server/
+│   │   ├── Main.server.luau      Single server entry point
+│   │   └── Services/
+│   │       ├── DataService.luau      Player data (load/save/sync)
+│   │       ├── PlotService.luau      3D lab creation & plot visuals
+│   │       ├── GrowthService.luau    Plant growth ticking & mutations
+│   │       ├── BrewingService.luau   Potion crafting logic
+│   │       └── EconomyService.luau   Gold transactions & upgrades
+│   ├── client/
+│   │   ├── Main.client.luau      Single client entry point
+│   │   └── Controllers/
+│   │       ├── UIController.luau         All UI (HUD, shop, brewing, sell)
+│   │       └── InteractionController.luau ProximityPrompt handling
+│   └── shared/
+│       ├── Config.luau           Game balance constants (single source of truth)
+│       ├── Ingredients.luau      4 ingredient definitions
+│       ├── Recipes.luau          10 potion recipes + value calculator
+│       ├── Network.luau          RemoteEvent name constants
+│       └── Strings.luau          All player-facing text (i18n-ready)
+└── assets/                       Art, sound, UI assets (future)
+```
 
 ## Architecture
 
 Uses **Single-Script Architecture** (the pattern behind Adopt Me, Brookhaven, and other front-page games):
 
-- `src/server/` — One main ServerScript that `require()`s ModuleScripts for all server-side logic
-- `src/client/` — One main LocalScript that `require()`s ModuleScripts for all client-side logic
-- `src/shared/` — ModuleScripts shared between server and client (via ReplicatedStorage)
-- `assets/` — Art, sound, and UI assets
+- `Main.server.luau` — boots all services, creates RemoteEvents, routes client requests
+- `Main.client.luau` — boots controllers, listens for state sync and notifications
+- **Server-authoritative** — all game logic runs on the server; client is display-only
+- **Full state sync** — server pushes complete player state after every action
+
+### Data flow
+
+```
+Player clicks plot → ProximityPrompt triggers
+  → InteractionController → fires RemoteEvent
+    → Main.server.luau routes to GrowthService.plantSeed()
+      → validates input, deducts gold, updates plot state
+        → PlotService.updatePlotVisual() (3D world)
+        → DataService.syncToClient() (full state push)
+          → UIController.updateState() (refresh UI)
+```
 
 ## Key Technical Rules
 
@@ -17,7 +90,8 @@ Uses **Single-Script Architecture** (the pattern behind Adopt Me, Brookhaven, an
 4. **Always** wrap DataStore calls in `pcall()`
 5. **Always** disconnect event connections to prevent memory leaks
 6. **Never** import Free Models without inspecting for backdoor scripts
-7. Use ProfileService/ProfileStore for data persistence — never raw DataStoreService
+7. All player-facing strings go in `Strings.luau` (i18n-ready)
+8. All balance tuning goes in `Config.luau` (one place to change numbers)
 
 ## Performance Targets
 
@@ -27,10 +101,10 @@ Uses **Single-Script Architecture** (the pattern behind Adopt Me, Brookhaven, an
 - All stationary parts: anchored
 - Target devices: mobile (low-end) through desktop
 
-## Monetization (Phase 2)
+## Monetization (Phase 2 — not in vertical slice)
 
-- Cosmetic shop: 10-15 items, 50-500 Robux ($0.63-$6.25)
-- Game passes: 2-3 convenience passes (2x speed, auto-collect, VIP)
+- Cosmetic shop: lab decorations, cauldron skins, potion bottle styles
+- Game passes: 2x growth speed, auto-harvest, VIP lab theme
 - Optional seasonal battle pass with dual-track free/premium
 - No loot boxes, no pay-to-win, no gambling mechanics
 
