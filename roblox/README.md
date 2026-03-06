@@ -1,6 +1,6 @@
-# Potion Lab — Roblox Game (Phase 1-2)
+# Alchemy Academy — Roblox Game (Phase 1-2)
 
-An idle tycoon where players grow magical ingredients, brew potions at a cauldron, and upgrade their lab. Built with Single-Script Architecture and Rojo.
+A free educational idle game where players grow magical ingredients, brew potions, and unlock the real science behind every recipe. Built with Single-Script Architecture and Rojo.
 
 ## Getting Started
 
@@ -42,22 +42,28 @@ roblox/
 │   ├── server/
 │   │   ├── Main.server.luau      Single server entry point
 │   │   └── Services/
-│   │       ├── DataService.luau      Player data (load/save/sync)
+│   │       ├── DataService.luau      Player data (load/save/sync via ProfileService)
 │   │       ├── PlotService.luau      3D lab creation & plot visuals
 │   │       ├── GrowthService.luau    Plant growth ticking & mutations
 │   │       ├── BrewingService.luau   Potion crafting logic
-│   │       └── EconomyService.luau   Gold transactions & upgrades
+│   │       ├── EconomyService.luau   Essence transactions & upgrades
+│   │       ├── DiscoveryService.luau Recipe discovery tracking & announcements
+│   │       ├── AnalyticsService.luau Funnel event tracking (D1/D7 measurement)
+│   │       └── LeaderboardService.luau OrderedDataStore global leaderboard
 │   ├── client/
 │   │   ├── Main.client.luau      Single client entry point
 │   │   └── Controllers/
-│   │       ├── UIController.luau         All UI (HUD, shop, brewing, sell)
-│   │       └── InteractionController.luau ProximityPrompt handling
+│   │       ├── UIController.luau         All UI (HUD, shop, brewing, sell, journal)
+│   │       ├── InteractionController.luau ProximityPrompt handling
+│   │       ├── SoundController.luau      Music and SFX management
+│   │       └── TutorialController.luau   First-session onboarding overlay
 │   └── shared/
 │       ├── Config.luau           Game balance constants (single source of truth)
 │       ├── Ingredients.luau      4 ingredient definitions
 │       ├── Recipes.luau          10 potion recipes + value calculator
 │       ├── Network.luau          RemoteEvent name constants
-│       └── Strings.luau          All player-facing text (i18n-ready)
+│       ├── Strings.luau          All player-facing text (i18n-ready)
+│       └── Journal.luau          Educational science content (ingredient + recipe notes)
 └── assets/                       Art, sound, UI assets (future)
 ```
 

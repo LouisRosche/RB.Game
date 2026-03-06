@@ -115,7 +115,7 @@ function PlotService.createLab(player: Player)
 	base.Parent = labModel
 
 	-- Player name billboard
-	addBillboard(base, player.DisplayName .. "'s Potion Lab")
+	addBillboard(base, player.DisplayName .. "'s Alchemy Lab")
 
 	-- Create plots
 	local plotCount = Config.LAB_LEVELS[data.LabLevel].plots

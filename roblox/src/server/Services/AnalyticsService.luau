@@ -95,9 +95,11 @@ function AnalyticsService.onSessionStart(player: Player)
 	sessionStart[userId] = tick()
 	sessionFlags[userId] = {}
 
-	-- Log whether this player has ever played before (for new-player funnel)
+	-- Log whether this is a first-ever session (for new-player funnel).
+	-- TutorialCompleted is false by default and set true after the tutorial,
+	-- making it the cleanest proxy for "player has played before".
 	local data = DataService.getData(player)
-	local isNewPlayer = data and data.Stats and data.Stats.PotionsBrewed == 0
+	local isNewPlayer = data and data.TutorialCompleted == false
 	fireEvent(player, "SessionStart", if isNewPlayer then 1 else 0)
 end
 

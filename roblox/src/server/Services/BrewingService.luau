@@ -36,11 +36,11 @@ end
 ---------------------------------------------------------------------------
 
 --- Brew a potion from two ingredients in the player's inventory.
---- Returns { recipeId, value } on success, or nil on failure.
+--- Returns { recipeId, value, isNewDiscovery, discoveryCount } on success, or nil on failure.
 --- @param player  The player requesting the brew
 --- @param idx1    First ingredient inventory index (1-based)
 --- @param idx2    Second ingredient inventory index (1-based)
-function BrewingService.brewPotion(player: Player, idx1: number, idx2: number): { recipeId: string, value: number }?
+function BrewingService.brewPotion(player: Player, idx1: number, idx2: number): { recipeId: string, value: number, isNewDiscovery: boolean, discoveryCount: number }?
 	local data = DataService.getData(player)
 	if not data then return end
 

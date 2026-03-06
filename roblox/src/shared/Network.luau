@@ -6,9 +6,6 @@
 
 local Network = {}
 
---- Path where the server creates RemoteEvent instances at runtime.
-Network.REMOTES_FOLDER = "ReplicatedStorage.Remotes"
-
 --============================================================================--
 -- Client -> Server events
 --============================================================================--

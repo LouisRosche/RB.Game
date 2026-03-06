@@ -1,6 +1,6 @@
 --[[
 	LeaderboardService.luau
-	Global leaderboard tracking total gold earned, lifetime.
+	Global leaderboard tracking total Essence earned, lifetime.
 
 	WHY THIS MATTERS FOR RETENTION:
 	  Social competition is one of the strongest D7+ retention drivers on Roblox.
@@ -47,7 +47,6 @@ local LEADERBOARD_UPDATE_INTERVAL = 60   -- seconds between periodic refreshes
 ---------------------------------------------------------------------------
 
 local orderedStore = nil   -- OrderedDataStore; set in init()
-local lastBroadcast: { rank: number, name: string, score: number }? = nil
 
 ---------------------------------------------------------------------------
 -- Helpers
