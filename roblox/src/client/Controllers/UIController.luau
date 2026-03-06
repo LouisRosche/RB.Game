@@ -56,6 +56,7 @@ local UIController = {}
 local playerState: { [string]: any } = {}
 local remotes: Folder = nil :: any
 local screenGui: ScreenGui = nil :: any
+local soundController: any = nil  -- optional; injected via init()
 
 -- UI element references (set during init)
 local hudGoldLabel: TextLabel = nil :: any
@@ -451,6 +452,7 @@ local function createSeedPanel()
 
 		plantBtn.Activated:Connect(function()
 			if activePlotIndex then
+				if soundController then soundController.onPlant() end
 				fireRemote(Network.PlantSeed, activePlotIndex, id)
 				UIController.closePanels()
 			end
@@ -751,9 +753,8 @@ local function populateSellList()
 		sellBtn.ZIndex = 14
 
 		sellBtn.Activated:Connect(function()
+			if soundController then soundController.onSell() end
 			fireRemote(Network.SellPotion, i)
-			-- Server will send a StateSync which refreshes the panel;
-			-- close panel for cleaner UX and let them reopen it.
 			UIController.closePanels()
 		end)
 	end
@@ -795,10 +796,9 @@ local function createSellPanel()
 
 	sellAllButton.Activated:Connect(function()
 		local potions = playerState.Potions
-		if potions then
+		if potions and #potions > 0 then
+			if soundController then soundController.onSell() end
 			-- Sell from the end backwards so indices stay valid on the server.
-			-- Each sell triggers a StateSync; we fire all at once and let the
-			-- server process them sequentially.
 			for i = #potions, 1, -1 do
 				fireRemote(Network.SellPotion, i)
 			end
@@ -905,6 +905,7 @@ local function createUpgradePanel()
 	upgradeLabBtn.ZIndex = 13
 
 	upgradeLabBtn.Activated:Connect(function()
+		if soundController then soundController.onUpgrade() end
 		fireRemote(Network.UpgradeLab)
 	end)
 
@@ -941,6 +942,7 @@ local function createUpgradePanel()
 	upgradeCauldronBtn.ZIndex = 13
 
 	upgradeCauldronBtn.Activated:Connect(function()
+		if soundController then soundController.onUpgrade() end
 		fireRemote(Network.UpgradeCauldron)
 	end)
 end
@@ -1349,9 +1351,11 @@ end
 ---------------------------------------------------------------------------
 
 --- Creates all UI elements. Called once from Main.client.luau.
-function UIController.init(initialState: { [string]: any }, remotesFolder: Folder)
+--- @param soundCtrl  Optional SoundController for UI action audio feedback.
+function UIController.init(initialState: { [string]: any }, remotesFolder: Folder, soundCtrl: any?)
 	playerState = initialState or {}
 	remotes = remotesFolder
+	soundController = soundCtrl
 
 	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 

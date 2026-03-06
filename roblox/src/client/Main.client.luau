@@ -93,9 +93,9 @@ end)
 ---------------------------------------------------------------------------
 -- Initialise controllers
 ---------------------------------------------------------------------------
--- UIController needs the state accessor and the Remotes folder so it can
--- fire client-to-server events from button callbacks.
-UIController.init(playerState, Remotes)
+-- UIController needs the state accessor, Remotes, and SoundController
+-- so button callbacks can play the correct SFX on action confirmation.
+UIController.init(playerState, Remotes, SoundController)
 
 -- InteractionController needs UIController (to open panels), the state
 -- accessor (to check plot states), and SoundController for audio feedback.
