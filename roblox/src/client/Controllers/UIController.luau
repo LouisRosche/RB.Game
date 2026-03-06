@@ -56,6 +56,7 @@ local UIController = {}
 local playerState: { [string]: any } = {}
 local remotes: Folder = nil :: any
 local screenGui: ScreenGui = nil :: any
+local soundController: any = nil  -- optional; injected via init()
 
 -- UI element references (set during init)
 local hudGoldLabel: TextLabel = nil :: any
@@ -67,7 +68,18 @@ local brewPanel: Frame = nil :: any
 local sellPanel: Frame = nil :: any
 local upgradePanel: Frame = nil :: any
 local journalPanel: Frame = nil :: any
+local settingsPanel: Frame = nil :: any
+local leaderboardPanel: Frame = nil :: any
 local notificationContainer: Frame = nil :: any
+
+-- Volume state for settings panel (percent 0–100, matches SoundController defaults)
+local musicVolumePct = 18
+local sfxVolumePct   = 55
+local settingsMusicLabel: TextLabel = nil :: any
+local settingsSFXLabel: TextLabel   = nil :: any
+
+-- Leaderboard row labels (reused on each update to avoid re-creating UI)
+local leaderboardRowLabels: { TextLabel } = {}
 
 -- Brewing selection state
 local selectedIngredients: { number } = {}
@@ -266,7 +278,7 @@ local function createHUD()
 	-- Container
 	local hud = Instance.new("Frame")
 	hud.Name = "HUD"
-	hud.Size = UDim2.new(0, 220, 0, 130)
+	hud.Size = UDim2.new(0, 220, 0, 162)
 	hud.Position = UDim2.new(0, 10, 0, 10)
 	hud.BackgroundColor3 = PANEL_BG_COLOR
 	hud.BackgroundTransparency = PANEL_BG_TRANSPARENCY
@@ -352,6 +364,24 @@ local function createHUD()
 
 	journalBtn.Activated:Connect(function()
 		UIController.openJournalPanel()
+	end)
+
+	-- Settings button (volume / accessibility controls)
+	local settingsBtn = createButton("SettingsBtn", "⚙ Settings", UDim2.new(1, 0, 0, 26), hud)
+	settingsBtn.Position = UDim2.new(0, 0, 0, 118)
+	settingsBtn.TextSize = 13
+	settingsBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 70)
+	settingsBtn.ZIndex = 6
+
+	settingsBtn.MouseEnter:Connect(function()
+		settingsBtn.BackgroundColor3 = Color3.fromRGB(65, 65, 90)
+	end)
+	settingsBtn.MouseLeave:Connect(function()
+		settingsBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 70)
+	end)
+
+	settingsBtn.Activated:Connect(function()
+		UIController.openSettingsPanel()
 	end)
 end
 
@@ -447,6 +477,7 @@ local function createSeedPanel()
 
 		plantBtn.Activated:Connect(function()
 			if activePlotIndex then
+				if soundController then soundController.onPlant() end
 				fireRemote(Network.PlantSeed, activePlotIndex, id)
 				UIController.closePanels()
 			end
@@ -747,9 +778,8 @@ local function populateSellList()
 		sellBtn.ZIndex = 14
 
 		sellBtn.Activated:Connect(function()
+			if soundController then soundController.onSell() end
 			fireRemote(Network.SellPotion, i)
-			-- Server will send a StateSync which refreshes the panel;
-			-- close panel for cleaner UX and let them reopen it.
 			UIController.closePanels()
 		end)
 	end
@@ -791,10 +821,9 @@ local function createSellPanel()
 
 	sellAllButton.Activated:Connect(function()
 		local potions = playerState.Potions
-		if potions then
+		if potions and #potions > 0 then
+			if soundController then soundController.onSell() end
 			-- Sell from the end backwards so indices stay valid on the server.
-			-- Each sell triggers a StateSync; we fire all at once and let the
-			-- server process them sequentially.
 			for i = #potions, 1, -1 do
 				fireRemote(Network.SellPotion, i)
 			end
@@ -901,6 +930,7 @@ local function createUpgradePanel()
 	upgradeLabBtn.ZIndex = 13
 
 	upgradeLabBtn.Activated:Connect(function()
+		if soundController then soundController.onUpgrade() end
 		fireRemote(Network.UpgradeLab)
 	end)
 
@@ -937,6 +967,7 @@ local function createUpgradePanel()
 	upgradeCauldronBtn.ZIndex = 13
 
 	upgradeCauldronBtn.Activated:Connect(function()
+		if soundController then soundController.onUpgrade() end
 		fireRemote(Network.UpgradeCauldron)
 	end)
 end
@@ -1257,6 +1288,153 @@ local function createJournalPanel()
 end
 
 ---------------------------------------------------------------------------
+-- Settings Panel (volume / accessibility controls)
+---------------------------------------------------------------------------
+
+--- Build one volume row: label on left, [−] [N%] [+] on right.
+--- Returns the current-value TextLabel so the caller can update it.
+local function createVolumeRow(
+	parent: Frame,
+	rowName: string,
+	labelText: string,
+	yOffset: number,
+	initialPct: number,
+	onChanged: (newPct: number) -> ()
+): TextLabel
+	local row = Instance.new("Frame")
+	row.Name = rowName
+	row.Size = UDim2.new(1, 0, 0, 36)
+	row.Position = UDim2.new(0, 0, 0, yOffset)
+	row.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+	row.BackgroundTransparency = 0.3
+	row.BorderSizePixel = 0
+	row.ZIndex = 11
+	row.Parent = parent
+
+	local rowCorner = Instance.new("UICorner")
+	rowCorner.CornerRadius = UDim.new(0, 6)
+	rowCorner.Parent = row
+
+	-- Left label
+	local nameLabel = Instance.new("TextLabel")
+	nameLabel.Size = UDim2.new(0.4, 0, 1, 0)
+	nameLabel.Position = UDim2.new(0, 8, 0, 0)
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.Font = FONT_BODY
+	nameLabel.TextSize = 15
+	nameLabel.TextColor3 = TEXT_COLOR
+	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+	nameLabel.Text = labelText
+	nameLabel.ZIndex = 12
+	nameLabel.Parent = row
+
+	-- Current value label (centre)
+	local valueLabel = Instance.new("TextLabel")
+	valueLabel.Name = "Value"
+	valueLabel.Size = UDim2.new(0.2, 0, 1, 0)
+	valueLabel.Position = UDim2.new(0.4, 0, 0, 0)
+	valueLabel.BackgroundTransparency = 1
+	valueLabel.Font = FONT_HEADER
+	valueLabel.TextSize = 15
+	valueLabel.TextColor3 = GOLD_TEXT_COLOR
+	valueLabel.TextXAlignment = Enum.TextXAlignment.Center
+	valueLabel.Text = tostring(initialPct) .. "%"
+	valueLabel.ZIndex = 12
+	valueLabel.Parent = row
+
+	-- Decrease button
+	local minusBtn = createButton("MinusBtn", "−", UDim2.new(0, 30, 0, 26), row)
+	minusBtn.Position = UDim2.new(0.6, 0, 0.5, -13)
+	minusBtn.TextSize = 18
+	minusBtn.ZIndex = 13
+
+	-- Increase button
+	local plusBtn = createButton("PlusBtn", "+", UDim2.new(0, 30, 0, 26), row)
+	plusBtn.Position = UDim2.new(0.6, 36, 0.5, -13)
+	plusBtn.TextSize = 18
+	plusBtn.ZIndex = 13
+
+	local currentPct = initialPct
+
+	minusBtn.Activated:Connect(function()
+		currentPct = math.max(0, currentPct - 10)
+		valueLabel.Text = tostring(currentPct) .. "%"
+		onChanged(currentPct)
+	end)
+
+	plusBtn.Activated:Connect(function()
+		currentPct = math.min(100, currentPct + 10)
+		valueLabel.Text = tostring(currentPct) .. "%"
+		onChanged(currentPct)
+	end)
+
+	return valueLabel
+end
+
+local function createSettingsPanel()
+	settingsPanel = createPanel("SettingsPanel", UDim2.new(0, 320, 0, 210), UDim2.new(0.5, 0, 0.5, 0))
+	settingsPanel.Parent = screenGui
+
+	local title = createLabel("Title", "⚙ Settings", FONT_HEADER, 20, settingsPanel)
+	title.TextXAlignment = Enum.TextXAlignment.Center
+	title.Size = UDim2.new(1, -40, 0, 28)
+
+	createCloseButton(settingsPanel)
+
+	-- Subtitle
+	local sub = createLabel("Sub", "Audio", FONT_BODY, 13, settingsPanel)
+	sub.Position = UDim2.new(0, 0, 0, 34)
+	sub.TextColor3 = Color3.fromRGB(150, 150, 180)
+
+	-- Music volume row
+	settingsMusicLabel = createVolumeRow(
+		settingsPanel, "MusicRow", "Music", 56, musicVolumePct,
+		function(pct: number)
+			musicVolumePct = pct
+			if soundController then
+				soundController.setMusicVolume(pct / 100)
+			end
+		end
+	)
+
+	-- SFX volume row
+	settingsSFXLabel = createVolumeRow(
+		settingsPanel, "SFXRow", "Sound FX", 100, sfxVolumePct,
+		function(pct: number)
+			sfxVolumePct = pct
+			if soundController then
+				soundController.setSFXVolume(pct / 100)
+			end
+		end
+	)
+
+	-- Mute all toggle
+	local muteBtn = createButton("MuteBtn", "Mute All", UDim2.new(1, 0, 0, 32), settingsPanel)
+	muteBtn.Position = UDim2.new(0, 0, 0, 148)
+	muteBtn.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
+	muteBtn.ZIndex = 12
+
+	muteBtn.MouseEnter:Connect(function()
+		muteBtn.BackgroundColor3 = Color3.fromRGB(150, 60, 60)
+	end)
+	muteBtn.MouseLeave:Connect(function()
+		muteBtn.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
+	end)
+
+	local muted = false
+	muteBtn.Activated:Connect(function()
+		muted = not muted
+		if soundController then
+			soundController.setMuted(muted)
+		end
+		muteBtn.Text = if muted then "Unmute All" else "Mute All"
+		muteBtn.BackgroundColor3 = if muted
+			then Color3.fromRGB(40, 100, 40)
+			else Color3.fromRGB(120, 40, 40)
+	end)
+end
+
+---------------------------------------------------------------------------
 -- Notification System
 ---------------------------------------------------------------------------
 
@@ -1279,13 +1457,77 @@ local function createNotificationContainer()
 end
 
 ---------------------------------------------------------------------------
+-- Leaderboard sidebar (always visible, top-right corner)
+---------------------------------------------------------------------------
+
+local TOP_N_DISPLAY = 10
+
+local function createLeaderboardPanel()
+	leaderboardPanel = Instance.new("Frame")
+	leaderboardPanel.Name = "Leaderboard"
+	leaderboardPanel.Size = UDim2.new(0, 210, 0, 26 + TOP_N_DISPLAY * 22 + 8)
+	leaderboardPanel.Position = UDim2.new(1, -220, 0, 10)
+	leaderboardPanel.AnchorPoint = Vector2.new(0, 0)
+	leaderboardPanel.BackgroundColor3 = PANEL_BG_COLOR
+	leaderboardPanel.BackgroundTransparency = PANEL_BG_TRANSPARENCY
+	leaderboardPanel.BorderSizePixel = 0
+	leaderboardPanel.ZIndex = 5
+	leaderboardPanel.Parent = screenGui
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = CORNER_RADIUS
+	corner.Parent = leaderboardPanel
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = PANEL_STROKE_COLOR
+	stroke.Thickness = PANEL_STROKE_THICKNESS
+	stroke.Parent = leaderboardPanel
+
+	-- Title row
+	local title = Instance.new("TextLabel")
+	title.Name = "Title"
+	title.Size = UDim2.new(1, -8, 0, 20)
+	title.Position = UDim2.new(0, 4, 0, 4)
+	title.BackgroundTransparency = 1
+	title.Font = FONT_HEADER
+	title.TextSize = 13
+	title.TextColor3 = GOLD_TEXT_COLOR
+	title.TextXAlignment = Enum.TextXAlignment.Center
+	title.Text = "Top Alchemists"
+	title.ZIndex = 6
+	title.Parent = leaderboardPanel
+
+	-- Pre-create row labels (rank + name, score right-aligned)
+	for i = 1, TOP_N_DISPLAY do
+		local rowY = 26 + (i - 1) * 22
+
+		local row = Instance.new("TextLabel")
+		row.Name = "Row_" .. i
+		row.Size = UDim2.new(1, -8, 0, 20)
+		row.Position = UDim2.new(0, 4, 0, rowY)
+		row.BackgroundTransparency = 1
+		row.Font = FONT_BODY
+		row.TextSize = 12
+		row.TextColor3 = TEXT_COLOR
+		row.TextXAlignment = Enum.TextXAlignment.Left
+		row.Text = i .. ". —"
+		row.ZIndex = 6
+		row.Parent = leaderboardPanel
+
+		leaderboardRowLabels[i] = row
+	end
+end
+
+---------------------------------------------------------------------------
 -- Public API
 ---------------------------------------------------------------------------
 
 --- Creates all UI elements. Called once from Main.client.luau.
-function UIController.init(initialState: { [string]: any }, remotesFolder: Folder)
+--- @param soundCtrl  Optional SoundController for UI action audio feedback.
+function UIController.init(initialState: { [string]: any }, remotesFolder: Folder, soundCtrl: any?)
 	playerState = initialState or {}
 	remotes = remotesFolder
+	soundController = soundCtrl
 
 	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 
@@ -1302,6 +1544,8 @@ function UIController.init(initialState: { [string]: any }, remotesFolder: Folde
 	createSellPanel()
 	createUpgradePanel()
 	createJournalPanel()
+	createSettingsPanel()
+	createLeaderboardPanel()
 	createNotificationContainer()
 
 	-- Refresh HUD with whatever state we already have
@@ -1526,6 +1770,45 @@ function UIController.onRecipeDiscovered(recipeId: string, recipeName: string, i
 	end
 end
 
+--- Updates the leaderboard sidebar with a fresh top-N payload from the server.
+--- @param entries Array of { rank: number, name: string, score: number }
+function UIController.updateLeaderboard(entries: { { rank: number, name: string, score: number } })
+	if not leaderboardRowLabels or #leaderboardRowLabels == 0 then return end
+
+	for i = 1, TOP_N_DISPLAY do
+		local label = leaderboardRowLabels[i]
+		if not label then continue end
+
+		local entry = entries[i]
+		if entry then
+			-- Truncate long names to keep layout clean
+			local name = if #entry.name > 14 then string.sub(entry.name, 1, 13) .. "…" else entry.name
+			label.Text = entry.rank .. ". " .. name .. "  " .. tostring(entry.score) .. "g"
+			-- Gold colour for #1, silver for #2, bronze for #3, default otherwise
+			if entry.rank == 1 then
+				label.TextColor3 = GOLD_TEXT_COLOR
+			elseif entry.rank == 2 then
+				label.TextColor3 = Color3.fromRGB(192, 192, 192)
+			elseif entry.rank == 3 then
+				label.TextColor3 = Color3.fromRGB(205, 127, 50)
+			else
+				label.TextColor3 = TEXT_COLOR
+			end
+		else
+			label.Text = i .. ". —"
+			label.TextColor3 = Color3.fromRGB(100, 100, 120)
+		end
+	end
+end
+
+--- Opens the settings panel (volume / accessibility controls).
+function UIController.openSettingsPanel()
+	UIController.closePanels()
+	if settingsPanel then
+		settingsPanel.Visible = true
+	end
+end
+
 --- Closes all overlay panels.
 function UIController.closePanels()
 	activePlotIndex = nil
@@ -1536,6 +1819,7 @@ function UIController.closePanels()
 	if sellPanel then sellPanel.Visible = false end
 	if upgradePanel then upgradePanel.Visible = false end
 	if journalPanel then journalPanel.Visible = false end
+	if settingsPanel then settingsPanel.Visible = false end
 end
 
 return UIController

@@ -52,6 +52,14 @@ Network.RecipeDiscovered = "RecipeDiscovered"
 --- Server responds via StateSync (already includes DiscoveredRecipes in data).
 Network.RequestDiscoverySummary = "RequestDiscoverySummary"
 
+--- Client notifies server that the player has completed the first-session tutorial.
+--- Server saves TutorialCompleted = true to prevent showing it again.
+Network.TutorialComplete = "TutorialComplete"
+
+--- Server broadcasts the top-N leaderboard entries to all clients.
+--- Payload: array of { rank: number, name: string, score: number }
+Network.LeaderboardUpdate = "LeaderboardUpdate"
+
 --============================================================================--
 -- Helpers
 --============================================================================--
@@ -68,10 +76,12 @@ function Network.getAllEventNames(): { string }
 		Network.UpgradeLab,
 		Network.UpgradeCauldron,
 		Network.RequestDiscoverySummary,
+		Network.TutorialComplete,
 		-- Server -> Client
 		Network.StateSync,
 		Network.Notification,
 		Network.RecipeDiscovered,
+		Network.LeaderboardUpdate,
 	}
 end
 

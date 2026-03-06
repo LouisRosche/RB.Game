@@ -35,9 +35,11 @@ local Strings     = require(Shared:WaitForChild("Strings"))
 ---------------------------------------------------------------------------
 -- Client controllers
 ---------------------------------------------------------------------------
-local Controllers          = script.Parent:WaitForChild("Controllers")
-local UIController         = require(Controllers:WaitForChild("UIController"))
+local Controllers           = script.Parent:WaitForChild("Controllers")
+local UIController          = require(Controllers:WaitForChild("UIController"))
 local InteractionController = require(Controllers:WaitForChild("InteractionController"))
+local SoundController       = require(Controllers:WaitForChild("SoundController"))
+local TutorialController    = require(Controllers:WaitForChild("TutorialController"))
 
 ---------------------------------------------------------------------------
 -- Local state cache — updated every time the server sends a StateSync
@@ -62,6 +64,7 @@ local notificationRemote = Remotes:WaitForChild(Network.Notification) :: RemoteE
 stateSyncRemote.OnClientEvent:Connect(function(newState: { [string]: any })
 	playerState = newState
 	UIController.updateState(newState)
+	TutorialController.onStateChanged(newState)
 end)
 
 ---------------------------------------------------------------------------
@@ -69,6 +72,7 @@ end)
 ---------------------------------------------------------------------------
 notificationRemote.OnClientEvent:Connect(function(message: string, color: Color3?)
 	UIController.showNotification(message, color)
+	SoundController.onNotification()
 end)
 
 ---------------------------------------------------------------------------
@@ -77,17 +81,33 @@ end)
 local recipeDiscoveredRemote = Remotes:WaitForChild(Network.RecipeDiscovered) :: RemoteEvent
 recipeDiscoveredRemote.OnClientEvent:Connect(function(recipeId: string, recipeName: string, isSessionFirst: boolean)
 	UIController.onRecipeDiscovered(recipeId, recipeName, isSessionFirst)
+	SoundController.onDiscovery()
+end)
+
+---------------------------------------------------------------------------
+-- Leaderboard handler — server pushes top-N rankings periodically
+---------------------------------------------------------------------------
+local leaderboardRemote = Remotes:WaitForChild(Network.LeaderboardUpdate) :: RemoteEvent
+leaderboardRemote.OnClientEvent:Connect(function(entries: { { rank: number, name: string, score: number } })
+	UIController.updateLeaderboard(entries)
 end)
 
 ---------------------------------------------------------------------------
 -- Initialise controllers
 ---------------------------------------------------------------------------
--- UIController needs the state accessor and the Remotes folder so it can
--- fire client-to-server events from button callbacks.
-UIController.init(playerState, Remotes)
+-- UIController needs the state accessor, Remotes, and SoundController
+-- so button callbacks can play the correct SFX on action confirmation.
+UIController.init(playerState, Remotes, SoundController)
 
--- InteractionController needs UIController (to open panels) and the state
--- accessor (to check plot states).
-InteractionController.init(UIController, getState, Remotes)
+-- InteractionController needs UIController (to open panels), the state
+-- accessor (to check plot states), and SoundController for audio feedback.
+InteractionController.init(UIController, getState, Remotes, SoundController)
+
+-- SoundController starts background music and prepares the SFX pool.
+SoundController.init()
+
+-- TutorialController detects new players and shows the onboarding overlay.
+-- Must be initialised after UIController (which creates PlayerGui.PotionLabUI).
+TutorialController.init(Remotes)
 
 print("[AlchemyAcademy] Client initialised — welcome to the lab!")

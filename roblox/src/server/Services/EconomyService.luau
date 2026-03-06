@@ -19,8 +19,8 @@ local EconomyService = {}
 -- Public API
 ---------------------------------------------------------------------------
 
---- Purchase a seed. Deducts gold only; actual planting is via GrowthService.
---- This is called from the BuySeed remote when buying into inventory.
+--- Purchase a seed and add it to the player's seed inventory.
+--- Actual planting is a separate step via GrowthService (PlantSeed remote).
 function EconomyService.buySeed(player: Player, ingredientId: string)
 	local data = DataService.getData(player)
 	if not data then return end
@@ -33,7 +33,14 @@ function EconomyService.buySeed(player: Player, ingredientId: string)
 		return
 	end
 
+	if #data.Seeds >= Config.MAX_SEEDS then
+		DataService.notify(player, "Seed pouch full (" .. Config.MAX_SEEDS .. " max)! Plant some seeds first.")
+		return
+	end
+
 	data.Gold -= def.seedCost
+	-- Track the purchased seed so GrowthService can consume it on plant
+	table.insert(data.Seeds, { Id = ingredientId })
 	DataService.syncToClient(player)
 	DataService.notify(player, "Purchased " .. def.displayName .. " seed!")
 end
@@ -96,6 +103,7 @@ function EconomyService.upgradeLab(player: Player)
 
 	DataService.syncToClient(player)
 	DataService.notify(player, "Lab upgraded to " .. nextDef.name .. "! Now have " .. newPlots .. " plots")
+	return nextLevel
 end
 
 --- Upgrade the player's cauldron to the next level.
@@ -124,6 +132,7 @@ function EconomyService.upgradeCauldron(player: Player)
 
 	DataService.syncToClient(player)
 	DataService.notify(player, "Cauldron upgraded to " .. nextDef.name .. "! Brews " .. nextDef.brewTime .. "s, +" .. math.floor((nextDef.valueBonus - 1) * 100) .. "% value")
+	return nextLevel
 end
 
 return EconomyService
