@@ -72,6 +72,14 @@ notificationRemote.OnClientEvent:Connect(function(message: string, color: Color3
 end)
 
 ---------------------------------------------------------------------------
+-- Recipe discovery handler — server notifies of a first-time brew
+---------------------------------------------------------------------------
+local recipeDiscoveredRemote = Remotes:WaitForChild(Network.RecipeDiscovered) :: RemoteEvent
+recipeDiscoveredRemote.OnClientEvent:Connect(function(recipeId: string, recipeName: string, isSessionFirst: boolean)
+	UIController.onRecipeDiscovered(recipeId, recipeName, isSessionFirst)
+end)
+
+---------------------------------------------------------------------------
 -- Initialise controllers
 ---------------------------------------------------------------------------
 -- UIController needs the state accessor and the Remotes folder so it can
@@ -82,4 +90,4 @@ UIController.init(playerState, Remotes)
 -- accessor (to check plot states).
 InteractionController.init(UIController, getState, Remotes)
 
-print("[PotionLab] Client initialised")
+print("[AlchemyAcademy] Client initialised — welcome to the lab!")

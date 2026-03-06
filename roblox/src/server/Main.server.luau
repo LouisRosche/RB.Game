@@ -24,12 +24,13 @@ local Recipes     = require(Shared.Recipes)
 ---------------------------------------------------------------------------
 -- Server service modules (ServerScriptService.Server.Services)
 ---------------------------------------------------------------------------
-local Services        = script.Parent.Services
-local DataService     = require(Services.DataService)
-local PlotService     = require(Services.PlotService)
-local GrowthService   = require(Services.GrowthService)
-local BrewingService  = require(Services.BrewingService)
-local EconomyService  = require(Services.EconomyService)
+local Services          = script.Parent.Services
+local DataService       = require(Services.DataService)
+local PlotService       = require(Services.PlotService)
+local GrowthService     = require(Services.GrowthService)
+local BrewingService    = require(Services.BrewingService)
+local EconomyService    = require(Services.EconomyService)
+local DiscoveryService  = require(Services.DiscoveryService)
 
 ---------------------------------------------------------------------------
 -- Seed the PRNG once so mutation rolls are non-deterministic across servers
@@ -130,9 +131,21 @@ remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotInde
 	DataService.syncToClient(player)
 
 	local displayName = ingredientId_toDisplayName(entry.Id)
+	local rarity = entry.Rarity or "Common"
+
+	-- Celebratory, educational rarity messages (no gambling framing)
+	local rarityMessages = {
+		Common    = "Harvested " .. displayName .. "! A healthy Common specimen.",
+		Uncommon  = "Harvested " .. displayName .. "! Uncommon — ideal growing conditions.",
+		Rare      = "Harvested " .. displayName .. "! Rare — something special happened here!",
+		Epic      = "Harvested " .. displayName .. "! Epic — extraordinary growth conditions!",
+		Legendary = "Harvested " .. displayName .. "! LEGENDARY — a once-in-a-generation specimen!",
+	}
+	local message = rarityMessages[rarity] or ("Harvested " .. displayName .. "! (" .. rarity .. ")")
+
 	local notifRemote = ReplicatedStorage.Remotes:FindFirstChild(Network.Notification)
 	if notifRemote then
-		notifRemote:FireClient(player, "Harvested " .. displayName .. " (" .. entry.Rarity .. ")!")
+		notifRemote:FireClient(player, message)
 	end
 end)
 

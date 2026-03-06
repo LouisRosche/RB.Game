@@ -11,7 +11,8 @@ local Shared  = ReplicatedStorage:WaitForChild("Shared")
 local Config  = require(Shared.Config)
 local Recipes = require(Shared.Recipes)
 
-local DataService = require(script.Parent.DataService)
+local DataService     = require(script.Parent.DataService)
+local DiscoveryService = require(script.Parent.DiscoveryService)
 
 local BrewingService = {}
 
@@ -87,8 +88,22 @@ function BrewingService.brewPotion(player: Player, idx1: number, idx2: number)
 	-- Update stats
 	data.Stats.PotionsBrewed += 1
 
+	-- Handle discovery (first time brewing this recipe)
+	local isNewDiscovery = DiscoveryService.onRecipeBrewed(player, recipe.id)
+	if isNewDiscovery then
+		data.Stats.TotalDiscoveries += 1
+	end
+
 	DataService.syncToClient(player)
-	DataService.notify(player, "Brewed " .. recipe.displayName .. "! Worth " .. potionValue .. " gold")
+
+	-- Notify with appropriate message
+	local discoveryCount = DiscoveryService.getDiscoveryCount(player)
+	local totalRecipes   = DiscoveryService.getTotalRecipeCount()
+	if isNewDiscovery then
+		DataService.notify(player, "NEW DISCOVERY: " .. recipe.displayName .. "! (" .. discoveryCount .. "/" .. totalRecipes .. " recipes found)")
+	else
+		DataService.notify(player, "Brewed " .. recipe.displayName .. "! Worth " .. potionValue .. " Essence")
+	end
 end
 
 return BrewingService

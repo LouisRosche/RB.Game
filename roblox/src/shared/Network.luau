@@ -44,6 +44,14 @@ Network.StateSync = "StateSync"
 --- Server sends a notification message to the client UI.
 Network.Notification = "Notification"
 
+--- Server notifies a client that they discovered a new recipe for the first time.
+--- Payload: recipeId (string), recipeName (string), isSessionFirst (boolean)
+Network.RecipeDiscovered = "RecipeDiscovered"
+
+--- Client requests the discovery summary (count of recipes found vs total).
+--- Server responds via StateSync (already includes DiscoveredRecipes in data).
+Network.RequestDiscoverySummary = "RequestDiscoverySummary"
+
 --============================================================================--
 -- Helpers
 --============================================================================--
@@ -59,9 +67,11 @@ function Network.getAllEventNames(): { string }
 		Network.SellPotion,
 		Network.UpgradeLab,
 		Network.UpgradeCauldron,
+		Network.RequestDiscoverySummary,
 		-- Server -> Client
 		Network.StateSync,
 		Network.Notification,
+		Network.RecipeDiscovered,
 	}
 end
 

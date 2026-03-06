@@ -11,8 +11,10 @@ local Config = {}
 -- Starting values
 --============================================================================--
 
---- Gold awarded to every new player on first join.
-Config.STARTING_GOLD = 100
+--- Essence awarded to every new player on first join.
+--- Increased so new players can immediately try all starter ingredients,
+--- removing any "stuck at zero" frustration in the first session.
+Config.STARTING_GOLD = 200
 
 --- Maximum lab upgrade level a player can reach.
 Config.MAX_LAB_LEVEL = 3
@@ -95,6 +97,26 @@ Config.LAB_OFFSET = 50
 --============================================================================--
 
 --- When true, planted ingredients continue to grow while the player is offline.
+--- Always true — no FOMO mechanics around growth timers.
 Config.OFFLINE_GROWTH = true
+
+--============================================================================--
+-- Educational / anti-dark-pattern settings
+--============================================================================--
+
+--- When true, mutation odds are shown transparently in the journal.
+--- Players always know the exact probability of each rarity.
+Config.SHOW_MUTATION_ODDS = true
+
+--- When true, a recipe discovery celebration effect plays on the client.
+Config.CELEBRATE_DISCOVERIES = true
+
+--- Maximum notification stack height before oldest are discarded.
+--- Keeps the screen readable without suppressing important messages.
+Config.MAX_NOTIFICATIONS = 5
+
+--- How long (seconds) each notification stays before fading out.
+--- Long enough to read, short enough to not clutter the screen.
+Config.NOTIFICATION_DURATION = 4
 
 return Config

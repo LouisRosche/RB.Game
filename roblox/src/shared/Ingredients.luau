@@ -13,10 +13,11 @@ local Ingredients = {}
 export type IngredientDef = {
 	displayName: string,
 	growthTime: number,   -- seconds until the plant is fully grown
-	seedCost: number,     -- gold cost to purchase one seed
-	baseValue: number,    -- base gold value before rarity multipliers
+	seedCost: number,     -- essence cost to purchase one seed
+	baseValue: number,    -- base essence value before rarity multipliers
 	color: Color3,        -- representative colour for UI / 3D visuals
 	description: string,  -- flavour text shown in the shop and tooltips
+	scienceHook: string,  -- one-line real-world science hook (teaser in shop and journal)
 }
 
 --============================================================================--
@@ -29,7 +30,8 @@ Ingredients.Moonpetal: IngredientDef = {
 	seedCost = 5,
 	baseValue = 10,
 	color = Color3.fromRGB(100, 150, 255),
-	description = "A luminous blue flower that blooms under moonlight",
+	description = "A luminous blue flower that blooms under moonlight.",
+	scienceHook = "Science: moonlight is reflected sunlight — fireflies use the same trick!",
 }
 
 Ingredients.Fireroot: IngredientDef = {
@@ -38,7 +40,8 @@ Ingredients.Fireroot: IngredientDef = {
 	seedCost = 10,
 	baseValue = 15,
 	color = Color3.fromRGB(255, 80, 30),
-	description = "A smoldering root that radiates warmth",
+	description = "A smoldering root that channels heat from deep underground.",
+	scienceHook = "Science: geothermal energy from Earth's core powers whole cities!",
 }
 
 Ingredients.Shadowmoss: IngredientDef = {
@@ -47,7 +50,8 @@ Ingredients.Shadowmoss: IngredientDef = {
 	seedCost = 20,
 	baseValue = 20,
 	color = Color3.fromRGB(140, 50, 200),
-	description = "A dark moss that thrives in the absence of light",
+	description = "A dark moss that thrives in the absence of light.",
+	scienceHook = "Science: Vantablack absorbs 99.965% of light — nearly as dark as space!",
 }
 
 Ingredients.Starbloom: IngredientDef = {
@@ -56,7 +60,8 @@ Ingredients.Starbloom: IngredientDef = {
 	seedCost = 40,
 	baseValue = 30,
 	color = Color3.fromRGB(255, 220, 50),
-	description = "A radiant blossom infused with starlight",
+	description = "A radiant blossom infused with energy from distant stars.",
+	scienceHook = "Science: stars are nuclear fusion reactors billions of km away!",
 }
 
 --============================================================================--
