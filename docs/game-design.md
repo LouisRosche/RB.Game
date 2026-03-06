@@ -1,11 +1,62 @@
-# Potion Lab -- Game Design Document (Vertical Slice)
+# Alchemy Academy — Game Design Document
 
-**Title:** Potion Lab (working title)
-**Platform:** Roblox
-**Genre:** Idle Tycoon / Simulator
-**Target Audience:** Roblox core demographic (ages 8-16)
+**Title:** Alchemy Academy (formerly Potion Lab)
+**Platform:** Roblox (free to play, no pay-to-win, no pay-to-progress)
+**Genre:** Educational Idle Discovery / Simulator
+**Target Audience:** Ages 8-16, teachers, parents seeking screen time with genuine learning value
 **Development Time:** 8-12 weeks (60-80 hours)
-**Monetization (Phase 2):** Cosmetic lab decorations, cauldron skins, bottle styles, convenience passes
+**Monetization:** Cosmetic-only (cauldron skins, lab decorations) — zero gameplay advantage
+
+---
+
+## Educational Mission
+
+Every mechanic teaches a real concept. Players who complete the full recipe
+discovery tree will have touched on:
+
+- **Bioluminescence** (Moonpetal — reflected vs. emitted light)
+- **Geothermal energy** (Fireroot — Earth's internal heat)
+- **Chemosynthesis & light absorption** (Shadowmoss — Vantablack, dark matter)
+- **Nuclear fusion & spectroscopy** (Starbloom — how stars work)
+- **Convection, thermal runaway, resonance, exothermic reactions** (potion recipes)
+- **Probability & statistics** (mutation odds — shown transparently)
+- **Systems thinking** (value formula — multiplicative vs. additive relationships)
+
+The game never quizzes players or makes learning mandatory. Science notes appear
+naturally in the Alchemist's Journal, unlocked by brewing each potion.
+
+---
+
+## Anti-Dark-Pattern Principles
+
+This game is designed to be the **opposite** of manipulative:
+
+| Dark Pattern | Our Design |
+|---|---|
+| FOMO timers ("plant dies in 10s!") | Plants wait indefinitely — no punishment |
+| Hidden odds | Full probability table shown in Journal |
+| Pay-to-win | Zero mechanical advantage from purchases |
+| Guilt notifications | Warm, celebratory messages only |
+| Endless grind | 10 recipes = complete content; upgrades are a choice |
+| Fake scarcity | All recipes always available |
+| Social pressure | Visits are friendly, discoveries are shared joyfully |
+
+---
+
+---
+
+## Viral & Social Design (Ethical)
+
+Virality comes from **joy and generosity**, not manipulation:
+
+- **Discovery announcements**: When a player brews a recipe for the first time this
+  server session, it's announced to everyone. Players celebrate together.
+- **Journal sharing**: Players naturally want to share what they learned — "did you
+  know Vantablack absorbs 99.965% of light?" spreads organically.
+- **Zero-pressure visits**: Players can walk to each other's labs and see what's
+  been discovered. Visiting rewards curiosity, not competition.
+- **Discovery count**: HUD shows "X/10 recipes found" — completionists and casual
+  players alike feel progress without comparison to others.
 
 ---
 
@@ -103,6 +154,24 @@ Example: Celestial Brew with Epic Starbloom (15x) + Legendary Starbloom (50x) in
 | 1     | Basic  | 10s       | 1.0x        | Free    |
 | 2     | Copper | 7s        | 1.1x        | 300g    |
 | 3     | Silver | 4s        | 1.25x       | 1,500g  |
+
+---
+
+## Alchemist's Journal
+
+The Journal is a persistent in-game reference panel with 5 tabs:
+
+| Tab | Contents |
+|---|---|
+| How to Play | 8 plain-English steps covering the full loop |
+| Ingredients | Ingredient flavour + real science note for each |
+| Recipes | Discovered recipes unlock full science explanations; undiscovered show hints |
+| Odds & Fairness | Full probability table, value formula, rarity science notes |
+| Fun Facts | 10+ real-world alchemy/science facts (bioluminescence, geothermal, etc.) |
+
+**Design intent:** The journal removes all mystery around mechanics (transparency),
+while adding genuine educational depth. It's a reference players keep open, not
+a chore.
 
 ---
 

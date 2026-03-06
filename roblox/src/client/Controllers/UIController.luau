@@ -1,7 +1,13 @@
 --[[
 	UIController.luau
 	Creates and manages ALL game UI programmatically.
-	Panels: HUD, Seed Selection, Brewing, Sell, Upgrades, Notifications.
+	Panels: HUD, Seed Selection, Brewing, Sell, Upgrades, Notifications, Journal.
+
+	Design philosophy:
+	  - Every interaction is celebratory, never pressuring
+	  - The Journal panel teaches real science through the game
+	  - Odds are shown transparently — no mystery about probability
+	  - Notifications are warm and informative, never guilt-tripping
 
 	Follows the Single-Script Architecture — this is a ModuleScript required
 	by Main.client.luau.
@@ -23,6 +29,7 @@ local Ingredients = require(Shared:WaitForChild("Ingredients"))
 local Recipes     = require(Shared:WaitForChild("Recipes"))
 local Strings     = require(Shared:WaitForChild("Strings"))
 local Network     = require(Shared:WaitForChild("Network"))
+local Journal     = require(Shared:WaitForChild("Journal"))
 
 ---------------------------------------------------------------------------
 -- Constants — UI Style Guide
@@ -59,6 +66,7 @@ local seedPanel: Frame = nil :: any
 local brewPanel: Frame = nil :: any
 local sellPanel: Frame = nil :: any
 local upgradePanel: Frame = nil :: any
+local journalPanel: Frame = nil :: any
 local notificationContainer: Frame = nil :: any
 
 -- Brewing selection state
@@ -258,7 +266,7 @@ local function createHUD()
 	-- Container
 	local hud = Instance.new("Frame")
 	hud.Name = "HUD"
-	hud.Size = UDim2.new(0, 220, 0, 100)
+	hud.Size = UDim2.new(0, 220, 0, 130)
 	hud.Position = UDim2.new(0, 10, 0, 10)
 	hud.BackgroundColor3 = PANEL_BG_COLOR
 	hud.BackgroundTransparency = PANEL_BG_TRANSPARENCY
@@ -327,6 +335,24 @@ local function createHUD()
 	hudCauldronLabel.Text = "Cauldron: Basic"
 	hudCauldronLabel.ZIndex = 6
 	hudCauldronLabel.Parent = hud
+
+	-- Journal button (always accessible from HUD)
+	local journalBtn = createButton("JournalBtn", "Alchemist's Journal", UDim2.new(1, 0, 0, 28), hud)
+	journalBtn.Position = UDim2.new(0, 0, 0, 84)
+	journalBtn.TextSize = 14
+	journalBtn.BackgroundColor3 = Color3.fromRGB(50, 80, 130)
+	journalBtn.ZIndex = 6
+
+	journalBtn.MouseEnter:Connect(function()
+		journalBtn.BackgroundColor3 = Color3.fromRGB(70, 100, 160)
+	end)
+	journalBtn.MouseLeave:Connect(function()
+		journalBtn.BackgroundColor3 = Color3.fromRGB(50, 80, 130)
+	end)
+
+	journalBtn.Activated:Connect(function()
+		UIController.openJournalPanel()
+	end)
 end
 
 ---------------------------------------------------------------------------
@@ -916,6 +942,321 @@ local function createUpgradePanel()
 end
 
 ---------------------------------------------------------------------------
+-- Journal Panel (opens from HUD button)
+-- Tabs: How to Play | Ingredients | Recipes | Odds | Fun Facts
+---------------------------------------------------------------------------
+
+local journalTabButtons: { [string]: TextButton } = {}
+local journalContentFrame: Frame = nil :: any
+local activeJournalTab: string = "basics"
+
+local function clearJournalContent()
+	if not journalContentFrame then return end
+	for _, child in journalContentFrame:GetChildren() do
+		child:Destroy()
+	end
+end
+
+local function makeJournalText(text: string, size: number, parent: GuiObject, italic: boolean?): TextLabel
+	local label = Instance.new("TextLabel")
+	label.Text = text
+	label.Font = if italic then FONT_BODY else FONT_BODY
+	label.TextSize = size
+	label.TextColor3 = TEXT_COLOR
+	label.BackgroundTransparency = 1
+	label.Size = UDim2.new(1, 0, 0, 0)
+	label.AutomaticSize = Enum.AutomaticSize.Y
+	label.TextWrapped = true
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.ZIndex = 22
+	label.Parent = parent
+	return label
+end
+
+local function makeJournalDivider(parent: GuiObject)
+	local line = Instance.new("Frame")
+	line.Size = UDim2.new(1, 0, 0, 1)
+	line.BackgroundColor3 = PANEL_STROKE_COLOR
+	line.BackgroundTransparency = 0.6
+	line.BorderSizePixel = 0
+	line.ZIndex = 22
+	line.Parent = parent
+end
+
+local function showJournalBasics()
+	clearJournalContent()
+	makeJournalText(Strings.JOURNAL_WELCOME, 15, journalContentFrame)
+	makeJournalDivider(journalContentFrame)
+	for _, line in Journal.HowToPlay do
+		local bullet = makeJournalText("• " .. line, 14, journalContentFrame)
+		bullet.TextColor3 = Color3.fromRGB(200, 220, 255)
+	end
+end
+
+local function showJournalIngredients()
+	clearJournalContent()
+	local ingredientList = Ingredients.getList()
+	for _, entry in ingredientList do
+		local def = entry.def
+		local block = Instance.new("Frame")
+		block.Size = UDim2.new(1, 0, 0, 0)
+		block.AutomaticSize = Enum.AutomaticSize.Y
+		block.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
+		block.BackgroundTransparency = 0.3
+		block.BorderSizePixel = 0
+		block.ZIndex = 22
+		block.Parent = journalContentFrame
+
+		local bCorner = Instance.new("UICorner")
+		bCorner.CornerRadius = UDim.new(0, 6)
+		bCorner.Parent = block
+
+		local bPad = Instance.new("UIPadding")
+		bPad.PaddingTop = UDim.new(0, 6)
+		bPad.PaddingBottom = UDim.new(0, 6)
+		bPad.PaddingLeft = UDim.new(0, 8)
+		bPad.PaddingRight = UDim.new(0, 8)
+		bPad.Parent = block
+
+		local bList = Instance.new("UIListLayout")
+		bList.SortOrder = Enum.SortOrder.LayoutOrder
+		bList.Padding = UDim.new(0, 3)
+		bList.Parent = block
+
+		local header = makeJournalText(def.displayName, 16, block)
+		header.Font = FONT_HEADER
+		header.TextColor3 = def.color
+		header.LayoutOrder = 1
+
+		local desc = makeJournalText(def.description, 13, block)
+		desc.TextColor3 = Color3.fromRGB(180, 180, 200)
+		desc.LayoutOrder = 2
+
+		local hook = makeJournalText(def.scienceHook, 13, block)
+		hook.TextColor3 = Color3.fromRGB(140, 220, 180)
+		hook.LayoutOrder = 3
+
+		local note = Journal.IngredientNotes[entry.id]
+		if note then
+			local noteLabel = makeJournalText(note, 12, block)
+			noteLabel.TextColor3 = Color3.fromRGB(160, 190, 255)
+			noteLabel.LayoutOrder = 4
+		end
+	end
+end
+
+local function showJournalRecipes()
+	clearJournalContent()
+	-- Show discovered recipes with science hooks
+	local discoveredSet = playerState.DiscoveredRecipes or {}
+	local totalDiscovered = 0
+	for _ in discoveredSet do totalDiscovered += 1 end
+
+	local totalRecipes = 0
+	for _ in Recipes.Map do totalRecipes += 1 end
+
+	local progress = makeJournalText("Recipes discovered: " .. totalDiscovered .. " / " .. totalRecipes, 15, journalContentFrame)
+	progress.Font = FONT_HEADER
+	progress.TextColor3 = GOLD_TEXT_COLOR
+	makeJournalDivider(journalContentFrame)
+
+	for key, recipe in Recipes.Map do
+		local isKnown = discoveredSet[recipe.id] == true
+
+		local block = Instance.new("Frame")
+		block.Size = UDim2.new(1, 0, 0, 0)
+		block.AutomaticSize = Enum.AutomaticSize.Y
+		block.BackgroundColor3 = if isKnown then Color3.fromRGB(30, 45, 30) else Color3.fromRGB(40, 40, 50)
+		block.BackgroundTransparency = 0.3
+		block.BorderSizePixel = 0
+		block.ZIndex = 22
+		block.Parent = journalContentFrame
+
+		local bCorner = Instance.new("UICorner")
+		bCorner.CornerRadius = UDim.new(0, 6)
+		bCorner.Parent = block
+
+		local bPad = Instance.new("UIPadding")
+		bPad.PaddingTop = UDim.new(0, 6)
+		bPad.PaddingBottom = UDim.new(0, 6)
+		bPad.PaddingLeft = UDim.new(0, 8)
+		bPad.PaddingRight = UDim.new(0, 8)
+		bPad.Parent = block
+
+		local bList = Instance.new("UIListLayout")
+		bList.SortOrder = Enum.SortOrder.LayoutOrder
+		bList.Padding = UDim.new(0, 3)
+		bList.Parent = block
+
+		if isKnown then
+			local header = makeJournalText(recipe.displayName .. " (Discovered!)", 15, block)
+			header.Font = FONT_HEADER
+			header.TextColor3 = recipe.color
+			header.LayoutOrder = 1
+
+			if recipe.scienceHook then
+				local hook = makeJournalText(recipe.scienceHook, 13, block)
+				hook.TextColor3 = Color3.fromRGB(140, 220, 180)
+				hook.LayoutOrder = 2
+			end
+
+			local fullNote = Journal.RecipeNotes[recipe.id]
+			if fullNote then
+				local noteLabel = makeJournalText(fullNote, 12, block)
+				noteLabel.TextColor3 = Color3.fromRGB(160, 190, 255)
+				noteLabel.LayoutOrder = 3
+			end
+		else
+			local unknown = makeJournalText("??? (Brew it to discover!)", 14, block)
+			unknown.TextColor3 = Color3.fromRGB(120, 120, 140)
+			unknown.LayoutOrder = 1
+
+			local hint = makeJournalText("Hint: combine two different ingredients to find this.", 12, block)
+			hint.TextColor3 = Color3.fromRGB(100, 100, 120)
+			hint.LayoutOrder = 2
+		end
+	end
+end
+
+local function showJournalOdds()
+	clearJournalContent()
+	makeJournalText(Strings.JOURNAL_ODDS_HEADER, 15, journalContentFrame).Font = FONT_HEADER
+	makeJournalText(Strings.JOURNAL_ODDS_NOTE, 13, journalContentFrame).TextColor3 = Color3.fromRGB(170, 200, 170)
+	makeJournalDivider(journalContentFrame)
+
+	local oddsLines = {
+		{ text = Strings.ODDS_LEGENDARY, color = Config.MUTATION_TIERS[5].color },
+		{ text = Strings.ODDS_EPIC,      color = Config.MUTATION_TIERS[4].color },
+		{ text = Strings.ODDS_RARE,      color = Config.MUTATION_TIERS[3].color },
+		{ text = Strings.ODDS_UNCOMMON,  color = Config.MUTATION_TIERS[2].color },
+		{ text = Strings.ODDS_COMMON,    color = Config.MUTATION_TIERS[1].color },
+	}
+	for _, entry in oddsLines do
+		local label = makeJournalText(entry.text, 14, journalContentFrame)
+		label.Font = Enum.Font.Code
+		label.TextColor3 = entry.color
+	end
+
+	makeJournalDivider(journalContentFrame)
+	makeJournalText("Value formula: base × rarity1 × rarity2 × cauldron bonus", 13, journalContentFrame).TextColor3 = Color3.fromRGB(180, 180, 200)
+	makeJournalText("Example: Celestial Brew with two Legendary Starblooms in a Silver Cauldron = 75 × 50 × 50 × 1.25 = 234,375 Essence!", 13, journalContentFrame).TextColor3 = GOLD_TEXT_COLOR
+
+	makeJournalDivider(journalContentFrame)
+
+	-- Rarity science notes
+	for _, tier in Config.MUTATION_TIERS do
+		local note = Journal.RarityNotes[tier.name]
+		if note then
+			local label = makeJournalText(tier.name .. ": " .. note, 13, journalContentFrame)
+			label.TextColor3 = tier.color
+		end
+	end
+end
+
+local function showJournalFunFacts()
+	clearJournalContent()
+	makeJournalText(Strings.JOURNAL_FACTS_HEADER, 16, journalContentFrame).Font = FONT_HEADER
+	makeJournalDivider(journalContentFrame)
+	for i, fact in Journal.FunFacts do
+		local label = makeJournalText(tostring(i) .. ". " .. fact, 14, journalContentFrame)
+		label.TextColor3 = Color3.fromRGB(180, 230, 200)
+	end
+end
+
+local journalTabFunctions: { [string]: () -> () } = {
+	basics      = showJournalBasics,
+	ingredients = showJournalIngredients,
+	recipes     = showJournalRecipes,
+	odds        = showJournalOdds,
+	facts       = showJournalFunFacts,
+}
+
+local function switchJournalTab(tabName: string)
+	activeJournalTab = tabName
+
+	-- Update tab button visuals
+	for name, btn in journalTabButtons do
+		if name == tabName then
+			btn.BackgroundColor3 = PANEL_STROKE_COLOR
+			btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		else
+			btn.BackgroundColor3 = BUTTON_COLOR
+			btn.TextColor3 = TEXT_COLOR
+		end
+	end
+
+	-- Show content
+	local fn = journalTabFunctions[tabName]
+	if fn then
+		fn()
+	end
+end
+
+local function createJournalPanel()
+	journalPanel = createPanel("JournalPanel", UDim2.new(0, 520, 0, 560), UDim2.new(0.5, 0, 0.5, 0))
+	journalPanel.Parent = screenGui
+
+	-- Title
+	local title = createLabel("Title", Strings.JOURNAL, FONT_HEADER, 20, journalPanel)
+	title.TextXAlignment = Enum.TextXAlignment.Center
+	title.Size = UDim2.new(1, -40, 0, 28)
+
+	createCloseButton(journalPanel)
+
+	-- Tab bar
+	local tabBar = Instance.new("Frame")
+	tabBar.Name = "TabBar"
+	tabBar.Size = UDim2.new(1, 0, 0, 32)
+	tabBar.Position = UDim2.new(0, 0, 0, 34)
+	tabBar.BackgroundTransparency = 1
+	tabBar.ZIndex = 11
+	tabBar.Parent = journalPanel
+
+	local tabLayout = Instance.new("UIListLayout")
+	tabLayout.FillDirection = Enum.FillDirection.Horizontal
+	tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	tabLayout.Padding = UDim.new(0, 4)
+	tabLayout.Parent = tabBar
+
+	local tabs = {
+		{ id = "basics",      label = Strings.TAB_BASICS,      order = 1 },
+		{ id = "ingredients", label = Strings.TAB_INGREDIENTS,  order = 2 },
+		{ id = "recipes",     label = Strings.TAB_RECIPES,      order = 3 },
+		{ id = "odds",        label = Strings.TAB_ODDS,         order = 4 },
+		{ id = "facts",       label = Strings.TAB_FUN_FACTS,    order = 5 },
+	}
+
+	for _, tab in tabs do
+		local btn = createButton(tab.id, tab.label, UDim2.new(0, 90, 1, 0), tabBar)
+		btn.TextSize = 12
+		btn.LayoutOrder = tab.order
+		btn.ZIndex = 12
+		journalTabButtons[tab.id] = btn
+
+		btn.Activated:Connect(function()
+			switchJournalTab(tab.id)
+		end)
+	end
+
+	-- Content scroll area
+	local scroll = createScrollingList(
+		"JournalContent",
+		UDim2.new(1, 0, 1, -78),
+		UDim2.new(0, 0, 0, 74),
+		journalPanel
+	)
+	scroll.ZIndex = 21
+
+	-- Override scroll's UIListLayout padding for more spacing
+	local scrollLayout = scroll:FindFirstChildWhichIsA("UIListLayout")
+	if scrollLayout then
+		scrollLayout.Padding = UDim.new(0, 8)
+	end
+
+	journalContentFrame = scroll
+end
+
+---------------------------------------------------------------------------
 -- Notification System
 ---------------------------------------------------------------------------
 
@@ -960,6 +1301,7 @@ function UIController.init(initialState: { [string]: any }, remotesFolder: Folde
 	createBrewPanel()
 	createSellPanel()
 	createUpgradePanel()
+	createJournalPanel()
 	createNotificationContainer()
 
 	-- Refresh HUD with whatever state we already have
@@ -997,6 +1339,11 @@ function UIController.updateState(newState: { [string]: any })
 	-- If sell panel is open, refresh potion list
 	if sellPanel and sellPanel.Visible then
 		populateSellList()
+	end
+
+	-- If journal is open on the recipes tab, refresh (discoveries may have updated)
+	if journalPanel and journalPanel.Visible and activeJournalTab == "recipes" then
+		showJournalRecipes()
 	end
 end
 
@@ -1050,8 +1397,8 @@ function UIController.showNotification(message: string, color: Color3?)
 	)
 	slideIn:Play()
 
-	-- After 3 seconds, fade out and destroy
-	task.delay(3, function()
+	-- After NOTIFICATION_DURATION seconds, fade out and destroy
+	task.delay(Config.NOTIFICATION_DURATION, function()
 		local fadeOut = TweenService:Create(
 			notifFrame,
 			TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
@@ -1149,6 +1496,36 @@ function UIController.openUpgradePanel()
 	end
 end
 
+--- Opens the journal panel on the specified tab (defaults to "basics").
+function UIController.openJournalPanel(tabName: string?)
+	UIController.closePanels()
+	switchJournalTab(tabName or activeJournalTab or "basics")
+	if journalPanel then
+		journalPanel.Visible = true
+	end
+end
+
+--- Called when a recipe discovery event arrives from the server.
+--- Triggers a celebratory journal flash.
+function UIController.onRecipeDiscovered(recipeId: string, recipeName: string, isSessionFirst: boolean)
+	-- Show a special discovery notification
+	local msg = if isSessionFirst
+		then "WORLD FIRST this session: " .. recipeName .. "! Open the Journal to read the science behind it."
+		else "New recipe: " .. recipeName .. "! Check your Journal to learn the science."
+	UIController.showNotification(msg, Color3.fromRGB(255, 215, 50))
+
+	-- Auto-open journal to the recipes tab after a short delay so the
+	-- brew notification is visible first
+	if Config.CELEBRATE_DISCOVERIES then
+		task.delay(2, function()
+			-- Only open if no other panel is currently open
+			if journalPanel and not journalPanel.Visible then
+				UIController.openJournalPanel("recipes")
+			end
+		end)
+	end
+end
+
 --- Closes all overlay panels.
 function UIController.closePanels()
 	activePlotIndex = nil
@@ -1158,6 +1535,7 @@ function UIController.closePanels()
 	if brewPanel then brewPanel.Visible = false end
 	if sellPanel then sellPanel.Visible = false end
 	if upgradePanel then upgradePanel.Visible = false end
+	if journalPanel then journalPanel.Visible = false end
 end
 
 return UIController

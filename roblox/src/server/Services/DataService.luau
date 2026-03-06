@@ -37,11 +37,13 @@ local function getTemplate(): { [string]: any }
 		LabLevel = 1,
 		CauldronLevel = 1,
 		Plots = plots,
-		Ingredients = {},  -- harvested ingredients: { {Id, Rarity}, ... }
-		Potions = {},      -- brewed potions: { {Id, DisplayName, Value}, ... }
+		Ingredients = {},          -- harvested ingredients: { {Id, Rarity}, ... }
+		Potions = {},              -- brewed potions: { {Id, DisplayName, Value}, ... }
+		DiscoveredRecipes = {},    -- set of recipe IDs the player has personally brewed
 		Stats = {
 			TotalGoldEarned = 0,
 			PotionsBrewed = 0,
+			TotalDiscoveries = 0,  -- lifetime recipe discoveries
 		},
 	}
 end
@@ -116,7 +118,7 @@ end
 
 function DataService.init()
 	local ok, store = pcall(function()
-		return DataStoreService:GetDataStore("PotionLabData_v1")
+		return DataStoreService:GetDataStore("PotionLabData_v2")
 	end)
 	if ok then
 		dataStore = store
