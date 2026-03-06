@@ -36,24 +36,25 @@ end
 ---------------------------------------------------------------------------
 
 --- Brew a potion from two ingredients in the player's inventory.
+--- Returns { recipeId, value } on success, or nil on failure.
 --- @param player  The player requesting the brew
 --- @param idx1    First ingredient inventory index (1-based)
 --- @param idx2    Second ingredient inventory index (1-based)
-function BrewingService.brewPotion(player: Player, idx1: number, idx2: number)
+function BrewingService.brewPotion(player: Player, idx1: number, idx2: number): { recipeId: string, value: number }?
 	local data = DataService.getData(player)
 	if not data then return end
 
 	-- Validate: different indices
 	if idx1 == idx2 then
 		DataService.notify(player, "Select two different ingredients!")
-		return
+		return nil
 	end
 
 	-- Validate: both indices exist
 	local inv = data.Ingredients
 	if not inv[idx1] or not inv[idx2] then
 		DataService.notify(player, "Invalid ingredient selection!")
-		return
+		return nil
 	end
 
 	local ingredient1 = inv[idx1]
@@ -63,7 +64,7 @@ function BrewingService.brewPotion(player: Player, idx1: number, idx2: number)
 	local recipe = Recipes.lookup(ingredient1.Id, ingredient2.Id)
 	if not recipe then
 		DataService.notify(player, "These ingredients can't be combined!")
-		return
+		return nil
 	end
 
 	-- Calculate potion value
@@ -104,6 +105,8 @@ function BrewingService.brewPotion(player: Player, idx1: number, idx2: number)
 	else
 		DataService.notify(player, "Brewed " .. recipe.displayName .. "! Worth " .. potionValue .. " Essence")
 	end
+
+	return { recipeId = recipe.id, value = potionValue }
 end
 
 return BrewingService

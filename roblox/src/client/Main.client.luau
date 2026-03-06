@@ -38,6 +38,7 @@ local Strings     = require(Shared:WaitForChild("Strings"))
 local Controllers          = script.Parent:WaitForChild("Controllers")
 local UIController         = require(Controllers:WaitForChild("UIController"))
 local InteractionController = require(Controllers:WaitForChild("InteractionController"))
+local SoundController       = require(Controllers:WaitForChild("SoundController"))
 
 ---------------------------------------------------------------------------
 -- Local state cache — updated every time the server sends a StateSync
@@ -69,6 +70,7 @@ end)
 ---------------------------------------------------------------------------
 notificationRemote.OnClientEvent:Connect(function(message: string, color: Color3?)
 	UIController.showNotification(message, color)
+	SoundController.onNotification()
 end)
 
 ---------------------------------------------------------------------------
@@ -77,6 +79,7 @@ end)
 local recipeDiscoveredRemote = Remotes:WaitForChild(Network.RecipeDiscovered) :: RemoteEvent
 recipeDiscoveredRemote.OnClientEvent:Connect(function(recipeId: string, recipeName: string, isSessionFirst: boolean)
 	UIController.onRecipeDiscovered(recipeId, recipeName, isSessionFirst)
+	SoundController.onDiscovery()
 end)
 
 ---------------------------------------------------------------------------
@@ -89,5 +92,8 @@ UIController.init(playerState, Remotes)
 -- InteractionController needs UIController (to open panels) and the state
 -- accessor (to check plot states).
 InteractionController.init(UIController, getState, Remotes)
+
+-- SoundController starts background music and prepares the SFX pool.
+SoundController.init()
 
 print("[AlchemyAcademy] Client initialised — welcome to the lab!")

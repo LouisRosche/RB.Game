@@ -90,7 +90,9 @@ function GrowthService.init()
 	RunService.Heartbeat:Connect(onHeartbeat)
 end
 
---- Plant a seed in a player's plot. Validates inputs and deducts gold.
+--- Plant a seed in a player's plot.
+--- Consumes a pre-purchased seed from the Seeds inventory if available (BuySeed flow).
+--- Falls back to buy-and-plant in one step so PlantSeed works without a prior BuySeed.
 function GrowthService.plantSeed(player: Player, plotIndex: number, ingredientId: string)
 	local data = DataService.getData(player)
 	if not data then return end
@@ -107,14 +109,29 @@ function GrowthService.plantSeed(player: Player, plotIndex: number, ingredientId
 		return
 	end
 
-	-- Check gold
-	if data.Gold < ingredientDef.seedCost then
-		DataService.notify(player, "Not enough gold! Need " .. ingredientDef.seedCost .. "g")
-		return
+	-- Check whether a pre-purchased seed exists in inventory (BuySeed was called first)
+	local seedIndex = nil
+	if data.Seeds then
+		for i, seed in data.Seeds do
+			if seed.Id == ingredientId then
+				seedIndex = i
+				break
+			end
+		end
 	end
 
-	-- Deduct gold and plant
-	data.Gold -= ingredientDef.seedCost
+	if seedIndex then
+		-- Consume the pre-purchased seed; gold was already deducted at buy time
+		table.remove(data.Seeds, seedIndex)
+	else
+		-- Direct plant: deduct gold now (no prior BuySeed required)
+		if data.Gold < ingredientDef.seedCost then
+			DataService.notify(player, "Not enough gold! Need " .. ingredientDef.seedCost .. "g")
+			return
+		end
+		data.Gold -= ingredientDef.seedCost
+	end
+
 	plot.State = "Growing"
 	plot.IngredientId = ingredientId
 	plot.PlantedAt = os.time()

@@ -19,8 +19,8 @@ local EconomyService = {}
 -- Public API
 ---------------------------------------------------------------------------
 
---- Purchase a seed. Deducts gold only; actual planting is via GrowthService.
---- This is called from the BuySeed remote when buying into inventory.
+--- Purchase a seed and add it to the player's seed inventory.
+--- Actual planting is a separate step via GrowthService (PlantSeed remote).
 function EconomyService.buySeed(player: Player, ingredientId: string)
 	local data = DataService.getData(player)
 	if not data then return end
@@ -34,6 +34,8 @@ function EconomyService.buySeed(player: Player, ingredientId: string)
 	end
 
 	data.Gold -= def.seedCost
+	-- Track the purchased seed so GrowthService can consume it on plant
+	table.insert(data.Seeds, { Id = ingredientId })
 	DataService.syncToClient(player)
 	DataService.notify(player, "Purchased " .. def.displayName .. " seed!")
 end

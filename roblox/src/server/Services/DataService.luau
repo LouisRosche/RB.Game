@@ -37,6 +37,7 @@ local function getTemplate(): { [string]: any }
 		LabLevel = 1,
 		CauldronLevel = 1,
 		Plots = plots,
+		Seeds = {},                -- purchased seeds waiting to be planted: { {Id}, ... }
 		Ingredients = {},          -- harvested ingredients: { {Id, Rarity}, ... }
 		Potions = {},              -- brewed potions: { {Id, DisplayName, Value}, ... }
 		DiscoveredRecipes = {},    -- set of recipe IDs the player has personally brewed
