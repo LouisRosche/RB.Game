@@ -44,6 +44,12 @@ function BrewingService.brewPotion(player: Player, idx1: number, idx2: number): 
 	local data = DataService.getData(player)
 	if not data then return end
 
+	-- Enforce potion inventory cap (protects DataStore size)
+	if #data.Potions >= Config.MAX_POTIONS then
+		DataService.notify(player, "Potion shelf full (" .. Config.MAX_POTIONS .. " max)! Sell some potions first.")
+		return nil
+	end
+
 	-- Validate: different indices
 	if idx1 == idx2 then
 		DataService.notify(player, "Select two different ingredients!")

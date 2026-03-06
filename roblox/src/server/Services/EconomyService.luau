@@ -33,6 +33,11 @@ function EconomyService.buySeed(player: Player, ingredientId: string)
 		return
 	end
 
+	if #data.Seeds >= Config.MAX_SEEDS then
+		DataService.notify(player, "Seed pouch full (" .. Config.MAX_SEEDS .. " max)! Plant some seeds first.")
+		return
+	end
+
 	data.Gold -= def.seedCost
 	-- Track the purchased seed so GrowthService can consume it on plant
 	table.insert(data.Seeds, { Id = ingredientId })

@@ -16,6 +16,7 @@ local ReplicatedStorage  = game:GetService("ReplicatedStorage")
 ---------------------------------------------------------------------------
 local Shared      = ReplicatedStorage:WaitForChild("Shared")
 local Network     = require(Shared.Network)
+local Config      = require(Shared.Config)
 local Ingredients = require(Shared.Ingredients)
 
 ---------------------------------------------------------------------------
@@ -168,6 +169,12 @@ remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotInde
 
 	local plot = data.Plots[plotIndex]
 	if not plot or plot.State ~= "Ready" then return end
+
+	-- Enforce ingredient inventory cap (protects DataStore size)
+	if #data.Ingredients >= Config.MAX_INGREDIENTS then
+		DataService.notify(player, "Ingredient bag full (" .. Config.MAX_INGREDIENTS .. " max)! Brew some potions first.")
+		return
+	end
 
 	local entry = {
 		Id = plot.IngredientId,

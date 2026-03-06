@@ -119,4 +119,22 @@ Config.MAX_NOTIFICATIONS = 5
 --- Long enough to read, short enough to not clutter the screen.
 Config.NOTIFICATION_DURATION = 4
 
+--============================================================================--
+-- Inventory caps
+-- Roblox DataStore keys have a 4 MB serialised limit. Uncapped inventory
+-- arrays are the most common cause of silent data corruption.
+-- These limits are generous for normal play while preventing runaway growth.
+--============================================================================--
+
+--- Maximum harvested ingredients held before harvest is blocked.
+--- Players must brew before picking more plants.
+Config.MAX_INGREDIENTS = 30
+
+--- Maximum brewed potions held before brewing is blocked.
+--- Players must sell before brewing more potions.
+Config.MAX_POTIONS = 20
+
+--- Maximum pre-purchased seeds awaiting planting.
+Config.MAX_SEEDS = 12
+
 return Config

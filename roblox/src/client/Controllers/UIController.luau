@@ -67,7 +67,11 @@ local brewPanel: Frame = nil :: any
 local sellPanel: Frame = nil :: any
 local upgradePanel: Frame = nil :: any
 local journalPanel: Frame = nil :: any
+local leaderboardPanel: Frame = nil :: any
 local notificationContainer: Frame = nil :: any
+
+-- Leaderboard row labels (reused on each update to avoid re-creating UI)
+local leaderboardRowLabels: { TextLabel } = {}
 
 -- Brewing selection state
 local selectedIngredients: { number } = {}
@@ -1279,6 +1283,68 @@ local function createNotificationContainer()
 end
 
 ---------------------------------------------------------------------------
+-- Leaderboard sidebar (always visible, top-right corner)
+---------------------------------------------------------------------------
+
+local TOP_N_DISPLAY = 10
+
+local function createLeaderboardPanel()
+	leaderboardPanel = Instance.new("Frame")
+	leaderboardPanel.Name = "Leaderboard"
+	leaderboardPanel.Size = UDim2.new(0, 210, 0, 26 + TOP_N_DISPLAY * 22 + 8)
+	leaderboardPanel.Position = UDim2.new(1, -220, 0, 10)
+	leaderboardPanel.AnchorPoint = Vector2.new(0, 0)
+	leaderboardPanel.BackgroundColor3 = PANEL_BG_COLOR
+	leaderboardPanel.BackgroundTransparency = PANEL_BG_TRANSPARENCY
+	leaderboardPanel.BorderSizePixel = 0
+	leaderboardPanel.ZIndex = 5
+	leaderboardPanel.Parent = screenGui
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = CORNER_RADIUS
+	corner.Parent = leaderboardPanel
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = PANEL_STROKE_COLOR
+	stroke.Thickness = PANEL_STROKE_THICKNESS
+	stroke.Parent = leaderboardPanel
+
+	-- Title row
+	local title = Instance.new("TextLabel")
+	title.Name = "Title"
+	title.Size = UDim2.new(1, -8, 0, 20)
+	title.Position = UDim2.new(0, 4, 0, 4)
+	title.BackgroundTransparency = 1
+	title.Font = FONT_HEADER
+	title.TextSize = 13
+	title.TextColor3 = GOLD_TEXT_COLOR
+	title.TextXAlignment = Enum.TextXAlignment.Center
+	title.Text = "Top Alchemists"
+	title.ZIndex = 6
+	title.Parent = leaderboardPanel
+
+	-- Pre-create row labels (rank + name, score right-aligned)
+	for i = 1, TOP_N_DISPLAY do
+		local rowY = 26 + (i - 1) * 22
+
+		local row = Instance.new("TextLabel")
+		row.Name = "Row_" .. i
+		row.Size = UDim2.new(1, -8, 0, 20)
+		row.Position = UDim2.new(0, 4, 0, rowY)
+		row.BackgroundTransparency = 1
+		row.Font = FONT_BODY
+		row.TextSize = 12
+		row.TextColor3 = TEXT_COLOR
+		row.TextXAlignment = Enum.TextXAlignment.Left
+		row.Text = i .. ". —"
+		row.ZIndex = 6
+		row.Parent = leaderboardPanel
+
+		leaderboardRowLabels[i] = row
+	end
+end
+
+---------------------------------------------------------------------------
 -- Public API
 ---------------------------------------------------------------------------
 
@@ -1302,6 +1368,7 @@ function UIController.init(initialState: { [string]: any }, remotesFolder: Folde
 	createSellPanel()
 	createUpgradePanel()
 	createJournalPanel()
+	createLeaderboardPanel()
 	createNotificationContainer()
 
 	-- Refresh HUD with whatever state we already have
@@ -1523,6 +1590,37 @@ function UIController.onRecipeDiscovered(recipeId: string, recipeName: string, i
 				UIController.openJournalPanel("recipes")
 			end
 		end)
+	end
+end
+
+--- Updates the leaderboard sidebar with a fresh top-N payload from the server.
+--- @param entries Array of { rank: number, name: string, score: number }
+function UIController.updateLeaderboard(entries: { { rank: number, name: string, score: number } })
+	if not leaderboardRowLabels or #leaderboardRowLabels == 0 then return end
+
+	for i = 1, TOP_N_DISPLAY do
+		local label = leaderboardRowLabels[i]
+		if not label then continue end
+
+		local entry = entries[i]
+		if entry then
+			-- Truncate long names to keep layout clean
+			local name = if #entry.name > 14 then string.sub(entry.name, 1, 13) .. "…" else entry.name
+			label.Text = entry.rank .. ". " .. name .. "  " .. tostring(entry.score) .. "g"
+			-- Gold colour for #1, silver for #2, bronze for #3, default otherwise
+			if entry.rank == 1 then
+				label.TextColor3 = GOLD_TEXT_COLOR
+			elseif entry.rank == 2 then
+				label.TextColor3 = Color3.fromRGB(192, 192, 192)
+			elseif entry.rank == 3 then
+				label.TextColor3 = Color3.fromRGB(205, 127, 50)
+			else
+				label.TextColor3 = TEXT_COLOR
+			end
+		else
+			label.Text = i .. ". —"
+			label.TextColor3 = Color3.fromRGB(100, 100, 120)
+		end
 	end
 end
 
