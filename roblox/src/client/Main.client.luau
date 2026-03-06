@@ -35,10 +35,11 @@ local Strings     = require(Shared:WaitForChild("Strings"))
 ---------------------------------------------------------------------------
 -- Client controllers
 ---------------------------------------------------------------------------
-local Controllers          = script.Parent:WaitForChild("Controllers")
-local UIController         = require(Controllers:WaitForChild("UIController"))
+local Controllers           = script.Parent:WaitForChild("Controllers")
+local UIController          = require(Controllers:WaitForChild("UIController"))
 local InteractionController = require(Controllers:WaitForChild("InteractionController"))
 local SoundController       = require(Controllers:WaitForChild("SoundController"))
+local TutorialController    = require(Controllers:WaitForChild("TutorialController"))
 
 ---------------------------------------------------------------------------
 -- Local state cache — updated every time the server sends a StateSync
@@ -63,6 +64,7 @@ local notificationRemote = Remotes:WaitForChild(Network.Notification) :: RemoteE
 stateSyncRemote.OnClientEvent:Connect(function(newState: { [string]: any })
 	playerState = newState
 	UIController.updateState(newState)
+	TutorialController.onStateChanged(newState)
 end)
 
 ---------------------------------------------------------------------------
@@ -103,5 +105,9 @@ InteractionController.init(UIController, getState, Remotes, SoundController)
 
 -- SoundController starts background music and prepares the SFX pool.
 SoundController.init()
+
+-- TutorialController detects new players and shows the onboarding overlay.
+-- Must be initialised after UIController (which creates PlayerGui.PotionLabUI).
+TutorialController.init(Remotes)
 
 print("[AlchemyAcademy] Client initialised — welcome to the lab!")

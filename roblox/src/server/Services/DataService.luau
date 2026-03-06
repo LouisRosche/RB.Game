@@ -51,6 +51,7 @@ local DATA_TEMPLATE: { [string]: any } = {
 	Ingredients  = {},   -- harvested: { {Id, Rarity} }
 	Potions      = {},   -- brewed: { {Id, DisplayName, Value} }
 	DiscoveredRecipes = {},  -- set of recipe IDs player has personally brewed
+	TutorialCompleted = false, -- set to true after the first-session onboarding flow
 	Stats = {
 		TotalGoldEarned = 0,
 		PotionsBrewed   = 0,

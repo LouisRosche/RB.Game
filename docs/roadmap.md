@@ -54,13 +54,16 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 - ✅ Progression curve (lab upgrades, cauldron upgrades)
 - ✅ Full UI built programmatically — HUD, seed/brew/sell/upgrade/journal panels
 - ✅ Leaderboard sidebar (top-10 by TotalGoldEarned, live broadcasts)
-- ⬜ Tutorial/onboarding (guided first-session flow — not yet built)
+- ✅ Tutorial/onboarding — `TutorialController.luau`: 5-step overlay, state-diff advancement, skip button, server-saved TutorialCompleted flag
 - ✅ Save system — ProfileService migration (session locking, auto-save, GDPR AddUserId)
   - **⚠ Action required**: download `ProfileService.luau` → `roblox/src/server/Vendor/` (see INSTALL.md)
 - ✅ Analytics — funnel tracking (plant/harvest/brew) for D1/D7 measurement via Roblox AnalyticsService
 - ✅ Internationalisation — all strings in `Strings.luau`, UTF-8 ready
-- ⬜ Accessibility Big Four (remappable controls, subtitles, volume sliders, no color-only info)
-  - Volume API exists in SoundController — needs settings UI
+- 🔄 Accessibility Big Four (remappable controls, subtitles, volume sliders, no color-only info)
+  - ✅ Volume sliders — Settings panel in HUD (Music +/−, SFX +/−, Mute All)
+  - ⬜ Remappable controls (low priority for Roblox — platform handles most)
+  - ⬜ Subtitles for any future voiced content
+  - ⬜ Color-blindness audit (rarity colours have sufficient contrast by design)
 - ⬜ Performance optimisation audit (< 75K parts, StreamingEnabled confirmed on)
 
 ### Sprint 3 — Polish & Soft Launch (Weeks 16-20)
@@ -134,8 +137,7 @@ These are the blockers before the game can be playtested:
 
 1. **Install ProfileService** — download from https://github.com/MadStudioRoblox/ProfileService/releases, place at `roblox/src/server/Vendor/ProfileService.luau`
 2. **Upload audio** — any free sound pack will do to unblock testing; replace placeholder IDs in `SoundController.luau`
-3. **Build the onboarding flow** — first-session guided tutorial (plant your first Moonpetal seed)
-4. **Publish unlisted on Roblox** — invite 5-10 testers, measure D1 retention
-5. **Set up business basics** — LLC, bank account, tax savings account (Phase 0 blockers for monetisation)
-6. **Start Discord server** — follow `community/discord/setup.md`; have it live before any public TikTok posts
-7. **Start TikTok** — first video before the public launch, not after
+3. **Publish unlisted on Roblox** — invite 5-10 testers, measure D1 retention (tutorial is now built ✅)
+4. **Set up business basics** — LLC, bank account, tax savings account (Phase 0 blockers for monetisation)
+5. **Start Discord server** — follow `community/discord/setup.md`; have it live before any public TikTok posts
+6. **Start TikTok** — first video before the public launch, not after

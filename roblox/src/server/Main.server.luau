@@ -258,3 +258,13 @@ end)
 remotes[Network.RequestDiscoverySummary].OnServerEvent:Connect(function(player: Player)
 	DataService.syncToClient(player)
 end)
+
+-- TutorialComplete: player finished (or skipped) the first-session tutorial.
+-- Mark the flag so the tutorial is not shown again on future sessions.
+remotes[Network.TutorialComplete].OnServerEvent:Connect(function(player: Player)
+	local data = DataService.getData(player)
+	if data and not data.TutorialCompleted then
+		data.TutorialCompleted = true
+		-- ProfileService auto-saves every ~30 s; no explicit save needed here.
+	end
+end)
