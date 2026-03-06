@@ -52,6 +52,10 @@ Network.RecipeDiscovered = "RecipeDiscovered"
 --- Server responds via StateSync (already includes DiscoveredRecipes in data).
 Network.RequestDiscoverySummary = "RequestDiscoverySummary"
 
+--- Server broadcasts the top-N leaderboard entries to all clients.
+--- Payload: array of { rank: number, name: string, score: number }
+Network.LeaderboardUpdate = "LeaderboardUpdate"
+
 --============================================================================--
 -- Helpers
 --============================================================================--
@@ -72,6 +76,7 @@ function Network.getAllEventNames(): { string }
 		Network.StateSync,
 		Network.Notification,
 		Network.RecipeDiscovered,
+		Network.LeaderboardUpdate,
 	}
 end
 

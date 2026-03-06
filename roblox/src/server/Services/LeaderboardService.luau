@@ -29,6 +29,8 @@ local Players           = game:GetService("Players")
 local DataStoreService  = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Shared   = ReplicatedStorage:WaitForChild("Shared")
+local Network  = require(Shared.Network)
 local DataService = require(script.Parent.DataService)
 
 local LeaderboardService = {}
@@ -123,6 +125,8 @@ local function fetchTopN(): { { rank: number, name: string, score: number } }?
 end
 
 --- Broadcast the current top-N to all connected players.
+--- The LeaderboardUpdate RemoteEvent is created by Main.server.luau via
+--- Network.getAllEventNames() — we just look it up here.
 local function broadcast()
 	local entries = fetchTopN()
 	if not entries then return end
@@ -130,7 +134,7 @@ local function broadcast()
 	local remotes = ReplicatedStorage:FindFirstChild("Remotes")
 	if not remotes then return end
 
-	local remote = remotes:FindFirstChild("LeaderboardUpdate")
+	local remote = remotes:FindFirstChild(Network.LeaderboardUpdate)
 	if not remote then return end
 
 	(remote :: RemoteEvent):FireAllClients(entries)
@@ -141,14 +145,6 @@ end
 ---------------------------------------------------------------------------
 
 function LeaderboardService.init()
-	-- Create the RemoteEvent for leaderboard pushes
-	local remotes = ReplicatedStorage:WaitForChild("Remotes")
-	if not remotes:FindFirstChild("LeaderboardUpdate") then
-		local remote = Instance.new("RemoteEvent")
-		remote.Name = "LeaderboardUpdate"
-		remote.Parent = remotes
-	end
-
 	-- Periodic refresh loop
 	task.spawn(function()
 		while true do

@@ -32,6 +32,7 @@ local InteractionController = {}
 
 -- References set during init
 local uiController: any = nil
+local soundController: any = nil
 local getStateFn: (() -> { [string]: any }) = nil :: any
 local remotes: Folder = nil :: any
 local localPlayer: Player = Players.LocalPlayer
@@ -101,9 +102,11 @@ local function onPromptTriggered(prompt: ProximityPrompt, triggeringPlayer: Play
 		local plotState = getPlotState(plotIndex)
 		if not plotState or plotState.State == "Empty" then
 			-- Empty plot -> open the seed selection panel
+			-- (sound plays when player confirms seed selection in the UI)
 			uiController.openSeedPanel(plotIndex)
 		elseif plotState.State == "Ready" then
-			-- Fully grown -> harvest immediately
+			-- Fully grown -> harvest immediately with haptic audio feedback
+			if soundController then soundController.onHarvest(plotState.Rarity or "Common") end
 			fireRemote(Network.Harvest, plotIndex)
 		end
 		-- "Growing" state -> do nothing (plant is still growing)
@@ -112,6 +115,7 @@ local function onPromptTriggered(prompt: ProximityPrompt, triggeringPlayer: Play
 
 	-- Cauldron interaction
 	if promptName == "CauldronPrompt" or parentName == "Cauldron" then
+		if soundController then soundController.onBrewStart() end
 		uiController.openBrewPanel()
 		return
 	end
@@ -134,11 +138,18 @@ end
 ---------------------------------------------------------------------------
 
 --- Initialises the InteractionController.
---- @param uiCtrl       Reference to UIController so we can open panels.
---- @param getState     Function that returns the current cached player state.
+--- @param uiCtrl        Reference to UIController so we can open panels.
+--- @param getState      Function that returns the current cached player state.
 --- @param remotesFolder The Remotes folder in ReplicatedStorage.
-function InteractionController.init(uiCtrl: any, getState: () -> { [string]: any }, remotesFolder: Folder)
+--- @param soundCtrl     Optional SoundController reference for interaction audio.
+function InteractionController.init(
+	uiCtrl: any,
+	getState: () -> { [string]: any },
+	remotesFolder: Folder,
+	soundCtrl: any?
+)
 	uiController = uiCtrl
+	soundController = soundCtrl
 	getStateFn = getState
 	remotes = remotesFolder
 

@@ -83,15 +83,23 @@ recipeDiscoveredRemote.OnClientEvent:Connect(function(recipeId: string, recipeNa
 end)
 
 ---------------------------------------------------------------------------
+-- Leaderboard handler — server pushes top-N rankings periodically
+---------------------------------------------------------------------------
+local leaderboardRemote = Remotes:WaitForChild(Network.LeaderboardUpdate) :: RemoteEvent
+leaderboardRemote.OnClientEvent:Connect(function(entries: { { rank: number, name: string, score: number } })
+	UIController.updateLeaderboard(entries)
+end)
+
+---------------------------------------------------------------------------
 -- Initialise controllers
 ---------------------------------------------------------------------------
 -- UIController needs the state accessor and the Remotes folder so it can
 -- fire client-to-server events from button callbacks.
 UIController.init(playerState, Remotes)
 
--- InteractionController needs UIController (to open panels) and the state
--- accessor (to check plot states).
-InteractionController.init(UIController, getState, Remotes)
+-- InteractionController needs UIController (to open panels), the state
+-- accessor (to check plot states), and SoundController for audio feedback.
+InteractionController.init(UIController, getState, Remotes, SoundController)
 
 -- SoundController starts background music and prepares the SFX pool.
 SoundController.init()

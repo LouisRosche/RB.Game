@@ -98,6 +98,7 @@ function EconomyService.upgradeLab(player: Player)
 
 	DataService.syncToClient(player)
 	DataService.notify(player, "Lab upgraded to " .. nextDef.name .. "! Now have " .. newPlots .. " plots")
+	return nextLevel
 end
 
 --- Upgrade the player's cauldron to the next level.
@@ -126,6 +127,7 @@ function EconomyService.upgradeCauldron(player: Player)
 
 	DataService.syncToClient(player)
 	DataService.notify(player, "Cauldron upgraded to " .. nextDef.name .. "! Brews " .. nextDef.brewTime .. "s, +" .. math.floor((nextDef.valueBonus - 1) * 100) .. "% value")
+	return nextLevel
 end
 
 return EconomyService

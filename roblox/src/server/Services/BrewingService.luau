@@ -106,7 +106,7 @@ function BrewingService.brewPotion(player: Player, idx1: number, idx2: number): 
 		DataService.notify(player, "Brewed " .. recipe.displayName .. "! Worth " .. potionValue .. " Essence")
 	end
 
-	return { recipeId = recipe.id, value = potionValue }
+	return { recipeId = recipe.id, value = potionValue, isNewDiscovery = isNewDiscovery, discoveryCount = discoveryCount }
 end
 
 return BrewingService

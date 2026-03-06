@@ -22,6 +22,14 @@
       "Shared": {
         "$path": "src/shared"
       }
+    },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "Vendor": {
+        "$className": "Folder",
+        "$comment": "Place third-party server modules here. ProfileService.luau required — see DataService.luau for download instructions.",
+        "$path": "src/server/Vendor"
+      }
     }
   }
 }

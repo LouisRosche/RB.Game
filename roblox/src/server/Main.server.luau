@@ -213,6 +213,9 @@ remotes[Network.BrewPotion].OnServerEvent:Connect(function(player: Player, idx1:
 	local brewed = BrewingService.brewPotion(player, idx1, idx2)
 	if brewed then
 		AnalyticsService.onPotion(player, brewed.recipeId, brewed.value)
+		if brewed.isNewDiscovery then
+			AnalyticsService.onDiscovery(player, brewed.recipeId, brewed.discoveryCount)
+		end
 	end
 end)
 
@@ -227,11 +230,24 @@ end)
 -- UpgradeLab: player upgrades their lab
 remotes[Network.UpgradeLab].OnServerEvent:Connect(function(player: Player)
 	if isRateLimited(player, Network.UpgradeLab) then return end
-	EconomyService.upgradeLab(player)
+	local newLevel = EconomyService.upgradeLab(player)
+	if newLevel then
+		AnalyticsService.onUpgrade(player, "Lab", newLevel)
+	end
 end)
 
 -- UpgradeCauldron: player upgrades their cauldron
 remotes[Network.UpgradeCauldron].OnServerEvent:Connect(function(player: Player)
 	if isRateLimited(player, Network.UpgradeCauldron) then return end
-	EconomyService.upgradeCauldron(player)
+	local newLevel = EconomyService.upgradeCauldron(player)
+	if newLevel then
+		AnalyticsService.onUpgrade(player, "Cauldron", newLevel)
+	end
+end)
+
+-- RequestDiscoverySummary: client requests up-to-date discovery data.
+-- The full DiscoveredRecipes set is already in StateSync; this just
+-- triggers a fresh push without requiring a separate data payload.
+remotes[Network.RequestDiscoverySummary].OnServerEvent:Connect(function(player: Player)
+	DataService.syncToClient(player)
 end)
