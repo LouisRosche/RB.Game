@@ -206,6 +206,9 @@ remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotInde
 	AnalyticsService.onHarvest(player, entry.Id, entry.Rarity)
 	DataService.syncToClient(player)
 
+	-- Notify the client so it can play localised particle burst
+	remotes[Network.HarvestEffect]:FireClient(player, plotIndex, entry.Rarity)
+
 	local displayName = ingredientId_toDisplayName(entry.Id)
 	local rarity = entry.Rarity
 
@@ -226,6 +229,8 @@ remotes[Network.BrewPotion].OnServerEvent:Connect(function(player: Player, idx1:
 		if brewed.isNewDiscovery then
 			AnalyticsService.onDiscovery(player, brewed.recipeId, brewed.discoveryCount)
 		end
+		-- Trigger cauldron particle burst on the brewing client
+		remotes[Network.BrewEffect]:FireClient(player)
 	end
 end)
 

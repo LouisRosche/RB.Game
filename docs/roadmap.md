@@ -69,11 +69,14 @@ Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execu
   - **⚠ Confirm StreamingEnabled is ON in Studio** → Workspace Properties → Streaming Enabled
 
 ### Sprint 3 — Polish & Soft Launch (Weeks 16-20)
-- ✅ Visual polish (lighting, particles, post-processing) — `LightingController.luau`: bloom, atmosphere, colour correction
+- ✅ Visual polish (lighting, particles, post-processing)
+  - ✅ `LightingController.luau`: bloom, atmosphere, colour correction
+  - ✅ `ParticleController.luau`: cauldron idle bubbles, rarity-burst harvest sparkles, brew-complete burst, discovery fanfare
+  - ✅ Performance Mode toggle in Settings panel (disables all visual effects for low-end devices)
 - ✅ Sound architecture — SoundController with looping music, SFX pool, per-rarity harvest stings
-  - **⚠ Action required**: upload audio assets, replace placeholder IDs in `SoundController.luau`
-- ⬜ Distinct SFX per action recorded/purchased (plant, harvest ×5 rarities, brew, sell, upgrade, discovery)
-- ⬜ Background music track chosen and uploaded
+  - **⚠ Action required**: upload audio assets per `roblox/AUDIO_ASSETS.md`, replace placeholder IDs in `SoundController.luau`
+- ⬜ Distinct SFX per action recorded/purchased — sourcing guide at `roblox/AUDIO_ASSETS.md`
+- ⬜ Background music track chosen and uploaded — see `roblox/AUDIO_ASSETS.md`
 - 📝 Game icon, thumbnails, description — spec written in `docs/store-listing.md`; assets need to be created and uploaded
 - ⬜ Publish publicly as free game (no monetization yet)
 
@@ -140,7 +143,7 @@ These are the blockers before the game can be playtested:
 1. **Create Roblox developer account** — follow `docs/platform-setup.md`; start the 30-day DevEx clock now
 2. **Register domain** — `alchemyacademy.gg` or `.game` before any public post; ~$20–35/yr at porkbun.com
 3. **Install ProfileService** — download from https://github.com/MadStudioRoblox/ProfileService/releases, place at `roblox/src/server/Vendor/ProfileService.luau`
-4. **Upload audio** — any free sound pack will do to unblock testing; replace placeholder IDs in `SoundController.luau`
+4. **Upload audio** — follow `roblox/AUDIO_ASSETS.md` for exact files needed; replace placeholder IDs in `SoundController.luau`
 5. **Publish the practice obby** — follow `roblox/obby/README.md` to exercise the full publish workflow before the real launch
 6. **Post concept feedback** — copy posts from `marketing/community-posts/` to DevForum and Reddit
 7. **Set up business basics** — LLC, bank account, tax savings account (see `business/legal/checklist.md`)

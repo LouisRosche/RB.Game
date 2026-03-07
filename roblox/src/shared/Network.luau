@@ -57,6 +57,14 @@ Network.TutorialComplete = "TutorialComplete"
 --- Payload: array of { rank: number, name: string, score: number }
 Network.LeaderboardUpdate = "LeaderboardUpdate"
 
+--- Server notifies the harvesting client of the exact plot and rarity so the
+--- client can play a localised particle burst. Payload: plotIndex (number), rarity (string).
+Network.HarvestEffect = "HarvestEffect"
+
+--- Server notifies the brewing client that their brew completed so the client
+--- can play a cauldron particle burst. No payload.
+Network.BrewEffect = "BrewEffect"
+
 --============================================================================--
 -- Helpers
 --============================================================================--
@@ -79,6 +87,8 @@ function Network.getAllEventNames(): { string }
 		Network.Notification,
 		Network.RecipeDiscovered,
 		Network.LeaderboardUpdate,
+		Network.HarvestEffect,
+		Network.BrewEffect,
 	}
 end
 

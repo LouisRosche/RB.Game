@@ -41,6 +41,7 @@ local InteractionController = require(Controllers:WaitForChild("InteractionContr
 local SoundController       = require(Controllers:WaitForChild("SoundController"))
 local TutorialController    = require(Controllers:WaitForChild("TutorialController"))
 local LightingController    = require(Controllers:WaitForChild("LightingController"))
+local ParticleController    = require(Controllers:WaitForChild("ParticleController"))
 
 ---------------------------------------------------------------------------
 -- Local state cache — updated every time the server sends a StateSync
@@ -83,6 +84,23 @@ local recipeDiscoveredRemote = Remotes:WaitForChild(Network.RecipeDiscovered) ::
 recipeDiscoveredRemote.OnClientEvent:Connect(function(recipeId: string, recipeName: string, isSessionFirst: boolean)
 	UIController.onRecipeDiscovered(recipeId, recipeName, isSessionFirst)
 	SoundController.onDiscovery()
+	ParticleController.onDiscovery()
+end)
+
+---------------------------------------------------------------------------
+-- Harvest particle effect — server sends plot + rarity for burst
+---------------------------------------------------------------------------
+local harvestEffectRemote = Remotes:WaitForChild(Network.HarvestEffect) :: RemoteEvent
+harvestEffectRemote.OnClientEvent:Connect(function(plotIndex: number, rarity: string)
+	ParticleController.onHarvest(plotIndex, rarity)
+end)
+
+---------------------------------------------------------------------------
+-- Brew complete particle effect
+---------------------------------------------------------------------------
+local brewEffectRemote = Remotes:WaitForChild(Network.BrewEffect) :: RemoteEvent
+brewEffectRemote.OnClientEvent:Connect(function()
+	ParticleController.onBrewComplete()
 end)
 
 ---------------------------------------------------------------------------
@@ -113,5 +131,13 @@ TutorialController.init(Remotes)
 
 -- LightingController applies Sprint 3 visual polish (bloom, atmosphere, colour grade).
 LightingController.init()
+
+-- ParticleController starts the cauldron idle bubbles and prepares burst helpers.
+-- Must be called after the lab model exists in the workspace (it waits internally).
+ParticleController.init()
+
+-- Wire performance-mode controllers into the settings panel so the player can
+-- disable visual effects on low-end devices.
+UIController.setPerformanceControllers(LightingController, ParticleController)
 
 print("[AlchemyAcademy] Client initialised — welcome to the lab!")

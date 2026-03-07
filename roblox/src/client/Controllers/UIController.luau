@@ -78,6 +78,10 @@ local sfxVolumePct   = 55
 local settingsMusicLabel: TextLabel = nil :: any
 local settingsSFXLabel: TextLabel   = nil :: any
 
+-- Performance-mode controllers (injected after init via setPerformanceControllers)
+local lightingController: any = nil
+local particleController: any = nil
+
 -- Leaderboard row labels (reused on each update to avoid re-creating UI)
 local leaderboardRowLabels: { TextLabel } = {}
 
@@ -1372,7 +1376,7 @@ local function createVolumeRow(
 end
 
 local function createSettingsPanel()
-	settingsPanel = createPanel("SettingsPanel", UDim2.new(0, 320, 0, 210), UDim2.new(0.5, 0, 0.5, 0))
+	settingsPanel = createPanel("SettingsPanel", UDim2.new(0, 320, 0, 260), UDim2.new(0.5, 0, 0.5, 0))
 	settingsPanel.Parent = screenGui
 
 	local title = createLabel("Title", "⚙ Settings", FONT_HEADER, 20, settingsPanel)
@@ -1431,6 +1435,40 @@ local function createSettingsPanel()
 		muteBtn.BackgroundColor3 = if muted
 			then Color3.fromRGB(40, 100, 40)
 			else Color3.fromRGB(120, 40, 40)
+	end)
+
+	-- Performance Mode toggle — disables bloom, atmosphere, and particles
+	-- on low-end devices. Wired to LightingController + ParticleController
+	-- injected via UIController.setPerformanceControllers().
+	local perfBtn = createButton("PerfModeBtn", "Performance Mode: OFF", UDim2.new(1, 0, 0, 32), settingsPanel)
+	perfBtn.Position = UDim2.new(0, 0, 0, 190)
+	perfBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+	perfBtn.ZIndex = 12
+
+	perfBtn.MouseEnter:Connect(function()
+		perfBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 90)
+	end)
+	perfBtn.MouseLeave:Connect(function()
+		local isOn = perfBtn.Text == "Performance Mode: ON"
+		perfBtn.BackgroundColor3 = if isOn
+			then Color3.fromRGB(40, 80, 40)
+			else Color3.fromRGB(50, 50, 70)
+	end)
+
+	local perfOn = false
+	perfBtn.Activated:Connect(function()
+		perfOn = not perfOn
+		if perfOn then
+			if lightingController then lightingController.disableEffects() end
+			if particleController then particleController.disableAll() end
+			perfBtn.Text = "Performance Mode: ON"
+			perfBtn.BackgroundColor3 = Color3.fromRGB(40, 80, 40)
+		else
+			if lightingController then lightingController.init() end
+			if particleController then particleController.enableAll() end
+			perfBtn.Text = "Performance Mode: OFF"
+			perfBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+		end
 	end)
 end
 
@@ -1799,6 +1837,14 @@ function UIController.updateLeaderboard(entries: { { rank: number, name: string,
 			label.TextColor3 = Color3.fromRGB(100, 100, 120)
 		end
 	end
+end
+
+--- Injects the LightingController and ParticleController so the settings panel
+--- Performance Mode toggle can call disableEffects() / enableAll() on them.
+--- Called from Main.client.luau after all controllers are initialised.
+function UIController.setPerformanceControllers(lc: any, pc: any)
+	lightingController = lc
+	particleController = pc
 end
 
 --- Opens the settings panel (volume / accessibility controls).
