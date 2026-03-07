@@ -621,7 +621,7 @@ local function populateBrewIngredients()
 					if ing1 and ing2 then
 						local recipe = Recipes.lookup(ing1.Id, ing2.Id)
 						if recipe then
-							brewPreviewLabel.Text = "Result: " .. recipe.displayName .. " (Base: " .. recipe.baseValue .. "g)"
+							brewPreviewLabel.Text = "Result: " .. recipe.displayName .. " (Base: " .. recipe.baseValue .. " Essence)"
 							brewPreviewLabel.TextColor3 = recipe.color
 						else
 							brewPreviewLabel.Text = "No recipe for this combination"
@@ -761,7 +761,7 @@ local function populateSellList()
 		-- Value
 		local valueLabel = Instance.new("TextLabel")
 		valueLabel.Name = "Value"
-		valueLabel.Text = tostring(potion.Value) .. "g"
+		valueLabel.Text = tostring(potion.Value) .. " Essence"
 		valueLabel.Font = FONT_BODY
 		valueLabel.TextSize = 15
 		valueLabel.TextColor3 = GOLD_TEXT_COLOR
@@ -1532,7 +1532,7 @@ function UIController.init(initialState: { [string]: any }, remotesFolder: Folde
 	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 
 	screenGui = Instance.new("ScreenGui")
-	screenGui.Name = "PotionLabUI"
+	screenGui.Name = "AlchemyAcademyUI"
 	screenGui.ResetOnSpawn = false
 	screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	screenGui.IgnoreGuiInset = false
@@ -1783,8 +1783,8 @@ function UIController.updateLeaderboard(entries: { { rank: number, name: string,
 		if entry then
 			-- Truncate long names to keep layout clean
 			local name = if #entry.name > 14 then string.sub(entry.name, 1, 13) .. "…" else entry.name
-			label.Text = entry.rank .. ". " .. name .. "  " .. tostring(entry.score) .. "g"
-			-- Gold colour for #1, silver for #2, bronze for #3, default otherwise
+			label.Text = entry.rank .. ". " .. name .. "  " .. tostring(entry.score) .. " E"
+			-- Essence colour for #1, silver for #2, bronze for #3, default otherwise
 			if entry.rank == 1 then
 				label.TextColor3 = GOLD_TEXT_COLOR
 			elseif entry.rank == 2 then
