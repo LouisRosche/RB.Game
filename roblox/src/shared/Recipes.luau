@@ -117,14 +117,14 @@ function Recipes.lookup(ingredientId1: string, ingredientId2: string): RecipeDef
 	return Recipes.Map[key]
 end
 
---- Calculates the final gold value of a brewed potion, applying both
+--- Calculates the final Essence value of a brewed potion, applying both
 --- ingredient rarity multipliers and the cauldron's value bonus.
 ---
 --- @param recipe         The recipe definition from Recipes.Map
 --- @param rarityIndex1   Index into Config.MUTATION_TIERS for the first ingredient
 --- @param rarityIndex2   Index into Config.MUTATION_TIERS for the second ingredient
 --- @param cauldronLevel  Current cauldron upgrade level (1-based)
---- @return               Final gold value (floored to an integer)
+--- @return               Final Essence value (floored to an integer)
 function Recipes.calculateValue(
 	recipe: RecipeDef,
 	rarityIndex1: number,

@@ -22,7 +22,7 @@ Network.Harvest = "Harvest"
 --- Player requests to brew a potion from two harvested ingredients.
 Network.BrewPotion = "BrewPotion"
 
---- Player requests to sell a brewed potion for gold.
+--- Player requests to sell a brewed potion for Essence.
 Network.SellPotion = "SellPotion"
 
 --- Player requests to upgrade their lab to the next level.

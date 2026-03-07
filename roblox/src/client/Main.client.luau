@@ -1,6 +1,6 @@
 --[[
 	Main.client.luau
-	Single client entry point for Potion Lab (Single-Script Architecture).
+	Single client entry point for Alchemy Academy (Single-Script Architecture).
 	Waits for all required services, wires up RemoteEvents, initialises
 	controllers, and keeps a local cache of the authoritative player state.
 ]]
@@ -107,7 +107,7 @@ InteractionController.init(UIController, getState, Remotes, SoundController)
 SoundController.init()
 
 -- TutorialController detects new players and shows the onboarding overlay.
--- Must be initialised after UIController (which creates PlayerGui.PotionLabUI).
+-- Must be initialised after UIController (which creates PlayerGui.AlchemyAcademyUI).
 TutorialController.init(Remotes)
 
 print("[AlchemyAcademy] Client initialised — welcome to the lab!")

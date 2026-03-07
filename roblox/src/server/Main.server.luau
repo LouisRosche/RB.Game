@@ -34,6 +34,18 @@ local AnalyticsService  = require(Services.AnalyticsService)
 local LeaderboardService = require(Services.LeaderboardService)
 
 ---------------------------------------------------------------------------
+-- Harvest rarity → Strings template map (module-level constant; avoids
+-- rebuilding the table on every harvest event)
+---------------------------------------------------------------------------
+local RARITY_HARVEST_STRINGS = {
+	Common    = Strings.HARVESTED_COMMON,
+	Uncommon  = Strings.HARVESTED_UNCOMMON,
+	Rare      = Strings.HARVESTED_RARE,
+	Epic      = Strings.HARVESTED_EPIC,
+	Legendary = Strings.HARVESTED_LEGENDARY,
+}
+
+---------------------------------------------------------------------------
 -- Seed the PRNG once so mutation rolls are non-deterministic across servers
 ---------------------------------------------------------------------------
 math.randomseed(os.time())
@@ -197,21 +209,9 @@ remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotInde
 	local displayName = ingredientId_toDisplayName(entry.Id)
 	local rarity = entry.Rarity
 
-	-- Use Strings.luau templates for harvest messages (keeps text in one place)
-	local rarityTemplates = {
-		Common    = Strings.HARVESTED_COMMON,
-		Uncommon  = Strings.HARVESTED_UNCOMMON,
-		Rare      = Strings.HARVESTED_RARE,
-		Epic      = Strings.HARVESTED_EPIC,
-		Legendary = Strings.HARVESTED_LEGENDARY,
-	}
-	local template = rarityTemplates[rarity] or ("Harvested {item}! (" .. rarity .. ")")
+	local template = RARITY_HARVEST_STRINGS[rarity] or ("Harvested {item}! (" .. rarity .. ")")
 	local message = string.gsub(template, "{item}", displayName)
-
-	local notifRemote = ReplicatedStorage.Remotes:FindFirstChild(Network.Notification)
-	if notifRemote then
-		notifRemote:FireClient(player, message)
-	end
+	remotes[Network.Notification]:FireClient(player, message)
 end)
 
 -- BrewPotion: player brews from two ingredients

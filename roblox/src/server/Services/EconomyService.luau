@@ -45,7 +45,7 @@ function EconomyService.buySeed(player: Player, ingredientId: string)
 	DataService.notify(player, "Purchased " .. def.displayName .. " seed!")
 end
 
---- Sell a potion from the player's inventory for its gold value.
+--- Sell a potion from the player's inventory for its Essence value.
 function EconomyService.sellPotion(player: Player, potionIndex: number)
 	local data = DataService.getData(player)
 	if not data then return end
