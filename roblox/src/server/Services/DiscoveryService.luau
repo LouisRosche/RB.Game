@@ -95,7 +95,7 @@ function DiscoveryService.onRecipeBrewed(player: Player, recipeId: string): bool
 
 		-- Announce to the whole server with joy!
 		broadcastToAll(
-			"🔬 " .. player.DisplayName .. " just discovered " .. recipeName .. " for the first time! Amazing!",
+			player.DisplayName .. " just discovered " .. recipeName .. " for the first time this session! Amazing!",
 			Color3.fromRGB(255, 220, 80)
 		)
 	else
@@ -103,7 +103,7 @@ function DiscoveryService.onRecipeBrewed(player: Player, recipeId: string): bool
 		local firstDiscoverer = sessionFirstDiscoveries[recipeId]
 		DataService.notify(
 			player,
-			"✨ New recipe discovered: " .. recipeName .. "! (First found this session by " .. firstDiscoverer .. ")"
+			"New recipe discovered: " .. recipeName .. "! (First found this session by " .. firstDiscoverer .. ")"
 		)
 	end
 

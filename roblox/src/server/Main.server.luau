@@ -158,6 +158,7 @@ end
 remotes[Network.BuySeed].OnServerEvent:Connect(function(player: Player, ingredientId: string)
 	if isRateLimited(player, Network.BuySeed) then return end
 	if typeof(ingredientId) ~= "string" then return end
+	if not Ingredients[ingredientId] then return end  -- reject unknown IDs
 	EconomyService.buySeed(player, ingredientId)
 end)
 
@@ -166,6 +167,7 @@ remotes[Network.PlantSeed].OnServerEvent:Connect(function(player: Player, plotIn
 	if isRateLimited(player, Network.PlantSeed) then return end
 	if typeof(plotIndex) ~= "number" then return end
 	if typeof(ingredientId) ~= "string" then return end
+	if not Ingredients[ingredientId] then return end  -- reject unknown IDs
 	plotIndex = math.floor(plotIndex)
 	GrowthService.plantSeed(player, plotIndex, ingredientId)
 	AnalyticsService.onSeedPlanted(player, ingredientId)

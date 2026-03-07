@@ -55,17 +55,17 @@ local orderedStore = nil   -- OrderedDataStore; set in init()
 local function getStore()
 	if orderedStore then return orderedStore end
 	local ok, store = pcall(function()
-		return DataStoreService:GetOrderedDataStore("Leaderboard_TotalGold_v1")
+		return DataStoreService:GetOrderedDataStore("Leaderboard_TotalEssence_v1")
 	end)
 	if ok then
 		orderedStore = store
 	else
-		warn("[LeaderboardService] Could not open OrderedDataStore:", store)
+		warn("[LeaderboardService] Could not open OrderedDataStore:", err)
 	end
 	return orderedStore
 end
 
---- Submit a player's TotalGoldEarned score to the ordered store.
+--- Submit a player's TotalEssenceEarned score to the ordered store.
 local function submitScore(player: Player)
 	local store = getStore()
 	if not store then return end
@@ -73,7 +73,7 @@ local function submitScore(player: Player)
 	local data = DataService.getData(player)
 	if not data or not data.Stats then return end
 
-	local score = data.Stats.TotalGoldEarned or 0
+	local score = data.Stats.TotalEssenceEarned or 0
 	if score <= 0 then return end
 
 	local ok, err = pcall(function()

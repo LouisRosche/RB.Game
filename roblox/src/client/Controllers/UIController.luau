@@ -471,7 +471,7 @@ local function createSeedPanel()
 		infoLabel.Parent = row
 
 		-- Plant button
-		local plantBtn = createButton("PlantBtn", Strings.PLANT .. " (-" .. def.seedCost .. "g)", UDim2.new(0, 90, 0, 36), row)
+		local plantBtn = createButton("PlantBtn", Strings.PLANT .. " (-" .. def.seedCost .. " E)", UDim2.new(0, 90, 0, 36), row)
 		plantBtn.Position = UDim2.new(1, -98, 0.5, -18)
 		plantBtn.ZIndex = 14
 
@@ -849,7 +849,7 @@ local function updateUpgradeButtons()
 	if labLevel < Config.MAX_LAB_LEVEL then
 		local nextLab = Config.LAB_LEVELS[labLevel + 1]
 		if nextLab and upgradeLabBtn then
-			upgradeLabBtn.Text = Strings.UPGRADE_LAB .. " (" .. nextLab.cost .. "g)"
+			upgradeLabBtn.Text = Strings.UPGRADE_LAB .. " (" .. nextLab.cost .. " E)"
 			upgradeLabBtn.Visible = true
 		end
 		if upgradeLabInfo and nextLab then
@@ -870,7 +870,7 @@ local function updateUpgradeButtons()
 	if cauldronLevel < Config.MAX_CAULDRON_LEVEL then
 		local nextCauldron = Config.CAULDRON_LEVELS[cauldronLevel + 1]
 		if nextCauldron and upgradeCauldronBtn then
-			upgradeCauldronBtn.Text = Strings.UPGRADE_CAULDRON .. " (" .. nextCauldron.cost .. "g)"
+			upgradeCauldronBtn.Text = Strings.UPGRADE_CAULDRON .. " (" .. nextCauldron.cost .. " E)"
 			upgradeCauldronBtn.Visible = true
 		end
 		if upgradeCauldronInfo and nextCauldron then
@@ -1559,7 +1559,7 @@ function UIController.updateState(newState: { [string]: any })
 
 	-- HUD
 	if hudGoldLabel then
-		hudGoldLabel.Text = Strings.GOLD .. ": " .. tostring(playerState.Gold or 0)
+		hudGoldLabel.Text = Strings.GOLD .. ": " .. tostring(playerState.Essence or 0)
 	end
 	if hudLabLabel then
 		local labLevel = playerState.LabLevel or 1
@@ -1675,7 +1675,7 @@ function UIController.openSeedPanel(plotIndex: number)
 	activePlotIndex = plotIndex
 
 	-- Update button states based on current gold
-	local currentGold = playerState.Gold or 0
+	local currentGold = playerState.Essence or 0
 	if seedPanel then
 		local seedList = seedPanel:FindFirstChild("SeedList")
 		if seedList then

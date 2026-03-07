@@ -107,11 +107,11 @@ function GrowthService.plantSeed(player: Player, plotIndex: number, ingredientId
 		table.remove(data.Seeds, seedIndex)
 	else
 		-- Direct plant: deduct Essence now (no prior BuySeed required)
-		if data.Gold < ingredientDef.seedCost then
+		if data.Essence < ingredientDef.seedCost then
 			DataService.notify(player, "Not enough Essence! Need " .. ingredientDef.seedCost .. " Essence")
 			return
 		end
-		data.Gold -= ingredientDef.seedCost
+		data.Essence -= ingredientDef.seedCost
 	end
 
 	plot.State = "Growing"

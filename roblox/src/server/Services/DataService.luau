@@ -43,7 +43,7 @@ local DataService = {}
 -- profile:Reconcile() in onPlayerAdded.
 ---------------------------------------------------------------------------
 local DATA_TEMPLATE: { [string]: any } = {
-	Gold         = Config.STARTING_GOLD,
+	Essence      = Config.STARTING_ESSENCE,
 	LabLevel     = 1,
 	CauldronLevel = 1,
 	Plots        = {},   -- populated dynamically; see reconcilePlots()
@@ -53,16 +53,16 @@ local DATA_TEMPLATE: { [string]: any } = {
 	DiscoveredRecipes = {},  -- set of recipe IDs player has personally brewed
 	TutorialCompleted = false, -- set to true after the first-session onboarding flow
 	Stats = {
-		TotalGoldEarned = 0,
-		PotionsBrewed   = 0,
-		TotalDiscoveries = 0,
+		TotalEssenceEarned = 0,
+		PotionsBrewed      = 0,
+		TotalDiscoveries   = 0,
 	},
 }
 
 ---------------------------------------------------------------------------
 -- ProfileStore (version suffix allows schema resets without wiping old data)
 ---------------------------------------------------------------------------
-local ProfileStore = ProfileService.GetProfileStore("PlayerData_v2", DATA_TEMPLATE)
+local ProfileStore = ProfileService.GetProfileStore("PlayerData_v3", DATA_TEMPLATE)
 
 -- Active profiles: userId -> Profile
 local profiles: { [number]: any } = {}
