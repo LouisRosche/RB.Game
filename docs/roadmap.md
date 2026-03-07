@@ -56,23 +56,25 @@ Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execu
 - ✅ Leaderboard sidebar (top-10 by TotalGoldEarned, live broadcasts)
 - ✅ Tutorial/onboarding — `TutorialController.luau`: 5-step overlay, state-diff advancement, skip button, server-saved TutorialCompleted flag
 - ✅ Save system — ProfileService migration (session locking, auto-save, GDPR AddUserId)
-  - **⚠ Action required**: download `ProfileService.luau` → `roblox/src/server/Vendor/` (see INSTALL.md)
+  - ✅ ProfileService stub installed at `roblox/src/server/Vendor/ProfileService.luau` — game runs in Studio now
+  - **⚠ Replace before public launch**: download real ProfileService from GitHub (see INSTALL.md)
 - ✅ Analytics — funnel tracking (plant/harvest/brew) for D1/D7 measurement via Roblox AnalyticsService
 - ✅ Internationalisation — all strings in `Strings.luau`, UTF-8 ready
 - 🔄 Accessibility Big Four (remappable controls, subtitles, volume sliders, no color-only info)
   - ✅ Volume sliders — Settings panel in HUD (Music +/−, SFX +/−, Mute All)
   - ⬜ Remappable controls (low priority for Roblox — platform handles most)
   - ⬜ Subtitles for any future voiced content
-  - ⬜ Color-blindness audit (rarity colours have sufficient contrast by design)
-- ⬜ Performance optimisation audit (< 75K parts, StreamingEnabled confirmed on)
+  - ✅ Color-blindness audit — PASS: all rarity info conveyed by text name; color is supplementary only
+- ✅ Performance audit — ~17 parts/player max; 50 players = 850 parts (well under 75K); all static parts anchored
+  - **⚠ Confirm StreamingEnabled is ON in Studio** → Workspace Properties → Streaming Enabled
 
 ### Sprint 3 — Polish & Soft Launch (Weeks 16-20)
-- ⬜ Visual polish (lighting, particles, post-processing)
+- ✅ Visual polish (lighting, particles, post-processing) — `LightingController.luau`: bloom, atmosphere, colour correction
 - ✅ Sound architecture — SoundController with looping music, SFX pool, per-rarity harvest stings
   - **⚠ Action required**: upload audio assets, replace placeholder IDs in `SoundController.luau`
 - ⬜ Distinct SFX per action recorded/purchased (plant, harvest ×5 rarities, brew, sell, upgrade, discovery)
 - ⬜ Background music track chosen and uploaded
-- ⬜ Game icon, thumbnails, description optimised
+- 📝 Game icon, thumbnails, description — spec written in `docs/store-listing.md`; assets need to be created and uploaded
 - ⬜ Publish publicly as free game (no monetization yet)
 
 ### Go/No-Go

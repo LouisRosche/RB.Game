@@ -40,6 +40,7 @@ local UIController          = require(Controllers:WaitForChild("UIController"))
 local InteractionController = require(Controllers:WaitForChild("InteractionController"))
 local SoundController       = require(Controllers:WaitForChild("SoundController"))
 local TutorialController    = require(Controllers:WaitForChild("TutorialController"))
+local LightingController    = require(Controllers:WaitForChild("LightingController"))
 
 ---------------------------------------------------------------------------
 -- Local state cache — updated every time the server sends a StateSync
@@ -109,5 +110,8 @@ SoundController.init()
 -- TutorialController detects new players and shows the onboarding overlay.
 -- Must be initialised after UIController (which creates PlayerGui.AlchemyAcademyUI).
 TutorialController.init(Remotes)
+
+-- LightingController applies Sprint 3 visual polish (bloom, atmosphere, colour grade).
+LightingController.init()
 
 print("[AlchemyAcademy] Client initialised — welcome to the lab!")

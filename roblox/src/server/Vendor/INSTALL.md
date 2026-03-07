@@ -23,4 +23,14 @@ ProfileService is intentionally excluded from this repo (it has its own
 MIT license and its own release cycle). Pin the version you use by
 noting it here:
 
-**Pinned version:** _not yet installed_
+**Pinned version:** STUB (development only — replace before production launch)
+
+A compatibility stub is currently installed at `ProfileService.luau`.
+It covers the full API surface used by DataService (GetProfileStore,
+LoadProfileAsync, AddUserId, Reconcile, ListenToRelease, Release, Save)
+with DataStoreService-backed persistence, so Studio playtesting works
+immediately without any extra setup.
+
+**The stub lacks cross-server session locking.** Replace it with the real
+ProfileService before your first public launch to prevent data corruption
+on simultaneous joins from the same account.
