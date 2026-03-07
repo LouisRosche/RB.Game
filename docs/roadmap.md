@@ -1,8 +1,8 @@
 # 18-Month Roadmap Tracker
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-07*
 
-Legend: ✅ Done · 🔄 In progress · ⬜ Not started
+Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execute manually) · ⬜ Not started
 
 ---
 
@@ -16,14 +16,14 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 - ⬜ Set up financial tracking (Wave or GnuCash) — see `business/finance/budget.md`
 
 ### Platform Setup
-- ⬜ Create Roblox developer account with 2FA
-- ⬜ Search 3 candidate game names on USPTO TESS
-- ⬜ Reserve domain name for top candidate
-- ⬜ Create itch.io account
+- ⬜ Create Roblox developer account with 2FA — see `docs/platform-setup.md`
+- 📝 Search 3 candidate game names on USPTO TESS — research documented in `docs/trademark-domain-research.md`
+- ⬜ Reserve domain name for top candidate (`alchemyacademy.gg` recommended) — see `docs/platform-setup.md`
+- ⬜ Create itch.io account — see `docs/platform-setup.md`
 
 ### Skill Building
 - ⬜ Complete Roblox Core Curriculum (~15 hrs)
-- ⬜ Publish a trivial game (obby) to complete the full publish cycle
+- 📝 Publish a trivial game (obby) to complete the full publish cycle — project ready at `roblox/obby/`, follow `roblox/obby/README.md`
 - ✅ Set up Single-Script Architecture template with ProfileService
 - ⬜ Create 5 placeholder art assets in MagicaVoxel
 - ⬜ Test sound pipeline (BFXR2, Bosca Ceoil Blue)
@@ -32,7 +32,7 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 - ✅ Generate 3 game concepts (tycoon/simulator or idle genre)
 - ✅ Apply filters: content treadmill, monetization fit, social play, art ceiling, scope
 - ✅ Build paper prototype or game design document for top concept
-- ⬜ Post concepts for community feedback (r/RobloxGameDev, DevForum, Discord)
+- 📝 Post concepts for community feedback — posts drafted in `marketing/community-posts/` (DevForum + r/RobloxGameDev + r/roblox)
 - ✅ Select one concept for Phase 1 → **Alchemy Academy** (educational idle)
 
 ---
@@ -135,9 +135,12 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 
 These are the blockers before the game can be playtested:
 
-1. **Install ProfileService** — download from https://github.com/MadStudioRoblox/ProfileService/releases, place at `roblox/src/server/Vendor/ProfileService.luau`
-2. **Upload audio** — any free sound pack will do to unblock testing; replace placeholder IDs in `SoundController.luau`
-3. **Publish unlisted on Roblox** — invite 5-10 testers, measure D1 retention (tutorial is now built ✅)
-4. **Set up business basics** — LLC, bank account, tax savings account (Phase 0 blockers for monetisation)
-5. **Start Discord server** — follow `community/discord/setup.md`; have it live before any public TikTok posts
-6. **Start TikTok** — first video before the public launch, not after
+1. **Create Roblox developer account** — follow `docs/platform-setup.md`; start the 30-day DevEx clock now
+2. **Register domain** — `alchemyacademy.gg` or `.game` before any public post; ~$20–35/yr at porkbun.com
+3. **Install ProfileService** — download from https://github.com/MadStudioRoblox/ProfileService/releases, place at `roblox/src/server/Vendor/ProfileService.luau`
+4. **Upload audio** — any free sound pack will do to unblock testing; replace placeholder IDs in `SoundController.luau`
+5. **Publish the practice obby** — follow `roblox/obby/README.md` to exercise the full publish workflow before the real launch
+6. **Post concept feedback** — copy posts from `marketing/community-posts/` to DevForum and Reddit
+7. **Set up business basics** — LLC, bank account, tax savings account (see `business/legal/checklist.md`)
+8. **Start Discord server** — follow `community/discord/setup.md`; live before any public TikTok posts
+9. **Start TikTok** — first video before the public launch, not after (see `marketing/tiktok/content-calendar.md`)
