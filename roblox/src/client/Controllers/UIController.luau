@@ -624,7 +624,7 @@ local function populateBrewIngredients()
 							brewPreviewLabel.Text = "Result: " .. recipe.displayName .. " (Base: " .. recipe.baseValue .. " Essence)"
 							brewPreviewLabel.TextColor3 = recipe.color
 						else
-							brewPreviewLabel.Text = "No recipe for this combination"
+							brewPreviewLabel.Text = Strings.UNKNOWN_RECIPE
 							brewPreviewLabel.TextColor3 = Color3.fromRGB(200, 100, 100)
 						end
 					end
