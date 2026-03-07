@@ -10,7 +10,7 @@
 
 	IMPLEMENTATION:
 	  Uses an OrderedDataStore (Roblox's built-in sorted key-value store).
-	  Scores are the player's all-time TotalGoldEarned stat.
+	  Scores are the player's all-time TotalEssenceEarned stat.
 
 	  Top-N entries are fetched periodically and broadcast to all clients via
 	  a RemoteEvent so the UI can display them without polling.
@@ -54,13 +54,13 @@ local orderedStore = nil   -- OrderedDataStore; set in init()
 
 local function getStore()
 	if orderedStore then return orderedStore end
-	local ok, store = pcall(function()
+	local ok, storeOrErr = pcall(function()
 		return DataStoreService:GetOrderedDataStore("Leaderboard_TotalEssence_v1")
 	end)
 	if ok then
-		orderedStore = store
+		orderedStore = storeOrErr
 	else
-		warn("[LeaderboardService] Could not open OrderedDataStore:", err)
+		warn("[LeaderboardService] Could not open OrderedDataStore:", storeOrErr)
 	end
 	return orderedStore
 end
