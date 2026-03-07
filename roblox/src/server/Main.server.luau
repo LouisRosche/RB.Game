@@ -33,6 +33,7 @@ local DiscoveryService     = require(Services.DiscoveryService)
 local AnalyticsService     = require(Services.AnalyticsService)
 local LeaderboardService   = require(Services.LeaderboardService)
 local MonetizationService  = require(Services.MonetizationService)
+local SeasonalService      = require(Services.SeasonalService)
 
 ---------------------------------------------------------------------------
 -- Harvest rarity → Strings template map (module-level constant; avoids
@@ -122,6 +123,7 @@ GrowthService.init()
 AnalyticsService.init()
 LeaderboardService.init()
 MonetizationService.init(DataService)
+SeasonalService.init(DataService)
 -- BrewingService, EconomyService, DiscoveryService are stateless; no init required.
 
 ---------------------------------------------------------------------------

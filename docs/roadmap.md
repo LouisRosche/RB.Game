@@ -123,13 +123,27 @@ Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execu
 *Budget: $77-197/month | Time: 12-18 hrs/week*
 
 ### Track A: Roblox Maintenance (4-6 hrs/week)
+- ✅ Seasonal event system — `SeasonalContent.luau` + `SeasonalService.luau`
+  - Winter Festival (Dec 25 – Jan 8): Frost Blossom, Aurora Moss, 3 seasonal recipes
+  - Spring Bloom (Mar 21 – Apr 5): Pollinator Petal, Mycelium Bloom, 3 seasonal recipes
+  - SeasonalService rechecks calendar every 10 min; broadcasts `SeasonalUpdate` to clients
+  - **⚠ Action required**: add seasonal seed rows to shop UI; expand BrewingService to check seasonal recipes via `SeasonalService.lookupActiveRecipe`
 - ⬜ Content update every 5-6 weeks
 - ⬜ Community management and bug fixes
 - ⬜ Maintain revenue stream
 
 ### Track B: Godot Development (8-12 hrs/week)
-- ⬜ Complete Godot "Your First 2D Game" tutorial
-- ⬜ Build standalone game (same universe, not a direct port)
+- ✅ Godot 4 project scaffolded — `godot/project.godot` + 4 autoload singletons
+  - `GameState.gd` — inventory, gold, chapter, discovery tracking, signals
+  - `SaveManager.gd` — ConfigFile save/load; settings isolated from progress
+  - `Ingredients.gd` — 10 ingredients (4 cross-universe with Roblox + 6 new)
+  - `Recipes.gd` — 15 recipes, order-independent lookup, rarity value formula
+- ✅ Scene scripts written: `MainMenu.gd`, `Lab.gd`, `Journal.gd`, `Settings.gd`
+  - `scenes/SCENE_STRUCTURE.md` — full node tree guide for building .tscn files
+  - `godot/README.md` — complete dev setup, architecture, and Steam export guide
+- ⬜ Create .tscn scene files in Godot editor — follow `scenes/SCENE_STRUCTURE.md`
+- ⬜ Replace ColorRect placeholders with real sprites (art pass)
+- ⬜ Write Chapter 1–4 story text + progression triggers
 
 ### Steam Launch Pipeline
 - ⬜ Weeks 41-55: Build game, publish Steam store page ($100 fee) — see `marketing/steam/store-checklist.md`

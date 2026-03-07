@@ -73,6 +73,11 @@ Network.HarvestEffect = "HarvestEffect"
 --- can play a cauldron particle burst. No payload.
 Network.BrewEffect = "BrewEffect"
 
+--- Server broadcasts seasonal event state to all clients (on start and on change).
+--- Payload: eventId (string|nil), eventName (string|nil), bannerText (string|nil).
+--- nil values mean no event is currently active.
+Network.SeasonalUpdate = "SeasonalUpdate"
+
 --============================================================================--
 -- Helpers
 --============================================================================--
@@ -99,6 +104,7 @@ function Network.getAllEventNames(): { string }
 		Network.LeaderboardUpdate,
 		Network.HarvestEffect,
 		Network.BrewEffect,
+		Network.SeasonalUpdate,
 	}
 end
 
