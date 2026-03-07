@@ -31,6 +31,14 @@ Network.UpgradeLab = "UpgradeLab"
 --- Player requests to upgrade their cauldron to the next level.
 Network.UpgradeCauldron = "UpgradeCauldron"
 
+--- Player equips an owned cosmetic item. Payload: cosmeticId (string).
+--- Server validates ownership before applying; state syncs back on success.
+Network.EquipCosmetic = "EquipCosmetic"
+
+--- Client notifies server to re-verify a game pass after a purchase prompt.
+--- Payload: passId (number). Server calls UserOwnsGamePassAsync and updates OwnedPasses.
+Network.VerifyGamePass = "VerifyGamePass"
+
 --============================================================================--
 -- Server -> Client events
 --============================================================================--
@@ -82,6 +90,8 @@ function Network.getAllEventNames(): { string }
 		Network.UpgradeCauldron,
 		Network.RequestDiscoverySummary,
 		Network.TutorialComplete,
+		Network.EquipCosmetic,
+		Network.VerifyGamePass,
 		-- Server -> Client
 		Network.StateSync,
 		Network.Notification,

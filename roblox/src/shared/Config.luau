@@ -137,4 +137,19 @@ Config.MAX_POTIONS = 20
 --- Maximum pre-purchased seeds awaiting planting.
 Config.MAX_SEEDS = 12
 
+--============================================================================--
+-- Phase 2: Monetisation
+--============================================================================--
+
+--- Multiplier applied to brew time when the player owns the Speed Brew game pass.
+--- 0.5 = 2× faster (brew time halved). Change here to tune the pass value.
+Config.SPEED_BREW_MULTIPLIER = 0.5
+
+--- When true, GrowthService will auto-harvest mature plots for players who
+--- own the Auto-Harvest game pass (adds to ingredients, still respects cap).
+Config.AUTO_HARVEST_ENABLED = true
+
+--- Chat tag prefix shown for VIP pass owners. Set to "" to disable.
+Config.VIP_CHAT_TAG = "[VIP] "
+
 return Config

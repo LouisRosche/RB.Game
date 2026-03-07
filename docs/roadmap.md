@@ -91,8 +91,17 @@ Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execu
 *Budget: $0-50/month + optional influencer budget | Time: 10-12 hrs/week*
 
 ### Monetization Layers
-- ⬜ Cosmetic shop: 10-15 items, prices A/B tested
-- ⬜ Game passes: 2-3 convenience passes (2× speed, auto-harvest, VIP theme)
+- ✅ Cosmetic shop: 12 items across 3 categories (Lab Themes, Cauldron Tints, Harvest Particles)
+  - ✅ `shared/Cosmetics.luau` — all item definitions with placeholder product IDs
+  - ✅ `server/Services/MonetizationService.luau` — ProcessReceipt handler, equip validation
+  - ✅ Cosmetic Shop panel in UIController (tabbed, scrollable, Equip/Buy buttons)
+  - **⚠ Action required**: create Developer Products in Creator Hub, replace placeholder IDs in `Cosmetics.luau`
+- ✅ Game passes: 3 convenience passes (Speed Brew 199R, Auto-Harvest 299R, VIP 99R)
+  - ✅ `shared/GamePasses.luau` — pass definitions with placeholder IDs
+  - ✅ GrowthService applies Speed Brew (2× faster growth) and Auto-Harvest (plots self-collect)
+  - ✅ MonetizationService checks passes on join, re-verifies after purchase prompt
+  - **⚠ Action required**: create Game Passes in Creator Hub, replace placeholder IDs in `GamePasses.luau`
+- ⬜ A/B price testing — run first for 2 weeks post-launch before changing prices
 - ⬜ Monitor retention post-monetisation (no significant drop acceptable)
 - ⬜ Optional: seasonal event with dual-track battle pass
 

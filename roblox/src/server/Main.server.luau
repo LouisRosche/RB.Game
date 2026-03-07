@@ -23,15 +23,16 @@ local Strings     = require(Shared.Strings)
 ---------------------------------------------------------------------------
 -- Server service modules (ServerScriptService.Server.Services)
 ---------------------------------------------------------------------------
-local Services          = script.Parent.Services
-local DataService       = require(Services.DataService)
-local PlotService       = require(Services.PlotService)
-local GrowthService     = require(Services.GrowthService)
-local BrewingService    = require(Services.BrewingService)
-local EconomyService    = require(Services.EconomyService)
-local DiscoveryService  = require(Services.DiscoveryService)
-local AnalyticsService  = require(Services.AnalyticsService)
-local LeaderboardService = require(Services.LeaderboardService)
+local Services             = script.Parent.Services
+local DataService          = require(Services.DataService)
+local PlotService          = require(Services.PlotService)
+local GrowthService        = require(Services.GrowthService)
+local BrewingService       = require(Services.BrewingService)
+local EconomyService       = require(Services.EconomyService)
+local DiscoveryService     = require(Services.DiscoveryService)
+local AnalyticsService     = require(Services.AnalyticsService)
+local LeaderboardService   = require(Services.LeaderboardService)
+local MonetizationService  = require(Services.MonetizationService)
 
 ---------------------------------------------------------------------------
 -- Harvest rarity → Strings template map (module-level constant; avoids
@@ -120,6 +121,7 @@ PlotService.init()
 GrowthService.init()
 AnalyticsService.init()
 LeaderboardService.init()
+MonetizationService.init(DataService)
 -- BrewingService, EconomyService, DiscoveryService are stateless; no init required.
 
 ---------------------------------------------------------------------------
@@ -129,6 +131,9 @@ local function onPlayerAdded(player: Player)
 	DataService.onPlayerAdded(player)
 	PlotService.createLab(player)
 	AnalyticsService.onSessionStart(player)
+
+	-- Check game pass ownership async so it doesn't block join
+	MonetizationService.checkPassesOnJoin(player)
 
 	-- Send the initial full state to the client once everything is ready
 	DataService.syncToClient(player)
@@ -275,4 +280,18 @@ remotes[Network.TutorialComplete].OnServerEvent:Connect(function(player: Player)
 		data.TutorialCompleted = true
 		-- ProfileService auto-saves every ~30 s; no explicit save needed here.
 	end
+end)
+
+-- EquipCosmetic: player swaps which cosmetic is active in a given category.
+-- Server validates ownership; if valid, updates ActiveCosmetic and syncs state.
+remotes[Network.EquipCosmetic].OnServerEvent:Connect(function(player: Player, cosmeticId: string)
+	if typeof(cosmeticId) ~= "string" then return end
+	MonetizationService.equipCosmetic(player, cosmeticId)
+end)
+
+-- VerifyGamePass: client fires after a purchase prompt is dismissed to ask
+-- the server to re-check ownership. Server calls UserOwnsGamePassAsync (async).
+remotes[Network.VerifyGamePass].OnServerEvent:Connect(function(player: Player, passId: number)
+	if typeof(passId) ~= "number" then return end
+	MonetizationService.checkPassesOnJoin(player)  -- re-verifies all passes
 end)

@@ -140,4 +140,23 @@ ParticleController.init()
 -- disable visual effects on low-end devices.
 UIController.setPerformanceControllers(LightingController, ParticleController)
 
+---------------------------------------------------------------------------
+-- Game Pass purchase detection
+-- When a PromptGamePassPurchase dialog is dismissed, ask the server to
+-- re-verify pass ownership. Server calls UserOwnsGamePassAsync (never trust
+-- the client alone) and updates OwnedPasses in the profile.
+---------------------------------------------------------------------------
+local MarketplaceService = game:GetService("MarketplaceService")
+local verifyPassRemote = Remotes:WaitForChild(Network.VerifyGamePass) :: RemoteEvent
+
+MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(
+	_player: Player,
+	passId: number,
+	_purchased: boolean
+)
+	-- Fire regardless of whether purchased = true so the server can sync
+	-- the definitive ownership state back to this client.
+	verifyPassRemote:FireServer(passId)
+end)
+
 print("[AlchemyAcademy] Client initialised — welcome to the lab!")

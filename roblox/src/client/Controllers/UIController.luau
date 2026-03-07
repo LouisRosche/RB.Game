@@ -23,6 +23,8 @@ local TweenService      = game:GetService("TweenService")
 ---------------------------------------------------------------------------
 -- Shared modules
 ---------------------------------------------------------------------------
+local MarketplaceService = game:GetService("MarketplaceService")
+
 local Shared      = ReplicatedStorage:WaitForChild("Shared")
 local Config      = require(Shared:WaitForChild("Config"))
 local Ingredients = require(Shared:WaitForChild("Ingredients"))
@@ -30,6 +32,8 @@ local Recipes     = require(Shared:WaitForChild("Recipes"))
 local Strings     = require(Shared:WaitForChild("Strings"))
 local Network     = require(Shared:WaitForChild("Network"))
 local Journal     = require(Shared:WaitForChild("Journal"))
+local Cosmetics   = require(Shared:WaitForChild("Cosmetics"))
+local GamePasses  = require(Shared:WaitForChild("GamePasses"))
 
 ---------------------------------------------------------------------------
 -- Constants — UI Style Guide
@@ -69,6 +73,7 @@ local sellPanel: Frame = nil :: any
 local upgradePanel: Frame = nil :: any
 local journalPanel: Frame = nil :: any
 local settingsPanel: Frame = nil :: any
+local cosmeticPanel: Frame = nil :: any
 local leaderboardPanel: Frame = nil :: any
 local notificationContainer: Frame = nil :: any
 
@@ -282,7 +287,7 @@ local function createHUD()
 	-- Container
 	local hud = Instance.new("Frame")
 	hud.Name = "HUD"
-	hud.Size = UDim2.new(0, 220, 0, 162)
+	hud.Size = UDim2.new(0, 220, 0, 196)
 	hud.Position = UDim2.new(0, 10, 0, 10)
 	hud.BackgroundColor3 = PANEL_BG_COLOR
 	hud.BackgroundTransparency = PANEL_BG_TRANSPARENCY
@@ -386,6 +391,24 @@ local function createHUD()
 
 	settingsBtn.Activated:Connect(function()
 		UIController.openSettingsPanel()
+	end)
+
+	-- Cosmetic Shop button
+	local cosmeticBtn = createButton("CosmeticBtn", "Cosmetic Shop", UDim2.new(1, 0, 0, 26), hud)
+	cosmeticBtn.Position = UDim2.new(0, 0, 0, 150)
+	cosmeticBtn.TextSize = 13
+	cosmeticBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 120)
+	cosmeticBtn.ZIndex = 6
+
+	cosmeticBtn.MouseEnter:Connect(function()
+		cosmeticBtn.BackgroundColor3 = Color3.fromRGB(130, 70, 155)
+	end)
+	cosmeticBtn.MouseLeave:Connect(function()
+		cosmeticBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 120)
+	end)
+
+	cosmeticBtn.Activated:Connect(function()
+		UIController.openCosmeticPanel()
 	end)
 end
 
@@ -1473,6 +1496,171 @@ local function createSettingsPanel()
 end
 
 ---------------------------------------------------------------------------
+-- Cosmetic Shop Panel
+-- Three category tabs: Lab Themes | Cauldron Tints | Harvest Particles.
+-- Each item row shows the name, price badge, and an Equip / Buy button.
+-- Purchasing triggers MarketplaceService:PromptProductPurchase on the
+-- client; ProcessReceipt on the server grants ownership and syncs state.
+---------------------------------------------------------------------------
+
+local activeCosmeticTab = "LabTheme"
+local cosmeticListFrame: ScrollingFrame = nil :: any
+
+local CATEGORY_TABS: { { id: string, label: string } } = {
+	{ id = "LabTheme",         label = "Lab Themes" },
+	{ id = "CauldronTint",     label = "Cauldron" },
+	{ id = "HarvestParticles", label = "Harvest FX" },
+}
+
+local function populateCosmeticList(category: string)
+	if not cosmeticListFrame then return end
+
+	-- Clear existing rows
+	for _, child in cosmeticListFrame:GetChildren() do
+		if child:IsA("Frame") or child:IsA("TextButton") then
+			child:Destroy()
+		end
+	end
+
+	local items = Cosmetics.getCategory(category)
+	local owned  = playerState.OwnedCosmetics or {}
+	local active = playerState.ActiveCosmetic  or {}
+
+	local yOffset = 0
+	for _, def in items do
+		local row = Instance.new("Frame")
+		row.Name = def.id
+		row.Size = UDim2.new(1, -8, 0, 64)
+		row.Position = UDim2.new(0, 4, 0, yOffset)
+		row.BackgroundColor3 = Color3.fromRGB(40, 35, 60)
+		row.BackgroundTransparency = 0.3
+		row.BorderSizePixel = 0
+		row.Parent = cosmeticListFrame
+
+		local rowCorner = Instance.new("UICorner")
+		rowCorner.CornerRadius = CORNER_RADIUS
+		rowCorner.Parent = row
+
+		-- Name label
+		local nameLabel = Instance.new("TextLabel")
+		nameLabel.Text = def.name
+		nameLabel.Font = FONT_HEADER
+		nameLabel.TextSize = 14
+		nameLabel.TextColor3 = TEXT_COLOR
+		nameLabel.BackgroundTransparency = 1
+		nameLabel.Position = UDim2.new(0, 8, 0, 6)
+		nameLabel.Size = UDim2.new(1, -110, 0, 18)
+		nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+		nameLabel.Parent = row
+
+		-- Description label
+		local descLabel = Instance.new("TextLabel")
+		descLabel.Text = def.description
+		descLabel.Font = FONT_BODY
+		descLabel.TextSize = 11
+		descLabel.TextColor3 = Color3.fromRGB(170, 160, 200)
+		descLabel.BackgroundTransparency = 1
+		descLabel.Position = UDim2.new(0, 8, 0, 26)
+		descLabel.Size = UDim2.new(1, -110, 0, 30)
+		descLabel.TextXAlignment = Enum.TextXAlignment.Left
+		descLabel.TextWrapped = true
+		descLabel.Parent = row
+
+		-- Action button (right side)
+		local isOwned   = (def.price == 0) or (owned[def.id] == true)
+		local isActive  = (active[def.category] == def.id)
+
+		local btnText: string
+		local btnColor: Color3
+
+		if isActive then
+			btnText  = "Equipped"
+			btnColor = Color3.fromRGB(30, 90, 30)
+		elseif isOwned then
+			btnText  = "Equip"
+			btnColor = Color3.fromRGB(50, 70, 140)
+		else
+			btnText  = def.price .. " R"
+			btnColor = Color3.fromRGB(120, 50, 20)
+		end
+
+		local actionBtn = createButton("ActionBtn", btnText, UDim2.new(0, 88, 0, 32), row)
+		actionBtn.Position = UDim2.new(1, -96, 0, 16)
+		actionBtn.TextSize = 13
+		actionBtn.BackgroundColor3 = btnColor
+
+		if isActive then
+			actionBtn.Active = false
+		elseif isOwned then
+			actionBtn.Activated:Connect(function()
+				if remotes then
+					remotes:FindFirstChild(Network.EquipCosmetic):FireServer(def.id)
+				end
+			end)
+		else
+			-- Trigger Roblox purchase prompt (cosmetics are Developer Products)
+			actionBtn.Activated:Connect(function()
+				if def.productId ~= 0 then
+					MarketplaceService:PromptProductPurchase(Players.LocalPlayer, def.productId)
+				end
+			end)
+		end
+
+		yOffset += 72
+	end
+
+	cosmeticListFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
+end
+
+local function createCosmeticPanel()
+	cosmeticPanel = createPanel("CosmeticPanel", UDim2.new(0, 480, 0, 440), UDim2.new(0.5, 0, 0.5, 0))
+	cosmeticPanel.Parent = screenGui
+
+	createLabel("Title", "Cosmetic Shop", FONT_HEADER, 20, cosmeticPanel)
+	createCloseButton(cosmeticPanel)
+
+	-- Game pass section header
+	local passHint = createLabel(
+		"PassHint",
+		"Game Passes: Speed Brew | Auto-Harvest | VIP — available on the game page.",
+		FONT_BODY, 11, cosmeticPanel
+	)
+	passHint.Position = UDim2.new(0, 0, 0, 28)
+	passHint.TextColor3 = Color3.fromRGB(200, 180, 120)
+	passHint.Size = UDim2.new(1, 0, 0, 24)
+
+	-- Category tab buttons
+	local tabY = 56
+	local tabWidth = 140
+	for i, tab in CATEGORY_TABS do
+		local tabBtn = createButton(
+			"Tab_" .. tab.id,
+			tab.label,
+			UDim2.new(0, tabWidth, 0, 28),
+			cosmeticPanel
+		)
+		tabBtn.Position = UDim2.new(0, (i - 1) * (tabWidth + 4), 0, tabY)
+		tabBtn.TextSize = 13
+		tabBtn.BackgroundColor3 = Color3.fromRGB(55, 45, 80)
+		tabBtn.ZIndex = 12
+
+		tabBtn.Activated:Connect(function()
+			activeCosmeticTab = tab.id
+			populateCosmeticList(activeCosmeticTab)
+		end)
+	end
+
+	-- Scrolling item list
+	cosmeticListFrame = createScrollingList(
+		"CosmeticList",
+		UDim2.new(1, 0, 1, -96),
+		UDim2.new(0, 0, 0, 92),
+		cosmeticPanel
+	)
+	cosmeticListFrame.ZIndex = 11
+end
+
+---------------------------------------------------------------------------
 -- Notification System
 ---------------------------------------------------------------------------
 
@@ -1583,6 +1771,7 @@ function UIController.init(initialState: { [string]: any }, remotesFolder: Folde
 	createUpgradePanel()
 	createJournalPanel()
 	createSettingsPanel()
+	createCosmeticPanel()
 	createLeaderboardPanel()
 	createNotificationContainer()
 
@@ -1626,6 +1815,11 @@ function UIController.updateState(newState: { [string]: any })
 	-- If journal is open on the recipes tab, refresh (discoveries may have updated)
 	if journalPanel and journalPanel.Visible and activeJournalTab == "recipes" then
 		showJournalRecipes()
+	end
+
+	-- If cosmetic panel is open, refresh (ownership may have updated after purchase)
+	if cosmeticPanel and cosmeticPanel.Visible then
+		populateCosmeticList(activeCosmeticTab)
 	end
 end
 
@@ -1847,6 +2041,15 @@ function UIController.setPerformanceControllers(lc: any, pc: any)
 	particleController = pc
 end
 
+--- Opens the cosmetic shop panel and populates the active tab.
+function UIController.openCosmeticPanel()
+	UIController.closePanels()
+	if cosmeticPanel then
+		cosmeticPanel.Visible = true
+		populateCosmeticList(activeCosmeticTab)
+	end
+end
+
 --- Opens the settings panel (volume / accessibility controls).
 function UIController.openSettingsPanel()
 	UIController.closePanels()
@@ -1866,6 +2069,7 @@ function UIController.closePanels()
 	if upgradePanel then upgradePanel.Visible = false end
 	if journalPanel then journalPanel.Visible = false end
 	if settingsPanel then settingsPanel.Visible = false end
+	if cosmeticPanel then cosmeticPanel.Visible = false end
 end
 
 return UIController
