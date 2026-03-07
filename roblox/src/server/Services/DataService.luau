@@ -57,6 +57,14 @@ local DATA_TEMPLATE: { [string]: any } = {
 		PotionsBrewed   = 0,
 		TotalDiscoveries = 0,
 	},
+
+	-- Phase 2: Monetisation
+	-- OwnedCosmetics: { [cosmeticId: string]: true } — written by MonetizationService on purchase
+	OwnedCosmetics = {},
+	-- ActiveCosmetic: { [category: string]: cosmeticId } — currently equipped item per category
+	ActiveCosmetic = {},
+	-- OwnedPasses: { [passId: string]: true } — verified by MonetizationService:checkPassesOnJoin
+	OwnedPasses    = {},
 }
 
 ---------------------------------------------------------------------------

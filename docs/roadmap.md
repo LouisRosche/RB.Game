@@ -1,8 +1,8 @@
 # 18-Month Roadmap Tracker
 
-*Last updated: 2026-03-06*
+*Last updated: 2026-03-07*
 
-Legend: ✅ Done · 🔄 In progress · ⬜ Not started
+Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execute manually) · ⬜ Not started
 
 ---
 
@@ -16,14 +16,14 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 - ⬜ Set up financial tracking (Wave or GnuCash) — see `business/finance/budget.md`
 
 ### Platform Setup
-- ⬜ Create Roblox developer account with 2FA
-- ⬜ Search 3 candidate game names on USPTO TESS
-- ⬜ Reserve domain name for top candidate
-- ⬜ Create itch.io account
+- ⬜ Create Roblox developer account with 2FA — see `docs/platform-setup.md`
+- 📝 Search 3 candidate game names on USPTO TESS — research documented in `docs/trademark-domain-research.md`
+- ⬜ Reserve domain name for top candidate (`alchemyacademy.gg` recommended) — see `docs/platform-setup.md`
+- ⬜ Create itch.io account — see `docs/platform-setup.md`
 
 ### Skill Building
 - ⬜ Complete Roblox Core Curriculum (~15 hrs)
-- ⬜ Publish a trivial game (obby) to complete the full publish cycle
+- 📝 Publish a trivial game (obby) to complete the full publish cycle — project ready at `roblox/obby/`, follow `roblox/obby/README.md`
 - ✅ Set up Single-Script Architecture template with ProfileService
 - ⬜ Create 5 placeholder art assets in MagicaVoxel
 - ⬜ Test sound pipeline (BFXR2, Bosca Ceoil Blue)
@@ -32,7 +32,7 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 - ✅ Generate 3 game concepts (tycoon/simulator or idle genre)
 - ✅ Apply filters: content treadmill, monetization fit, social play, art ceiling, scope
 - ✅ Build paper prototype or game design document for top concept
-- ⬜ Post concepts for community feedback (r/RobloxGameDev, DevForum, Discord)
+- 📝 Post concepts for community feedback — posts drafted in `marketing/community-posts/` (DevForum + r/RobloxGameDev + r/roblox)
 - ✅ Select one concept for Phase 1 → **Alchemy Academy** (educational idle)
 
 ---
@@ -56,23 +56,28 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 - ✅ Leaderboard sidebar (top-10 by TotalGoldEarned, live broadcasts)
 - ✅ Tutorial/onboarding — `TutorialController.luau`: 5-step overlay, state-diff advancement, skip button, server-saved TutorialCompleted flag
 - ✅ Save system — ProfileService migration (session locking, auto-save, GDPR AddUserId)
-  - **⚠ Action required**: download `ProfileService.luau` → `roblox/src/server/Vendor/` (see INSTALL.md)
+  - ✅ ProfileService stub installed at `roblox/src/server/Vendor/ProfileService.luau` — game runs in Studio now
+  - **⚠ Replace before public launch**: download real ProfileService from GitHub (see INSTALL.md)
 - ✅ Analytics — funnel tracking (plant/harvest/brew) for D1/D7 measurement via Roblox AnalyticsService
 - ✅ Internationalisation — all strings in `Strings.luau`, UTF-8 ready
 - 🔄 Accessibility Big Four (remappable controls, subtitles, volume sliders, no color-only info)
   - ✅ Volume sliders — Settings panel in HUD (Music +/−, SFX +/−, Mute All)
   - ⬜ Remappable controls (low priority for Roblox — platform handles most)
   - ⬜ Subtitles for any future voiced content
-  - ⬜ Color-blindness audit (rarity colours have sufficient contrast by design)
-- ⬜ Performance optimisation audit (< 75K parts, StreamingEnabled confirmed on)
+  - ✅ Color-blindness audit — PASS: all rarity info conveyed by text name; color is supplementary only
+- ✅ Performance audit — ~17 parts/player max; 50 players = 850 parts (well under 75K); all static parts anchored
+  - **⚠ Confirm StreamingEnabled is ON in Studio** → Workspace Properties → Streaming Enabled
 
 ### Sprint 3 — Polish & Soft Launch (Weeks 16-20)
-- ⬜ Visual polish (lighting, particles, post-processing)
+- ✅ Visual polish (lighting, particles, post-processing)
+  - ✅ `LightingController.luau`: bloom, atmosphere, colour correction
+  - ✅ `ParticleController.luau`: cauldron idle bubbles, rarity-burst harvest sparkles, brew-complete burst, discovery fanfare
+  - ✅ Performance Mode toggle in Settings panel (disables all visual effects for low-end devices)
 - ✅ Sound architecture — SoundController with looping music, SFX pool, per-rarity harvest stings
-  - **⚠ Action required**: upload audio assets, replace placeholder IDs in `SoundController.luau`
-- ⬜ Distinct SFX per action recorded/purchased (plant, harvest ×5 rarities, brew, sell, upgrade, discovery)
-- ⬜ Background music track chosen and uploaded
-- ⬜ Game icon, thumbnails, description optimised
+  - **⚠ Action required**: upload audio assets per `roblox/AUDIO_ASSETS.md`, replace placeholder IDs in `SoundController.luau`
+- ⬜ Distinct SFX per action recorded/purchased — sourcing guide at `roblox/AUDIO_ASSETS.md`
+- ⬜ Background music track chosen and uploaded — see `roblox/AUDIO_ASSETS.md`
+- 📝 Game icon, thumbnails, description — spec written in `docs/store-listing.md`; assets need to be created and uploaded
 - ⬜ Publish publicly as free game (no monetization yet)
 
 ### Go/No-Go
@@ -86,8 +91,17 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 *Budget: $0-50/month + optional influencer budget | Time: 10-12 hrs/week*
 
 ### Monetization Layers
-- ⬜ Cosmetic shop: 10-15 items, prices A/B tested
-- ⬜ Game passes: 2-3 convenience passes (2× speed, auto-harvest, VIP theme)
+- ✅ Cosmetic shop: 12 items across 3 categories (Lab Themes, Cauldron Tints, Harvest Particles)
+  - ✅ `shared/Cosmetics.luau` — all item definitions with placeholder product IDs
+  - ✅ `server/Services/MonetizationService.luau` — ProcessReceipt handler, equip validation
+  - ✅ Cosmetic Shop panel in UIController (tabbed, scrollable, Equip/Buy buttons)
+  - **⚠ Action required**: create Developer Products in Creator Hub, replace placeholder IDs in `Cosmetics.luau`
+- ✅ Game passes: 3 convenience passes (Speed Brew 199R, Auto-Harvest 299R, VIP 99R)
+  - ✅ `shared/GamePasses.luau` — pass definitions with placeholder IDs
+  - ✅ GrowthService applies Speed Brew (2× faster growth) and Auto-Harvest (plots self-collect)
+  - ✅ MonetizationService checks passes on join, re-verifies after purchase prompt
+  - **⚠ Action required**: create Game Passes in Creator Hub, replace placeholder IDs in `GamePasses.luau`
+- ⬜ A/B price testing — run first for 2 weeks post-launch before changing prices
 - ⬜ Monitor retention post-monetisation (no significant drop acceptable)
 - ⬜ Optional: seasonal event with dual-track battle pass
 
@@ -109,13 +123,27 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 *Budget: $77-197/month | Time: 12-18 hrs/week*
 
 ### Track A: Roblox Maintenance (4-6 hrs/week)
+- ✅ Seasonal event system — `SeasonalContent.luau` + `SeasonalService.luau`
+  - Winter Festival (Dec 25 – Jan 8): Frost Blossom, Aurora Moss, 3 seasonal recipes
+  - Spring Bloom (Mar 21 – Apr 5): Pollinator Petal, Mycelium Bloom, 3 seasonal recipes
+  - SeasonalService rechecks calendar every 10 min; broadcasts `SeasonalUpdate` to clients
+  - **⚠ Action required**: add seasonal seed rows to shop UI; expand BrewingService to check seasonal recipes via `SeasonalService.lookupActiveRecipe`
 - ⬜ Content update every 5-6 weeks
 - ⬜ Community management and bug fixes
 - ⬜ Maintain revenue stream
 
 ### Track B: Godot Development (8-12 hrs/week)
-- ⬜ Complete Godot "Your First 2D Game" tutorial
-- ⬜ Build standalone game (same universe, not a direct port)
+- ✅ Godot 4 project scaffolded — `godot/project.godot` + 4 autoload singletons
+  - `GameState.gd` — inventory, gold, chapter, discovery tracking, signals
+  - `SaveManager.gd` — ConfigFile save/load; settings isolated from progress
+  - `Ingredients.gd` — 10 ingredients (4 cross-universe with Roblox + 6 new)
+  - `Recipes.gd` — 15 recipes, order-independent lookup, rarity value formula
+- ✅ Scene scripts written: `MainMenu.gd`, `Lab.gd`, `Journal.gd`, `Settings.gd`
+  - `scenes/SCENE_STRUCTURE.md` — full node tree guide for building .tscn files
+  - `godot/README.md` — complete dev setup, architecture, and Steam export guide
+- ⬜ Create .tscn scene files in Godot editor — follow `scenes/SCENE_STRUCTURE.md`
+- ⬜ Replace ColorRect placeholders with real sprites (art pass)
+- ⬜ Write Chapter 1–4 story text + progression triggers
 
 ### Steam Launch Pipeline
 - ⬜ Weeks 41-55: Build game, publish Steam store page ($100 fee) — see `marketing/steam/store-checklist.md`
@@ -135,9 +163,12 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 
 These are the blockers before the game can be playtested:
 
-1. **Install ProfileService** — download from https://github.com/MadStudioRoblox/ProfileService/releases, place at `roblox/src/server/Vendor/ProfileService.luau`
-2. **Upload audio** — any free sound pack will do to unblock testing; replace placeholder IDs in `SoundController.luau`
-3. **Publish unlisted on Roblox** — invite 5-10 testers, measure D1 retention (tutorial is now built ✅)
-4. **Set up business basics** — LLC, bank account, tax savings account (Phase 0 blockers for monetisation)
-5. **Start Discord server** — follow `community/discord/setup.md`; have it live before any public TikTok posts
-6. **Start TikTok** — first video before the public launch, not after
+1. **Create Roblox developer account** — follow `docs/platform-setup.md`; start the 30-day DevEx clock now
+2. **Register domain** — `alchemyacademy.gg` or `.game` before any public post; ~$20–35/yr at porkbun.com
+3. **Install ProfileService** — download from https://github.com/MadStudioRoblox/ProfileService/releases, place at `roblox/src/server/Vendor/ProfileService.luau`
+4. **Upload audio** — follow `roblox/AUDIO_ASSETS.md` for exact files needed; replace placeholder IDs in `SoundController.luau`
+5. **Publish the practice obby** — follow `roblox/obby/README.md` to exercise the full publish workflow before the real launch
+6. **Post concept feedback** — copy posts from `marketing/community-posts/` to DevForum and Reddit
+7. **Set up business basics** — LLC, bank account, tax savings account (see `business/legal/checklist.md`)
+8. **Start Discord server** — follow `community/discord/setup.md`; live before any public TikTok posts
+9. **Start TikTok** — first video before the public launch, not after (see `marketing/tiktok/content-calendar.md`)

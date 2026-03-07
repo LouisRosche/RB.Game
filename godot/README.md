@@ -1,37 +1,197 @@
-# Godot Game (Phase 3)
+# Alchemy Academy: Origins — Godot 4 Standalone Game
 
-## Overview
+A narrative puzzle-adventure set in the same universe as the Roblox game.
+Built with Godot 4 + GDScript. Target platforms: Steam (Windows/macOS/Linux),
+Epic Games Store, itch.io. One-time purchase, no DLC, no microtransactions.
 
-Standalone 2D game built with Godot 4 and GDScript for Steam and Epic Games Store launch. Same thematic universe as the Roblox game to enable cross-promotion, but designed for offline-capable play.
+---
 
-## Structure
+## Concept
 
-- `src/` — GDScript source files
-- `assets/` — Art, sound, and UI assets
-- `scenes/` — Godot scene files (.tscn)
+**Alchemy Academy: Origins** is a story-driven puzzle game where you play as a
+new student who discovers the Academy's secrets by experimenting with 10 unique
+ingredients across 4 chapters. Every recipe you unlock reveals a real science
+fact — from nuclear fusion to mycorrhizal networks.
 
-## Why Godot
+**Different from the Roblox game:**
+- Linear narrative chapters (not open-ended idle)
+- 10 base ingredients + 6 exclusive to this game (vs. 4 in Roblox)
+- 15 recipes to discover (vs. 10)
+- 3–5 hours of content with a proper ending
+- Offline, no internet required
 
-- MIT license: zero royalties at any revenue level
-- Full IP portability: Steam, Epic, itch.io, mobile
-- Best-in-class 2D engine
-- GDScript shares conceptual DNA with Python and Luau
-- Surpassed Unreal Engine in usage at 2024 Global Game Jam
+---
 
-## Launch Checklist
+## Dev Environment Setup
 
-- [ ] Steam store page live with 5+ screenshots and trailer
-- [ ] 7,000+ wishlists before launch
-- [ ] Steam Next Fest demo (15-30 min, polished)
-- [ ] Localized: Simplified Chinese, German, Brazilian Portuguese
-- [ ] Trademark filed (Class 9 + Class 41)
-- [ ] Priced at $9.99-$14.99
-- [ ] Consider Epic Games Store dual-listing (100% rev share on first $1M)
+### 1. Install Godot 4
 
-## Distribution Revenue Share
+Download **Godot 4.3+** (Standard, not Mono) from https://godotengine.org/download
 
-| Store | Developer Share |
-|-------|----------------|
-| Epic Games Store | 100% (first $1M/year) |
-| Steam | 70% (75-80% past $10M-$50M) |
-| itch.io | 90%+ (developer sets split) |
+> The `.NET / C#` version is not required — all code is GDScript.
+
+### 2. Open the project
+
+```
+File → Open → select /godot/project.godot
+```
+
+Godot will import assets and generate the `.godot/` folder automatically.
+
+### 3. Create the scenes
+
+All scripts are written; you need to create the matching scene files (`.tscn`)
+in the editor. Follow `scenes/SCENE_STRUCTURE.md` for the node tree of each scene.
+
+Quick start order:
+1. Create `res://scenes/MainMenu.tscn` — attach `src/scenes/main_menu/MainMenu.gd`
+2. Create `res://scenes/Lab.tscn`      — attach `src/scenes/lab/Lab.gd`
+3. Create `res://scenes/Journal.tscn`  — attach `src/scenes/journal/Journal.gd`
+4. Create `res://scenes/Settings.tscn` — attach `src/scenes/settings/Settings.gd`
+
+### 4. Wire @export references
+
+Each scene script uses `@export` variables. After attaching the script to the root
+node, select the root node and use the **Inspector** to drag-and-drop child nodes
+into the export slots (e.g., drag `GoldLabel` into the `gold_label` slot).
+
+### 5. Placeholder art
+
+For MVP, use `ColorRect` nodes with the colours from `scenes/SCENE_STRUCTURE.md`.
+No external art is required to run the game.
+
+### 6. Run the game
+
+Press **F5** or click the Play button. The entry point is `res://scenes/MainMenu.tscn`
+(set in `project.godot → application/run/main_scene`).
+
+---
+
+## Project Structure
+
+```
+godot/
+  project.godot              ← Godot project config (autoloads, display settings)
+  src/
+    autoload/
+      GameState.gd           ← Singleton: all in-session player data + signals
+      SaveManager.gd         ← Singleton: save/load via ConfigFile (user://save.cfg)
+      Ingredients.gd         ← Singleton: ingredient database (10 ingredients)
+      Recipes.gd             ← Singleton: recipe database (15 recipes) + lookup
+    scenes/
+      main_menu/
+        MainMenu.gd          ← Main menu: New Game / Continue / Settings / Quit
+      lab/
+        Lab.gd               ← Core gameplay: select ingredients, brew, sell
+      journal/
+        Journal.gd           ← Recipe book + ingredient science facts
+      settings/
+        Settings.gd          ← Volume, fullscreen, delete save
+  scenes/
+    SCENE_STRUCTURE.md       ← Scene tree reference for creating .tscn files
+    (*.tscn files created in editor — not committed until scenes are built)
+  assets/
+    (art, sounds, fonts — to be added)
+```
+
+---
+
+## Architecture
+
+### Autoloads (singletons)
+
+Registered in `project.godot [autoload]` and accessible from any script globally.
+
+| Singleton | Purpose |
+|-----------|---------|
+| `GameState` | Source of truth for all player data. Emits `state_changed` and `recipe_discovered` signals. |
+| `SaveManager` | Serialises `GameState` to `user://save.cfg` via ConfigFile. Loaded on startup. |
+| `Ingredients` | Read-only ingredient database. Keyed by string id. |
+| `Recipes` | Read-only recipe database. `lookup(id_a, id_b)` returns a recipe dict or `{}`. |
+
+### Scene navigation
+
+All scene transitions use `get_tree().change_scene_to_file("res://scenes/X.tscn")`.
+There is no scene stack — navigating always replaces the current scene.
+
+### Save format
+
+`user://save.cfg` — Godot ConfigFile (INI-like, human-readable):
+```
+[progress]
+gold=150
+chapter=1
+ingredients=[{"id":"moonpetal","rarity":"Rare"}]
+...
+```
+
+`user://settings.cfg` — separate file so settings survive "New Game":
+```
+[settings]
+master_volume=1.0
+fullscreen=false
+```
+
+---
+
+## Ingredient & Recipe Data
+
+All data lives in the autoload singletons (not JSON files) so Godot's type
+system can help catch typos. To add an ingredient:
+
+1. Call `_register({...})` in `Ingredients.gd._register_all()`
+2. Add the matching recipes in `Recipes.gd._register_all()`
+3. Set the `chapter` field to control when it becomes available
+
+---
+
+## Steam / Export Setup (Phase 3 Week 41+)
+
+1. **Export templates**: Editor → Manage Export Templates → Download 4.3 stable
+2. **Windows**: Project → Export → Add Windows Desktop preset → Export
+3. **macOS**: Requires an Apple developer certificate for notarisation
+4. **Linux**: Export as `.x86_64` binary (Steam Deck compatible)
+5. **Steamworks SDK**: Integrate via the GodotSteam plugin (MIT licence)
+   - https://godotsteam.com/ — pre-built binaries available
+   - Required for Steam Cloud saves, achievements, and trading cards
+6. **AppID**: Register at https://partner.steamgames.com ($100 one-time fee)
+
+---
+
+## Development Roadmap
+
+| Milestone | Target | Status |
+|-----------|--------|--------|
+| Core loop working in editor | Week 41 | Scripts written — scenes pending |
+| Chapter 1 complete + playable | Week 43 | ⬜ |
+| All 4 chapters complete | Week 50 | ⬜ |
+| Art pass (placeholder → real) | Week 52 | ⬜ |
+| Steam store page live | Week 45 | ⬜ |
+| Steam Next Fest demo | Week 60 | ⬜ |
+| Launch (7K+ wishlists) | Week 72 | ⬜ |
+| Localisation: zh-CN, de, pt-BR | Week 74 | ⬜ |
+
+---
+
+## Anti-Dark-Pattern Design (same rules as Roblox game)
+
+- One-time purchase — no DLC, no season passes, no microtransactions
+- All science facts are real and cited in the in-game Journal
+- No artificial time pressure or energy systems
+- Game can be completed without any internet connection
+- All save data stored locally; Steamworks Cloud is opt-in additive
+
+---
+
+## Why This Game Is Different from the Roblox Version
+
+| Feature | Roblox (Alchemy Academy) | Godot (Origins) |
+|---------|--------------------------|-----------------|
+| Genre | Idle tycoon / simulator | Narrative puzzle-adventure |
+| Length | Ongoing (no ending) | 3–5 hours + ending |
+| Multiplayer | Yes (leaderboards, co-presence) | No (singleplayer) |
+| Revenue model | Free + cosmetics + passes | One-time purchase |
+| Platform | Roblox only | Steam, Epic, itch.io, mobile |
+| Unique ingredients | 4 | 10 |
+| Unique recipes | 10 | 15 |
+| Narrative | None | 4-chapter story |

@@ -31,6 +31,14 @@ Network.UpgradeLab = "UpgradeLab"
 --- Player requests to upgrade their cauldron to the next level.
 Network.UpgradeCauldron = "UpgradeCauldron"
 
+--- Player equips an owned cosmetic item. Payload: cosmeticId (string).
+--- Server validates ownership before applying; state syncs back on success.
+Network.EquipCosmetic = "EquipCosmetic"
+
+--- Client notifies server to re-verify a game pass after a purchase prompt.
+--- Payload: passId (number). Server calls UserOwnsGamePassAsync and updates OwnedPasses.
+Network.VerifyGamePass = "VerifyGamePass"
+
 --============================================================================--
 -- Server -> Client events
 --============================================================================--
@@ -57,6 +65,19 @@ Network.TutorialComplete = "TutorialComplete"
 --- Payload: array of { rank: number, name: string, score: number }
 Network.LeaderboardUpdate = "LeaderboardUpdate"
 
+--- Server notifies the harvesting client of the exact plot and rarity so the
+--- client can play a localised particle burst. Payload: plotIndex (number), rarity (string).
+Network.HarvestEffect = "HarvestEffect"
+
+--- Server notifies the brewing client that their brew completed so the client
+--- can play a cauldron particle burst. No payload.
+Network.BrewEffect = "BrewEffect"
+
+--- Server broadcasts seasonal event state to all clients (on start and on change).
+--- Payload: eventId (string|nil), eventName (string|nil), bannerText (string|nil).
+--- nil values mean no event is currently active.
+Network.SeasonalUpdate = "SeasonalUpdate"
+
 --============================================================================--
 -- Helpers
 --============================================================================--
@@ -74,11 +95,16 @@ function Network.getAllEventNames(): { string }
 		Network.UpgradeCauldron,
 		Network.RequestDiscoverySummary,
 		Network.TutorialComplete,
+		Network.EquipCosmetic,
+		Network.VerifyGamePass,
 		-- Server -> Client
 		Network.StateSync,
 		Network.Notification,
 		Network.RecipeDiscovered,
 		Network.LeaderboardUpdate,
+		Network.HarvestEffect,
+		Network.BrewEffect,
+		Network.SeasonalUpdate,
 	}
 end
 

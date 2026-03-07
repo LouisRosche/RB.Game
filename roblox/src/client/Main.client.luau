@@ -40,6 +40,8 @@ local UIController          = require(Controllers:WaitForChild("UIController"))
 local InteractionController = require(Controllers:WaitForChild("InteractionController"))
 local SoundController       = require(Controllers:WaitForChild("SoundController"))
 local TutorialController    = require(Controllers:WaitForChild("TutorialController"))
+local LightingController    = require(Controllers:WaitForChild("LightingController"))
+local ParticleController    = require(Controllers:WaitForChild("ParticleController"))
 
 ---------------------------------------------------------------------------
 -- Local state cache — updated every time the server sends a StateSync
@@ -82,6 +84,23 @@ local recipeDiscoveredRemote = Remotes:WaitForChild(Network.RecipeDiscovered) ::
 recipeDiscoveredRemote.OnClientEvent:Connect(function(recipeId: string, recipeName: string, isSessionFirst: boolean)
 	UIController.onRecipeDiscovered(recipeId, recipeName, isSessionFirst)
 	SoundController.onDiscovery()
+	ParticleController.onDiscovery()
+end)
+
+---------------------------------------------------------------------------
+-- Harvest particle effect — server sends plot + rarity for burst
+---------------------------------------------------------------------------
+local harvestEffectRemote = Remotes:WaitForChild(Network.HarvestEffect) :: RemoteEvent
+harvestEffectRemote.OnClientEvent:Connect(function(plotIndex: number, rarity: string)
+	ParticleController.onHarvest(plotIndex, rarity)
+end)
+
+---------------------------------------------------------------------------
+-- Brew complete particle effect
+---------------------------------------------------------------------------
+local brewEffectRemote = Remotes:WaitForChild(Network.BrewEffect) :: RemoteEvent
+brewEffectRemote.OnClientEvent:Connect(function()
+	ParticleController.onBrewComplete()
 end)
 
 ---------------------------------------------------------------------------
@@ -109,5 +128,35 @@ SoundController.init()
 -- TutorialController detects new players and shows the onboarding overlay.
 -- Must be initialised after UIController (which creates PlayerGui.AlchemyAcademyUI).
 TutorialController.init(Remotes)
+
+-- LightingController applies Sprint 3 visual polish (bloom, atmosphere, colour grade).
+LightingController.init()
+
+-- ParticleController starts the cauldron idle bubbles and prepares burst helpers.
+-- Must be called after the lab model exists in the workspace (it waits internally).
+ParticleController.init()
+
+-- Wire performance-mode controllers into the settings panel so the player can
+-- disable visual effects on low-end devices.
+UIController.setPerformanceControllers(LightingController, ParticleController)
+
+---------------------------------------------------------------------------
+-- Game Pass purchase detection
+-- When a PromptGamePassPurchase dialog is dismissed, ask the server to
+-- re-verify pass ownership. Server calls UserOwnsGamePassAsync (never trust
+-- the client alone) and updates OwnedPasses in the profile.
+---------------------------------------------------------------------------
+local MarketplaceService = game:GetService("MarketplaceService")
+local verifyPassRemote = Remotes:WaitForChild(Network.VerifyGamePass) :: RemoteEvent
+
+MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(
+	_player: Player,
+	passId: number,
+	_purchased: boolean
+)
+	-- Fire regardless of whether purchased = true so the server can sync
+	-- the definitive ownership state back to this client.
+	verifyPassRemote:FireServer(passId)
+end)
 
 print("[AlchemyAcademy] Client initialised — welcome to the lab!")

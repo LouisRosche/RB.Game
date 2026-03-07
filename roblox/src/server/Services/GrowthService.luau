@@ -9,7 +9,9 @@ local RunService        = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared      = ReplicatedStorage:WaitForChild("Shared")
+local Config      = require(Shared.Config)
 local Ingredients = require(Shared.Ingredients)
+local GamePasses  = require(Shared.GamePasses)
 
 local DataService = require(script.Parent.DataService)
 local PlotService = require(script.Parent.PlotService)
@@ -54,7 +56,26 @@ local function onHeartbeat(dt: number)
 
 				local info = Ingredients[plot.IngredientId]
 				local displayName = if info then info.displayName else plot.IngredientId
-				DataService.notify(player, "Your " .. displayName .. " is ready to harvest! (" .. plot.Rarity .. ")")
+
+				-- Auto-Harvest pass: immediately collect if inventory has room
+				if Config.AUTO_HARVEST_ENABLED and GamePasses.hasPass(data, GamePasses.AUTO_HARVEST) then
+					if #data.Ingredients < Config.MAX_INGREDIENTS then
+						local entry = { Id = plot.IngredientId, Rarity = plot.Rarity }
+						table.insert(data.Ingredients, entry)
+						plot.State = "Empty"
+						plot.IngredientId = nil
+						plot.PlantedAt    = nil
+						plot.GrowthDuration = nil
+						plot.Rarity       = nil
+						PlotService.updatePlotVisual(player, plotIndex)
+						DataService.notify(player, "[Auto] Harvested " .. displayName .. "! (" .. entry.Rarity .. ")")
+					else
+						-- Bag full — leave as Ready and warn
+						DataService.notify(player, displayName .. " is ready but your bag is full — brew first!")
+					end
+				else
+					DataService.notify(player, "Your " .. displayName .. " is ready to harvest! (" .. plot.Rarity .. ")")
+				end
 			end
 		end
 
@@ -114,14 +135,20 @@ function GrowthService.plantSeed(player: Player, plotIndex: number, ingredientId
 		data.Gold -= ingredientDef.seedCost
 	end
 
+	-- Speed Brew pass applies a multiplier to growth time as well as brew time
+	local growthTime = ingredientDef.growthTime
+	if GamePasses.hasPass(data, GamePasses.SPEED_BREW) then
+		growthTime = math.max(1, math.round(growthTime * Config.SPEED_BREW_MULTIPLIER))
+	end
+
 	plot.State = "Growing"
 	plot.IngredientId = ingredientId
 	plot.PlantedAt = os.time()
-	plot.GrowthDuration = ingredientDef.growthTime
+	plot.GrowthDuration = growthTime
 
 	PlotService.updatePlotVisual(player, plotIndex)
 	DataService.syncToClient(player)
-	DataService.notify(player, "Planted " .. ingredientDef.displayName .. "! Growing for " .. ingredientDef.growthTime .. "s")
+	DataService.notify(player, "Planted " .. ingredientDef.displayName .. "! Growing for " .. growthTime .. "s")
 end
 
 return GrowthService
