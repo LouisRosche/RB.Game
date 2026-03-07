@@ -28,7 +28,7 @@ function EconomyService.buySeed(player: Player, ingredientId: string)
 	local def = Ingredients[ingredientId]
 	if not def then return end
 
-	if data.Gold < def.seedCost then
+	if data.Essence < def.seedCost then
 		DataService.notify(player, "Not enough Essence! Need " .. def.seedCost .. " Essence")
 		return
 	end
@@ -38,7 +38,7 @@ function EconomyService.buySeed(player: Player, ingredientId: string)
 		return
 	end
 
-	data.Gold -= def.seedCost
+	data.Essence -= def.seedCost
 	-- Track the purchased seed so GrowthService can consume it on plant
 	table.insert(data.Seeds, { Id = ingredientId })
 	DataService.syncToClient(player)
@@ -57,8 +57,8 @@ function EconomyService.sellPotion(player: Player, potionIndex: number)
 	end
 
 	local value = potion.Value or 0
-	data.Gold += value
-	data.Stats.TotalGoldEarned += value
+	data.Essence += value
+	data.Stats.TotalEssenceEarned += value
 
 	local displayName = potion.DisplayName or potion.Id
 	table.remove(data.Potions, potionIndex)
@@ -82,13 +82,13 @@ function EconomyService.upgradeLab(player: Player)
 	local nextDef = Config.LAB_LEVELS[nextLevel]
 	if not nextDef then return end
 
-	if data.Gold < nextDef.cost then
+	if data.Essence < nextDef.cost then
 		DataService.notify(player, "Not enough Essence! Need " .. nextDef.cost .. " Essence")
 		return
 	end
 
 	-- Deduct Essence and upgrade
-	data.Gold -= nextDef.cost
+	data.Essence -= nextDef.cost
 	data.LabLevel = nextLevel
 
 	-- Add new empty plots for the additional slots
@@ -121,13 +121,13 @@ function EconomyService.upgradeCauldron(player: Player)
 	local nextDef = Config.CAULDRON_LEVELS[nextLevel]
 	if not nextDef then return end
 
-	if data.Gold < nextDef.cost then
+	if data.Essence < nextDef.cost then
 		DataService.notify(player, "Not enough Essence! Need " .. nextDef.cost .. " Essence")
 		return
 	end
 
 	-- Deduct Essence and upgrade
-	data.Gold -= nextDef.cost
+	data.Essence -= nextDef.cost
 	data.CauldronLevel = nextLevel
 
 	DataService.syncToClient(player)

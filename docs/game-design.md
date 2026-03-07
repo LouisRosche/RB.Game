@@ -62,12 +62,12 @@ Virality comes from **joy and generosity**, not manipulation:
 
 ## Core Loop
 
-1. **Buy** ingredient seeds from the shop (spend gold)
+1. **Buy** ingredient seeds from the shop (spend Essence)
 2. **Plant** seeds in growing plots
 3. **Wait** for ingredients to grow (idle mechanic -- grows even offline)
 4. **Harvest** ingredients (mutation rarity rolled at harvest: Common to Legendary)
 5. **Brew** -- combine 2 ingredients at the cauldron to make a potion
-6. **Sell** potions for gold
+6. **Sell** potions for Essence
 7. **Upgrade** -- buy rarer seeds, more plots, better cauldrons
 8. **Repeat** with higher-tier ingredients and rarer mutations
 
@@ -81,12 +81,12 @@ Virality comes from **joy and generosity**, not manipulation:
 
 ## Ingredients (4 for vertical slice)
 
-| Ingredient  | Color      | Growth Time | Seed Cost | Base Value |
-| ----------- | ---------- | ----------- | --------- | ---------- |
-| Moonpetal   | Blue       | 30s         | 5g        | 10g        |
-| Fireroot    | Red/Orange | 45s         | 10g       | 15g        |
-| Shadowmoss  | Purple     | 60s         | 20g       | 20g        |
-| Starbloom   | Gold       | 90s         | 40g       | 30g        |
+| Ingredient  | Color      | Growth Time | Seed Cost  | Base Value  |
+| ----------- | ---------- | ----------- | ---------- | ----------- |
+| Moonpetal   | Blue       | 30s         | 5 Essence  | 10 Essence  |
+| Fireroot    | Red/Orange | 45s         | 10 Essence | 15 Essence  |
+| Shadowmoss  | Purple     | 60s         | 20 Essence | 20 Essence  |
+| Starbloom   | Gold       | 90s         | 40 Essence | 30 Essence  |
 
 ---
 
@@ -108,23 +108,23 @@ Rolled at harvest. Higher rarity = higher multiplier on potion value.
 
 ### Pure potions (same ingredient x2)
 
-| Ingredient A | Ingredient B | Potion          | Base Value |
-| ------------ | ------------ | --------------- | ---------- |
-| Moonpetal    | Moonpetal    | Lunar Elixir    | 25g        |
-| Fireroot     | Fireroot     | Blazing Tonic   | 35g        |
-| Shadowmoss   | Shadowmoss   | Void Essence    | 50g        |
-| Starbloom    | Starbloom    | Celestial Brew  | 75g        |
+| Ingredient A | Ingredient B | Potion          | Base Value  |
+| ------------ | ------------ | --------------- | ----------- |
+| Moonpetal    | Moonpetal    | Lunar Elixir    | 25 Essence  |
+| Fireroot     | Fireroot     | Blazing Tonic   | 35 Essence  |
+| Shadowmoss   | Shadowmoss   | Void Essence    | 50 Essence  |
+| Starbloom    | Starbloom    | Celestial Brew  | 75 Essence  |
 
 ### Combination potions
 
-| Ingredient A | Ingredient B | Potion            | Base Value |
-| ------------ | ------------ | ----------------- | ---------- |
-| Moonpetal    | Fireroot     | Twilight Potion   | 30g        |
-| Moonpetal    | Shadowmoss   | Phantom Draught   | 40g        |
-| Moonpetal    | Starbloom    | Astral Serum      | 50g        |
-| Fireroot     | Shadowmoss   | Infernal Mix      | 45g        |
-| Fireroot     | Starbloom    | Solar Nectar      | 55g        |
-| Shadowmoss   | Starbloom    | Eclipse Tincture  | 65g        |
+| Ingredient A | Ingredient B | Potion            | Base Value  |
+| ------------ | ------------ | ----------------- | ----------- |
+| Moonpetal    | Fireroot     | Twilight Potion   | 30 Essence  |
+| Moonpetal    | Shadowmoss   | Phantom Draught   | 40 Essence  |
+| Moonpetal    | Starbloom    | Astral Serum      | 50 Essence  |
+| Fireroot     | Shadowmoss   | Infernal Mix      | 45 Essence  |
+| Fireroot     | Starbloom    | Solar Nectar      | 55 Essence  |
+| Shadowmoss   | Starbloom    | Eclipse Tincture  | 65 Essence  |
 
 ### Value Formula
 
@@ -133,7 +133,7 @@ Final potion value = base value x ingredient1 rarity multiplier x ingredient2 ra
 ```
 
 Example: Celestial Brew with Epic Starbloom (15x) + Legendary Starbloom (50x) in Silver cauldron (1.25x):
-75 x 15 x 50 x 1.25 = **70,312 gold**
+75 x 15 x 50 x 1.25 = **70,312 Essence**
 
 ---
 
@@ -141,19 +141,19 @@ Example: Celestial Brew with Epic Starbloom (15x) + Legendary Starbloom (50x) in
 
 ### Lab Levels
 
-| Level | Name       | Plots | Cost    |
-| ----- | ---------- | ----- | ------- |
-| 1     | Starter    | 2     | Free    |
-| 2     | Apprentice | 4     | 500g    |
-| 3     | Alchemist  | 6     | 2,000g  |
+| Level | Name       | Plots | Cost          |
+| ----- | ---------- | ----- | ------------- |
+| 1     | Starter    | 2     | Free          |
+| 2     | Apprentice | 4     | 500 Essence   |
+| 3     | Alchemist  | 6     | 2,000 Essence |
 
 ### Cauldron Levels
 
-| Level | Name   | Brew Time | Value Bonus | Cost    |
-| ----- | ------ | --------- | ----------- | ------- |
-| 1     | Basic  | 10s       | 1.0x        | Free    |
-| 2     | Copper | 7s        | 1.1x        | 300g    |
-| 3     | Silver | 4s        | 1.25x       | 1,500g  |
+| Level | Name   | Brew Time | Value Bonus | Cost           |
+| ----- | ------ | --------- | ----------- | -------------- |
+| 1     | Basic  | 10s       | 1.0x        | Free           |
+| 2     | Copper | 7s        | 1.1x        | 300 Essence    |
+| 3     | Silver | 4s        | 1.25x       | 1,500 Essence  |
 
 ---
 
@@ -179,7 +179,7 @@ a chore.
 
 - Each player has their own visible lab area in the world
 - Player name displayed above their lab
-- Leaderboard: Most Total Gold Earned, Most Potions Brewed
+- Leaderboard: Most Total Essence Earned, Most Potions Brewed
 - Visiting: players can walk to and view other players' labs
 - Future (Phase 2): trading ingredients/potions between players
 
@@ -206,11 +206,14 @@ a chore.
 - Weather events affecting mutation rates
 - Trading between players
 - Seasonal content / battle pass
-- Sound design
-- Tutorial / guided onboarding (beyond basic prompts)
 - Localization (infrastructure in place, translations deferred)
 - Advanced visual polish (lighting, post-processing, particles beyond basic)
-- Leaderboard UI (data tracked, display deferred)
+
+### What's IN (added post-vertical-slice planning)
+
+- Sound design (SFX for brewing, harvest, discovery, rarity stings)
+- Tutorial / guided onboarding (TutorialController with first-session flow)
+- Leaderboard UI (LeaderboardService + OrderedDataStore + UIController panel)
 
 ---
 
@@ -221,13 +224,13 @@ a chore.
 1. Player spawns at their empty lab
 2. They see 2 empty plots, a cauldron, and a shop station
 3. ProximityPrompt on empty plot says "Plant" -- opens seed selection
-4. Player buys cheapest seed (Moonpetal, 5g out of starting 100g)
+4. Player buys cheapest seed (Moonpetal, 5 Essence out of starting 200 Essence)
 5. Seed starts growing -- visual feedback (small sprout appears, grows over 30s)
 6. Player plants second plot while waiting
 7. First plant ready -- "Harvest" prompt -- player harvests -- "You harvested an Uncommon Moonpetal!" notification
 8. Second harvest -- now has 2 ingredients
 9. Clicks cauldron -- "Brew" -- selects 2 ingredients -- brews Lunar Elixir
-10. Clicks sell station -- sells potion -- gold increases
+10. Clicks sell station -- sells potion -- Essence increases
 11. Player understands the loop and is hooked on the "what rarity will I get?" dopamine
 
 ---
@@ -247,7 +250,7 @@ a chore.
 
 - **Single-Script Architecture:** one ServerScript + one LocalScript requiring ModuleScripts
 - **Rojo** for filesystem to Studio sync
-- **Data persistence:** DataStoreService (upgrade to ProfileService post-vertical-slice)
+- **Data persistence:** ProfileService (session locking, GDPR-ready, schema reconciliation)
 - **Server-authoritative:** all game logic runs on server, client is display-only
 - **RemoteEvents** for client-to-server actions, server-to-client state sync
 - **Full state sync pattern:** server sends complete player state after every action
@@ -258,7 +261,7 @@ a chore.
 
 The "Grow a ___" idle tycoon formula is proven (#1 on Roblox in 2025 via Grow a Garden). Existing themes that are TAKEN: garden, crystals, fish, farms, ducks, beehives, candy, brainrot.
 
-Potion Lab differentiates through:
+Alchemy Academy differentiates through:
 
 1. **Combinatorial depth** -- 10 ingredients x 5 rarities x 10 recipes = thousands of unique outcomes from minimal content. Systems over content.
 2. **Fantasy/alchemy theme** -- universally appealing to Roblox demographic, zero direct competitors in "Grow a" format.

@@ -59,7 +59,7 @@ Repeat pillar rotation. Prioritise:
 
 ## Technical Setup
 
-- **Account**: @AlchemyAcademy (or @PotionLabRoblox as fallback)
+- **Account**: @AlchemyAcademy (or @AlchemyAcademyRblx as fallback)
 - **Bio**: "🧪 Potions. Real science. Roblox. Play free → link in bio"
 - **Link in bio**: Direct Roblox game link (use a Linktree if posting Steam too)
 - **Hashtags**: #roblox #robloxgame #sciencefacts #indiegame #gamedev (5–7 max)

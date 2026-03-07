@@ -14,7 +14,7 @@ local Config = {}
 --- Essence awarded to every new player on first join.
 --- Increased so new players can immediately try all starter ingredients,
 --- removing any "stuck at zero" frustration in the first session.
-Config.STARTING_GOLD = 200
+Config.STARTING_ESSENCE = 200
 
 --- Maximum lab upgrade level a player can reach.
 Config.MAX_LAB_LEVEL = 3
