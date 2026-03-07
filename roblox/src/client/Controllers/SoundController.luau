@@ -1,6 +1,6 @@
 --[[
 	SoundController.luau
-	Client-side audio management for Potion Lab.
+	Client-side audio management for Alchemy Academy.
 
 	Research finding: strong audio design yields ~30% retention improvement.
 	All sounds are played locally (client authoritative for audio).
@@ -50,13 +50,6 @@ local SFX_IDS = {
 	RarityLegendary = "rbxassetid://9119713951", -- triumphant fanfare
 }
 
-local RARITY_SFX = {
-	Common    = SFX_IDS.RarityCommon,
-	Uncommon  = SFX_IDS.RarityUncommon,
-	Rare      = SFX_IDS.RarityRare,
-	Epic      = SFX_IDS.RarityEpic,
-	Legendary = SFX_IDS.RarityLegendary,
-}
 
 ---------------------------------------------------------------------------
 -- Volume settings
@@ -77,7 +70,7 @@ local sfxPool: { [string]: Sound } = {}
 
 local function createSoundGroup(): SoundGroup
 	local sg = Instance.new("SoundGroup")
-	sg.Name = "PotionLabSounds"
+	sg.Name = "AlchemyAcademySounds"
 	sg.Volume = 1
 	sg.Parent = SoundService
 	return sg
@@ -130,11 +123,12 @@ end
 --- @param rarity "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
 function SoundController.onHarvest(rarity: string)
 	playSFX("Harvest")
-	local rarityKey = RARITY_SFX[rarity]
-	if rarityKey and sfxPool[rarityKey] then
+	-- "Rarity" .. rarity maps directly to sfxPool keys (RarityCommon, RarityRare, etc.)
+	local rarityPoolKey = "Rarity" .. rarity
+	if sfxPool[rarityPoolKey] then
 		-- Small delay so rarity sting plays after the base harvest sound
 		task.delay(0.4, function()
-			if sfxPool[rarityKey] then sfxPool[rarityKey]:Play() end
+			if sfxPool[rarityPoolKey] then sfxPool[rarityPoolKey]:Play() end
 		end)
 	end
 end

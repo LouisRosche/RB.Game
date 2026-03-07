@@ -173,7 +173,7 @@ Journal.HowToPlay: { string } = {
 	"Plant seeds in your garden plots. They grow even when you're away — no need to rush!",
 	"Harvest ingredients when they're ready. Each one has a rarity determined by chance (shown in the Odds tab).",
 	"Combine two ingredients at the Cauldron to brew a potion. Some combinations haven't been discovered yet — experiment!",
-	"Sell potions to earn gold. Gold lets you upgrade your lab and unlock more ingredients.",
+	"Sell potions to earn Essence. Essence lets you upgrade your lab and unlock more ingredients.",
 	"Open the Journal anytime to read about the real science behind your ingredients.",
 	"You can visit other players' labs to see what they've discovered!",
 	"There's no losing condition. Take your time, be curious, and enjoy the process.",

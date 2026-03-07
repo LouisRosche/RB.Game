@@ -9,7 +9,6 @@ local RunService        = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared      = ReplicatedStorage:WaitForChild("Shared")
-local Config      = require(Shared.Config)
 local Ingredients = require(Shared.Ingredients)
 
 local DataService = require(script.Parent.DataService)
@@ -22,23 +21,6 @@ local GrowthService = {}
 ---------------------------------------------------------------------------
 local tickAccumulator = 0
 local TICK_INTERVAL = 1 -- seconds between growth checks
-
----------------------------------------------------------------------------
--- Mutation roll
----------------------------------------------------------------------------
-
---- Walk through MUTATION_TIERS and return the rarity name that was rolled.
-function GrowthService.rollMutation(): string
-	local roll = math.random()
-	local cumulative = 0
-	for _, tier in Config.MUTATION_TIERS do
-		cumulative += tier.chance
-		if roll <= cumulative then
-			return tier.name
-		end
-	end
-	return Config.MUTATION_TIERS[1].name
-end
 
 ---------------------------------------------------------------------------
 -- Growth tick
@@ -65,7 +47,7 @@ local function onHeartbeat(dt: number)
 			if elapsed >= plot.GrowthDuration then
 				-- Growth complete — roll rarity
 				plot.State = "Ready"
-				plot.Rarity = GrowthService.rollMutation()
+				plot.Rarity = DataService.rollMutation()
 				changed = true
 
 				PlotService.updatePlotVisual(player, plotIndex)
@@ -121,12 +103,12 @@ function GrowthService.plantSeed(player: Player, plotIndex: number, ingredientId
 	end
 
 	if seedIndex then
-		-- Consume the pre-purchased seed; gold was already deducted at buy time
+		-- Consume the pre-purchased seed; Essence was already deducted at buy time
 		table.remove(data.Seeds, seedIndex)
 	else
-		-- Direct plant: deduct gold now (no prior BuySeed required)
+		-- Direct plant: deduct Essence now (no prior BuySeed required)
 		if data.Gold < ingredientDef.seedCost then
-			DataService.notify(player, "Not enough gold! Need " .. ingredientDef.seedCost .. "g")
+			DataService.notify(player, "Not enough Essence! Need " .. ingredientDef.seedCost .. " Essence")
 			return
 		end
 		data.Gold -= ingredientDef.seedCost

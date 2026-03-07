@@ -71,8 +71,8 @@ local profiles: { [number]: any } = {}
 -- Helpers
 ---------------------------------------------------------------------------
 
---- Roll a mutation rarity. Defined here to avoid a circular dependency
---- with GrowthService (both need the same roll on offline completion).
+--- Roll a mutation rarity. Used here for offline growth completion and exposed
+--- as DataService.rollMutation() so GrowthService can share the same logic.
 local function rollMutation(): string
 	local roll = math.random()
 	local cumulative = 0
@@ -118,6 +118,9 @@ end
 ---------------------------------------------------------------------------
 -- Public API
 ---------------------------------------------------------------------------
+
+--- Public access to the mutation roll so GrowthService can reuse it.
+DataService.rollMutation = rollMutation
 
 function DataService.init()
 	-- ProfileStore is ready at require time; nothing else to set up.

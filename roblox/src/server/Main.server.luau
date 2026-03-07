@@ -1,6 +1,6 @@
 --[[
 	Main.server.luau
-	Single server entry point for Potion Lab.
+	Single server entry point for Alchemy Academy.
 	Creates all RemoteEvents, initialises services, and routes incoming
 	client requests to the appropriate service handlers.
 ]]
@@ -18,6 +18,7 @@ local Shared      = ReplicatedStorage:WaitForChild("Shared")
 local Network     = require(Shared.Network)
 local Config      = require(Shared.Config)
 local Ingredients = require(Shared.Ingredients)
+local Strings     = require(Shared.Strings)
 
 ---------------------------------------------------------------------------
 -- Server service modules (ServerScriptService.Server.Services)
@@ -196,14 +197,16 @@ remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotInde
 	local displayName = ingredientId_toDisplayName(entry.Id)
 	local rarity = entry.Rarity
 
-	local rarityMessages = {
-		Common    = "Harvested " .. displayName .. "! A healthy Common specimen.",
-		Uncommon  = "Harvested " .. displayName .. "! Uncommon — ideal growing conditions.",
-		Rare      = "Harvested " .. displayName .. "! Rare — something special happened here!",
-		Epic      = "Harvested " .. displayName .. "! Epic — extraordinary growth conditions!",
-		Legendary = "Harvested " .. displayName .. "! LEGENDARY — a once-in-a-generation specimen!",
+	-- Use Strings.luau templates for harvest messages (keeps text in one place)
+	local rarityTemplates = {
+		Common    = Strings.HARVESTED_COMMON,
+		Uncommon  = Strings.HARVESTED_UNCOMMON,
+		Rare      = Strings.HARVESTED_RARE,
+		Epic      = Strings.HARVESTED_EPIC,
+		Legendary = Strings.HARVESTED_LEGENDARY,
 	}
-	local message = rarityMessages[rarity] or ("Harvested " .. displayName .. "! (" .. rarity .. ")")
+	local template = rarityTemplates[rarity] or ("Harvested {item}! (" .. rarity .. ")")
+	local message = string.gsub(template, "{item}", displayName)
 
 	local notifRemote = ReplicatedStorage.Remotes:FindFirstChild(Network.Notification)
 	if notifRemote then

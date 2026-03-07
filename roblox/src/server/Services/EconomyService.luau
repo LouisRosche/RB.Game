@@ -1,6 +1,6 @@
 --[[
 	EconomyService.luau
-	Handles all gold transactions: buying seeds, selling potions,
+	Handles all Essence transactions: buying seeds, selling potions,
 	upgrading lab and cauldron levels.
 ]]
 
@@ -29,7 +29,7 @@ function EconomyService.buySeed(player: Player, ingredientId: string)
 	if not def then return end
 
 	if data.Gold < def.seedCost then
-		DataService.notify(player, "Not enough gold! Need " .. def.seedCost .. "g")
+		DataService.notify(player, "Not enough Essence! Need " .. def.seedCost .. " Essence")
 		return
 	end
 
@@ -64,7 +64,7 @@ function EconomyService.sellPotion(player: Player, potionIndex: number)
 	table.remove(data.Potions, potionIndex)
 
 	DataService.syncToClient(player)
-	DataService.notify(player, "Sold " .. displayName .. " for " .. value .. " gold!")
+	DataService.notify(player, "Sold " .. displayName .. " for " .. value .. " Essence!")
 end
 
 --- Upgrade the player's lab to the next level, adding more plots.
@@ -83,11 +83,11 @@ function EconomyService.upgradeLab(player: Player)
 	if not nextDef then return end
 
 	if data.Gold < nextDef.cost then
-		DataService.notify(player, "Not enough gold! Need " .. nextDef.cost .. "g")
+		DataService.notify(player, "Not enough Essence! Need " .. nextDef.cost .. " Essence")
 		return
 	end
 
-	-- Deduct gold and upgrade
+	-- Deduct Essence and upgrade
 	data.Gold -= nextDef.cost
 	data.LabLevel = nextLevel
 
@@ -122,11 +122,11 @@ function EconomyService.upgradeCauldron(player: Player)
 	if not nextDef then return end
 
 	if data.Gold < nextDef.cost then
-		DataService.notify(player, "Not enough gold! Need " .. nextDef.cost .. "g")
+		DataService.notify(player, "Not enough Essence! Need " .. nextDef.cost .. " Essence")
 		return
 	end
 
-	-- Deduct gold and upgrade
+	-- Deduct Essence and upgrade
 	data.Gold -= nextDef.cost
 	data.CauldronLevel = nextLevel
 
