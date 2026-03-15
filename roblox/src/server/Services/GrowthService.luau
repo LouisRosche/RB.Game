@@ -13,8 +13,9 @@ local Config      = require(Shared.Config)
 local Ingredients = require(Shared.Ingredients)
 local GamePasses  = require(Shared.GamePasses)
 
-local DataService = require(script.Parent.DataService)
-local PlotService = require(script.Parent.PlotService)
+local DataService     = require(script.Parent.DataService)
+local PlotService     = require(script.Parent.PlotService)
+local SeasonalService = require(script.Parent.SeasonalService)
 
 local GrowthService = {}
 
@@ -100,8 +101,19 @@ function GrowthService.plantSeed(player: Player, plotIndex: number, ingredientId
 	local data = DataService.getData(player)
 	if not data then return end
 
-	-- Validate ingredient exists
+	-- Validate ingredient exists (base or active seasonal)
 	local ingredientDef = Ingredients[ingredientId]
+	if not ingredientDef then
+		local seasonalDef = SeasonalService.getActiveIngredient(ingredientId)
+		if seasonalDef then
+			ingredientDef = {
+				displayName = seasonalDef.displayName,
+				growthTime = seasonalDef.growthTime,
+				seedCost = seasonalDef.seedCost,
+				baseValue = seasonalDef.baseValue,
+			}
+		end
+	end
 	if not ingredientDef then return end
 
 	-- Validate plot index
@@ -135,11 +147,10 @@ function GrowthService.plantSeed(player: Player, plotIndex: number, ingredientId
 		data.Essence -= ingredientDef.seedCost
 	end
 
-	-- Speed Brew pass applies a multiplier to growth time as well as brew time
+	-- Growth time is NOT affected by Speed Brew pass.
+	-- Speed Brew only reduces brew time at the cauldron (convenience, not advantage).
+	-- Applying it here would make it pay-to-win by halving all timers.
 	local growthTime = ingredientDef.growthTime
-	if GamePasses.hasPass(data, GamePasses.SPEED_BREW) then
-		growthTime = math.max(1, math.round(growthTime * Config.SPEED_BREW_MULTIPLIER))
-	end
 
 	plot.State = "Growing"
 	plot.IngredientId = ingredientId

@@ -12,15 +12,16 @@ local Config = {}
 --============================================================================--
 
 --- Essence awarded to every new player on first join.
---- Increased so new players can immediately try all starter ingredients,
---- removing any "stuck at zero" frustration in the first session.
-Config.STARTING_ESSENCE = 200
+--- Enough to buy several cheap seeds and experience the loop, but NOT enough
+--- to immediately unlock expensive ingredients. Scarcity teaches the value
+--- of Essence and motivates the first few brew-sell cycles.
+Config.STARTING_ESSENCE = 50
 
 --- Maximum lab upgrade level a player can reach.
-Config.MAX_LAB_LEVEL = 3
+Config.MAX_LAB_LEVEL = 5
 
 --- Maximum cauldron upgrade level a player can reach.
-Config.MAX_CAULDRON_LEVEL = 3
+Config.MAX_CAULDRON_LEVEL = 5
 
 --============================================================================--
 -- Lab levels
@@ -34,9 +35,11 @@ export type LabLevelDef = {
 }
 
 Config.LAB_LEVELS: { [number]: LabLevelDef } = {
-	[1] = { name = "Starter",     plots = 2, cost = 0 },
-	[2] = { name = "Apprentice",  plots = 4, cost = 500 },
-	[3] = { name = "Alchemist",   plots = 6, cost = 2000 },
+	[1] = { name = "Starter",       plots = 2, cost = 0 },
+	[2] = { name = "Apprentice",    plots = 3, cost = 750 },
+	[3] = { name = "Alchemist",     plots = 4, cost = 3000 },
+	[4] = { name = "Master",        plots = 5, cost = 10000 },
+	[5] = { name = "Grand Master",  plots = 6, cost = 30000 },
 }
 
 --============================================================================--
@@ -52,9 +55,11 @@ export type CauldronLevelDef = {
 }
 
 Config.CAULDRON_LEVELS: { [number]: CauldronLevelDef } = {
-	[1] = { name = "Basic",  brewTime = 10, valueBonus = 1.0,  cost = 0 },
-	[2] = { name = "Copper", brewTime = 7,  valueBonus = 1.1,  cost = 300 },
-	[3] = { name = "Silver", brewTime = 4,  valueBonus = 1.25, cost = 1500 },
+	[1] = { name = "Basic",     brewTime = 12, valueBonus = 1.0,  cost = 0 },
+	[2] = { name = "Copper",    brewTime = 10, valueBonus = 1.1,  cost = 500 },
+	[3] = { name = "Silver",    brewTime = 8,  valueBonus = 1.2,  cost = 2500 },
+	[4] = { name = "Gold",      brewTime = 6,  valueBonus = 1.35, cost = 8000 },
+	[5] = { name = "Legendary", brewTime = 4,  valueBonus = 1.5,  cost = 25000 },
 }
 
 --============================================================================--

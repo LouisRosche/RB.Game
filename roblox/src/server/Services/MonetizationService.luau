@@ -34,8 +34,9 @@ local Shared     = ReplicatedStorage:WaitForChild("Shared")
 local Cosmetics  = require(Shared:WaitForChild("Cosmetics"))
 local GamePasses = require(Shared:WaitForChild("GamePasses"))
 
--- DataService is required at call time (avoids circular require at module load)
+-- DataService and AnalyticsService are required at call time (avoids circular require at module load)
 local DataService: any = nil
+local AnalyticsService: any = nil
 
 local MonetizationService = {}
 
@@ -90,6 +91,11 @@ local function processReceipt(receiptInfo: { [string]: any }): Enum.ProductPurch
 		player,
 		"✨ " .. cosmetic.name .. " unlocked! Equip it in the Cosmetic Shop."
 	)
+
+	-- Track cosmetic purchase for monetization analytics
+	if AnalyticsService then
+		AnalyticsService.onCosmeticPurchased(player, cosmetic.id, cosmetic.price or 0)
+	end
 
 	return Enum.ProductPurchaseDecision.PurchaseGranted
 end
@@ -153,10 +159,11 @@ end
 -- Public API
 ---------------------------------------------------------------------------
 
---- Initialise: inject DataService (passed in to avoid circular require)
---- and register the ProcessReceipt handler.
-function MonetizationService.init(dataServiceRef: any)
+--- Initialise: inject DataService and AnalyticsService (passed in to avoid
+--- circular require) and register the ProcessReceipt handler.
+function MonetizationService.init(dataServiceRef: any, analyticsServiceRef: any)
 	DataService = dataServiceRef
+	AnalyticsService = analyticsServiceRef
 	MarketplaceService.ProcessReceipt = processReceipt
 end
 
