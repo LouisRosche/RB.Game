@@ -11,8 +11,9 @@ local Shared  = ReplicatedStorage:WaitForChild("Shared")
 local Config  = require(Shared.Config)
 local Recipes = require(Shared.Recipes)
 
-local DataService     = require(script.Parent.DataService)
+local DataService      = require(script.Parent.DataService)
 local DiscoveryService = require(script.Parent.DiscoveryService)
+local SeasonalService  = require(script.Parent.SeasonalService)
 
 local BrewingService = {}
 
@@ -66,8 +67,26 @@ function BrewingService.brewPotion(player: Player, idx1: number, idx2: number): 
 	local ingredient1 = inv[idx1]
 	local ingredient2 = inv[idx2]
 
-	-- Look up recipe
+	-- Look up recipe: check base recipes first, then active seasonal recipes
 	local recipe = Recipes.lookup(ingredient1.Id, ingredient2.Id)
+	local isSeasonal = false
+
+	if not recipe then
+		-- Check seasonal recipes
+		local seasonalRecipe = SeasonalService.lookupActiveRecipe(ingredient1.Id, ingredient2.Id)
+		if seasonalRecipe then
+			-- Adapt seasonal recipe to match base recipe shape
+			recipe = {
+				id = seasonalRecipe.id,
+				displayName = seasonalRecipe.displayName,
+				baseValue = seasonalRecipe.baseValue,
+				color = Color3.fromRGB(255, 200, 100), -- seasonal gold
+				scienceHook = seasonalRecipe.scienceFact or "",
+			}
+			isSeasonal = true
+		end
+	end
+
 	if not recipe then
 		DataService.notify(player, "These ingredients can't be combined!")
 		return nil

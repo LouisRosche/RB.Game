@@ -26,7 +26,7 @@ export type IngredientDef = {
 
 Ingredients.Moonpetal: IngredientDef = {
 	displayName = "Moonpetal",
-	growthTime = 30,
+	growthTime = 45,       -- ~45s: fast enough for first-session loop completion
 	seedCost = 5,
 	baseValue = 10,
 	color = Color3.fromRGB(100, 150, 255),
@@ -36,9 +36,9 @@ Ingredients.Moonpetal: IngredientDef = {
 
 Ingredients.Fireroot: IngredientDef = {
 	displayName = "Fireroot",
-	growthTime = 45,
-	seedCost = 10,
-	baseValue = 15,
+	growthTime = 120,      -- 2 min: second tier, encourages planting and waiting
+	seedCost = 15,
+	baseValue = 18,
 	color = Color3.fromRGB(255, 80, 30),
 	description = "A smoldering root that channels heat from deep underground.",
 	scienceHook = "Science: geothermal energy from Earth's core powers whole cities!",
@@ -46,9 +46,9 @@ Ingredients.Fireroot: IngredientDef = {
 
 Ingredients.Shadowmoss: IngredientDef = {
 	displayName = "Shadowmoss",
-	growthTime = 60,
-	seedCost = 20,
-	baseValue = 20,
+	growthTime = 300,      -- 5 min: mid-tier, plant before doing other things
+	seedCost = 35,
+	baseValue = 28,
 	color = Color3.fromRGB(140, 50, 200),
 	description = "A dark moss that thrives in the absence of light.",
 	scienceHook = "Science: Vantablack absorbs 99.965% of light — nearly as dark as space!",
@@ -56,9 +56,9 @@ Ingredients.Shadowmoss: IngredientDef = {
 
 Ingredients.Starbloom: IngredientDef = {
 	displayName = "Starbloom",
-	growthTime = 90,
-	seedCost = 40,
-	baseValue = 30,
+	growthTime = 900,      -- 15 min: premium tier, reason to stay in session or return
+	seedCost = 75,
+	baseValue = 45,
 	color = Color3.fromRGB(255, 220, 50),
 	description = "A radiant blossom infused with energy from distant stars.",
 	scienceHook = "Science: stars are nuclear fusion reactors billions of km away!",

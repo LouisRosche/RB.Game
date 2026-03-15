@@ -25,6 +25,9 @@ Network.BrewPotion = "BrewPotion"
 --- Player requests to sell a brewed potion for Essence.
 Network.SellPotion = "SellPotion"
 
+--- Player requests to sell ALL brewed potions at once.
+Network.SellAll = "SellAll"
+
 --- Player requests to upgrade their lab to the next level.
 Network.UpgradeLab = "UpgradeLab"
 
@@ -91,6 +94,7 @@ function Network.getAllEventNames(): { string }
 		Network.Harvest,
 		Network.BrewPotion,
 		Network.SellPotion,
+		Network.SellAll,
 		Network.UpgradeLab,
 		Network.UpgradeCauldron,
 		Network.RequestDiscoverySummary,

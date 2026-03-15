@@ -10,8 +10,9 @@ local Shared      = ReplicatedStorage:WaitForChild("Shared")
 local Config      = require(Shared.Config)
 local Ingredients = require(Shared.Ingredients)
 
-local DataService = require(script.Parent.DataService)
-local PlotService = require(script.Parent.PlotService)
+local DataService      = require(script.Parent.DataService)
+local PlotService      = require(script.Parent.PlotService)
+local SeasonalService  = require(script.Parent.SeasonalService)
 
 local EconomyService = {}
 
@@ -20,12 +21,29 @@ local EconomyService = {}
 ---------------------------------------------------------------------------
 
 --- Purchase a seed and add it to the player's seed inventory.
+--- Supports both base ingredients and active seasonal ingredients.
 --- Actual planting is a separate step via GrowthService (PlantSeed remote).
 function EconomyService.buySeed(player: Player, ingredientId: string)
 	local data = DataService.getData(player)
 	if not data then return end
 
+	-- Check base ingredients first, then seasonal
 	local def = Ingredients[ingredientId]
+	local isSeasonal = false
+	if not def then
+		local seasonalDef = SeasonalService.getActiveIngredient(ingredientId)
+		if seasonalDef then
+			-- Adapt seasonal ingredient to match base ingredient shape
+			def = {
+				displayName = seasonalDef.displayName,
+				seedCost = seasonalDef.seedCost,
+				baseValue = seasonalDef.baseValue,
+				growthTime = seasonalDef.growthTime,
+			}
+			isSeasonal = true
+		end
+	end
+
 	if not def then return end
 
 	if data.Essence < def.seedCost then
@@ -42,7 +60,11 @@ function EconomyService.buySeed(player: Player, ingredientId: string)
 	-- Track the purchased seed so GrowthService can consume it on plant
 	table.insert(data.Seeds, { Id = ingredientId })
 	DataService.syncToClient(player)
-	DataService.notify(player, "Purchased " .. def.displayName .. " seed!")
+
+	local label = if isSeasonal then "SEASONAL " else ""
+	DataService.notify(player, "Purchased " .. label .. def.displayName .. " seed!")
+
+	return def.seedCost, isSeasonal
 end
 
 --- Sell a potion from the player's inventory for its Essence value.
@@ -65,6 +87,32 @@ function EconomyService.sellPotion(player: Player, potionIndex: number)
 
 	DataService.syncToClient(player)
 	DataService.notify(player, "Sold " .. displayName .. " for " .. value .. " Essence!")
+end
+
+--- Sell all potions at once. Returns total value earned.
+function EconomyService.sellAll(player: Player): number
+	local data = DataService.getData(player)
+	if not data then return 0 end
+
+	if #data.Potions == 0 then
+		DataService.notify(player, "No potions to sell!")
+		return 0
+	end
+
+	local totalValue = 0
+	local count = #data.Potions
+	for _, potion in data.Potions do
+		totalValue += (potion.Value or 0)
+	end
+
+	data.Essence += totalValue
+	data.Stats.TotalEssenceEarned += totalValue
+	data.Potions = {}
+
+	DataService.syncToClient(player)
+	DataService.notify(player, "Sold " .. count .. " potions for " .. totalValue .. " Essence!")
+
+	return totalValue
 end
 
 --- Upgrade the player's lab to the next level, adding more plots.

@@ -56,9 +56,10 @@ GamePasses.DEFS: { GamePassDef } = {
 		price       = 199,
 		description = "Your cauldron brews potions at 2× speed — permanently.",
 		benefits    = {
-			"Basic cauldron: 10 s → 5 s",
-			"Copper cauldron: 7 s → 3.5 s",
-			"Silver cauldron: 4 s → 2 s",
+			"Basic cauldron: 12 s → 6 s",
+			"Copper cauldron: 10 s → 5 s",
+			"Silver cauldron: 8 s → 4 s",
+			"Gold cauldron: 6 s → 3 s",
 			"Stacks with cauldron upgrades",
 		},
 	},

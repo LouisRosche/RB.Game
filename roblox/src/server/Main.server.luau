@@ -72,6 +72,7 @@ local RATE_COOLDOWN: { [string]: number } = {
 	[Network.Harvest]        = 0.3,
 	[Network.BrewPotion]     = 0.5,
 	[Network.SellPotion]     = 0.3,
+	[Network.SellAll]        = 1.0,
 	[Network.UpgradeLab]     = 1.0,
 	[Network.UpgradeCauldron] = 1.0,
 }
@@ -122,7 +123,7 @@ PlotService.init()
 GrowthService.init()
 AnalyticsService.init()
 LeaderboardService.init()
-MonetizationService.init(DataService)
+MonetizationService.init(DataService, AnalyticsService)
 SeasonalService.init(DataService)
 -- BrewingService, EconomyService, DiscoveryService are stateless; no init required.
 
@@ -165,8 +166,18 @@ end
 remotes[Network.BuySeed].OnServerEvent:Connect(function(player: Player, ingredientId: string)
 	if isRateLimited(player, Network.BuySeed) then return end
 	if typeof(ingredientId) ~= "string" then return end
-	if not Ingredients[ingredientId] then return end  -- reject unknown IDs
-	EconomyService.buySeed(player, ingredientId)
+	-- Allow base ingredients OR active seasonal ingredients
+	if not Ingredients[ingredientId] and not SeasonalService.getActiveIngredient(ingredientId) then
+		return -- reject unknown IDs
+	end
+	local cost, isSeasonal = EconomyService.buySeed(player, ingredientId)
+	if cost then
+		if isSeasonal then
+			AnalyticsService.onSeasonalPurchased(player, ingredientId, cost)
+		else
+			AnalyticsService.onSeedPurchased(player, ingredientId, cost)
+		end
+	end
 end)
 
 -- PlantSeed: player plants a seed (from inventory or buy-and-plant in one step)
@@ -174,7 +185,10 @@ remotes[Network.PlantSeed].OnServerEvent:Connect(function(player: Player, plotIn
 	if isRateLimited(player, Network.PlantSeed) then return end
 	if typeof(plotIndex) ~= "number" then return end
 	if typeof(ingredientId) ~= "string" then return end
-	if not Ingredients[ingredientId] then return end  -- reject unknown IDs
+	-- Allow base ingredients OR active seasonal ingredients
+	if not Ingredients[ingredientId] and not SeasonalService.getActiveIngredient(ingredientId) then
+		return -- reject unknown IDs
+	end
 	plotIndex = math.floor(plotIndex)
 	GrowthService.plantSeed(player, plotIndex, ingredientId)
 	AnalyticsService.onSeedPlanted(player, ingredientId)
@@ -248,7 +262,28 @@ remotes[Network.SellPotion].OnServerEvent:Connect(function(player: Player, potio
 	if isRateLimited(player, Network.SellPotion) then return end
 	if typeof(potionIndex) ~= "number" then return end
 	potionIndex = math.floor(potionIndex)
+
+	-- Capture value before sell for analytics
+	local data = DataService.getData(player)
+	local potionValue = 0
+	if data and data.Potions and data.Potions[potionIndex] then
+		potionValue = data.Potions[potionIndex].Value or 0
+	end
+
 	EconomyService.sellPotion(player, potionIndex)
+
+	if potionValue > 0 then
+		AnalyticsService.onSell(player, potionValue)
+	end
+end)
+
+-- SellAll: player sells all potions at once
+remotes[Network.SellAll].OnServerEvent:Connect(function(player: Player)
+	if isRateLimited(player, Network.SellAll) then return end
+	local totalValue = EconomyService.sellAll(player)
+	if totalValue > 0 then
+		AnalyticsService.onSell(player, totalValue)
+	end
 end)
 
 -- UpgradeLab: player upgrades their lab

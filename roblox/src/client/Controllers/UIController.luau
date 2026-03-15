@@ -850,10 +850,8 @@ local function createSellPanel()
 		local potions = playerState.Potions
 		if potions and #potions > 0 then
 			if soundController then soundController.onSell() end
-			-- Sell from the end backwards so indices stay valid on the server.
-			for i = #potions, 1, -1 do
-				fireRemote(Network.SellPotion, i)
-			end
+			-- Single server call instead of N individual sells
+			fireRemote(Network.SellAll)
 		end
 		UIController.closePanels()
 	end)
