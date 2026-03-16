@@ -13,9 +13,18 @@ local Ingredients = require(Shared.Ingredients)
 local DataService           = require(script.Parent.DataService)
 local PlotService           = require(script.Parent.PlotService)
 local SeasonalService       = require(script.Parent.SeasonalService)
-local MonetizationService   = require(script.Parent.MonetizationService)
+
+-- MonetizationService is injected via init() to avoid tight coupling
+-- (MonetizationService already uses injection for DataService/AnalyticsService)
+local MonetizationService: any = nil
 
 local EconomyService = {}
+
+--- Inject MonetizationService reference. Called from Main.server.luau after
+--- all services are required, before any player joins.
+function EconomyService.init(monetizationServiceRef: any)
+	MonetizationService = monetizationServiceRef
+end
 
 ---------------------------------------------------------------------------
 -- Public API
@@ -80,7 +89,7 @@ function EconomyService.sellPotion(player: Player, potionIndex: number)
 	end
 
 	local baseValue = potion.Value or 0
-	local boostMultiplier = MonetizationService.getAdBoostMultiplier(player)
+	local boostMultiplier = if MonetizationService then MonetizationService.getAdBoostMultiplier(player) else 1.0
 	local value = math.floor(baseValue * boostMultiplier)
 	data.Essence += value
 	data.Stats.TotalEssenceEarned += value
@@ -103,7 +112,7 @@ function EconomyService.sellAll(player: Player): number
 		return 0
 	end
 
-	local boostMultiplier = MonetizationService.getAdBoostMultiplier(player)
+	local boostMultiplier = if MonetizationService then MonetizationService.getAdBoostMultiplier(player) else 1.0
 	local totalValue = 0
 	local count = #data.Potions
 	for _, potion in data.Potions do

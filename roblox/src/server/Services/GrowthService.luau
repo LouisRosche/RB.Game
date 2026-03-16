@@ -25,6 +25,11 @@ local GrowthService = {}
 local tickAccumulator = 0
 local TICK_INTERVAL = 1 -- seconds between growth checks
 
+-- Debounce "bag full" notifications for auto-harvest so they don't spam
+-- every tick. Stores userId -> os.clock() of last bag-full notification.
+local bagFullNotifiedAt: { [number]: number } = {}
+local BAG_FULL_NOTIFY_COOLDOWN = 30 -- seconds between repeated bag-full warnings
+
 ---------------------------------------------------------------------------
 -- Growth tick
 ---------------------------------------------------------------------------
@@ -71,8 +76,13 @@ local function onHeartbeat(dt: number)
 						PlotService.updatePlotVisual(player, plotIndex)
 						DataService.notify(player, "[Auto] Harvested " .. displayName .. "! (" .. entry.Rarity .. ")")
 					else
-						-- Bag full — leave as Ready and warn
-						DataService.notify(player, displayName .. " is ready but your bag is full — brew first!")
+						-- Bag full — leave as Ready and warn (debounced to avoid spam)
+						local now = os.clock()
+						local lastNotify = bagFullNotifiedAt[player.UserId] or 0
+						if now - lastNotify >= BAG_FULL_NOTIFY_COOLDOWN then
+							bagFullNotifiedAt[player.UserId] = now
+							DataService.notify(player, displayName .. " is ready but your bag is full — brew first!")
+						end
 					end
 				else
 					DataService.notify(player, "Your " .. displayName .. " is ready to harvest! (" .. plot.Rarity .. ")")
@@ -92,6 +102,11 @@ end
 
 function GrowthService.init()
 	RunService.Heartbeat:Connect(onHeartbeat)
+
+	-- Clean up bag-full debounce state when player leaves
+	game:GetService("Players").PlayerRemoving:Connect(function(player: Player)
+		bagFullNotifiedAt[player.UserId] = nil
+	end)
 end
 
 --- Plant a seed in a player's plot.

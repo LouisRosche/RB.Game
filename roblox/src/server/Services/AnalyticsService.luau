@@ -250,4 +250,9 @@ function AnalyticsService.onSeasonalPurchased(player: Player, ingredientId: stri
 	fireEvent(player, "SeasonalSeedPurchased", cost)
 end
 
+--- Called when a player successfully watches a rewarded video ad.
+function AnalyticsService.onAdReward(player: Player, rewardEssence: number, boostDuration: number)
+	fireEvent(player, "RewardedAdWatched", rewardEssence)
+end
+
 return AnalyticsService

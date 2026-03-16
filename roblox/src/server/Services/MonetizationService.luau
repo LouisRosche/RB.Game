@@ -241,10 +241,7 @@ local function grantAdReward(player: Player)
 
 	-- Analytics
 	if AnalyticsService then
-		AnalyticsService.trackEvent(player, "RewardedAdWatched", {
-			rewardEssence = Config.AD_REWARD_ESSENCE,
-			boostDuration = Config.AD_BOOST_DURATION,
-		})
+		AnalyticsService.onAdReward(player, Config.AD_REWARD_ESSENCE, Config.AD_BOOST_DURATION)
 	end
 end
 
@@ -282,6 +279,8 @@ function MonetizationService.handleAdRewardRequest(player: Player)
 		-- ShowRewardedVideoAdAsync returns a ShowAdResult enum
 		-- Reward is granted only on successful completion
 		if result == Enum.ShowAdResult.Completed then
+			-- Guard: player may have disconnected during the async ad
+			if not player.Parent then return end
 			grantAdReward(player)
 		else
 			DataService.notify(player, Strings.AD_WATCH_FAILED)

@@ -126,7 +126,8 @@ AnalyticsService.init()
 LeaderboardService.init()
 MonetizationService.init(DataService, AnalyticsService)
 SeasonalService.init(DataService)
--- BrewingService, EconomyService, DiscoveryService are stateless; no init required.
+EconomyService.init(MonetizationService)
+-- BrewingService, DiscoveryService are stateless; no init required.
 
 ---------------------------------------------------------------------------
 -- Player lifecycle

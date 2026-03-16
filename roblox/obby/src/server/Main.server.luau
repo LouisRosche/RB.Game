@@ -183,10 +183,12 @@ local function setupCoins()
 				local state = playerStates[player]
 				if not state then return end
 
-				local coinId = coin.Name .. "_" .. tostring(coin:GetAttribute("CoinValue") or 1)
+				-- Use GetDebugId for a unique key per coin instance
+				-- (coin.Name is not unique when multiple coins share a name)
+				local coinId = coin:GetDebugId()
 				-- Prevent double-collect
-				if state.collectedCoins[coin.Name] then return end
-				state.collectedCoins[coin.Name] = true
+				if state.collectedCoins[coinId] then return end
+				state.collectedCoins[coinId] = true
 
 				local value = (coin:GetAttribute("CoinValue") or Config.COIN_BASE_VALUE) :: number
 				if state.isVIP then
