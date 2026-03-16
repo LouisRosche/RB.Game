@@ -9,8 +9,36 @@
 	  - calculateValue() produces expected outputs for known inputs
 ]]
 
-local Recipes     = require(script.Parent.Parent:FindFirstChild("src") and script.Parent.Parent.src.shared.Recipes or game.ServerScriptService:FindFirstChild("src") and game.ServerScriptService.src.shared.Recipes or script.Parent.Parent.Parent.src.shared.Recipes)
-local Config      = require(script.Parent.Parent:FindFirstChild("src") and script.Parent.Parent.src.shared.Config or game.ServerScriptService:FindFirstChild("src") and game.ServerScriptService.src.shared.Config or script.Parent.Parent.Parent.src.shared.Config)
+local function requireShared(name: string)
+	-- Try relative path first (tests/ is sibling to src/)
+	local root = script.Parent.Parent
+	local shared = root:FindFirstChild("src") and root.src:FindFirstChild("shared")
+	if shared then
+		local mod = shared:FindFirstChild(name)
+		if mod then return require(mod) end
+	end
+	-- Fallback: ServerScriptService layout
+	local sss = game:GetService("ServerScriptService")
+	local server = sss:FindFirstChild("Server") or sss:FindFirstChild("src")
+	if server then
+		local s2 = server:FindFirstChild("shared") or server.Parent:FindFirstChild("Shared")
+		if s2 then
+			local mod = s2:FindFirstChild(name)
+			if mod then return require(mod) end
+		end
+	end
+	-- Last resort: ReplicatedStorage.Shared
+	local rs = game:GetService("ReplicatedStorage")
+	local rsShared = rs:FindFirstChild("Shared")
+	if rsShared then
+		local mod = rsShared:FindFirstChild(name)
+		if mod then return require(mod) end
+	end
+	error("[Test] Could not find shared module: " .. name)
+end
+
+local Recipes     = requireShared("Recipes")
+local Config      = requireShared("Config")
 
 local Tests = {}
 

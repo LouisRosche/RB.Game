@@ -120,6 +120,14 @@ adCooldownRemote.OnClientEvent:Connect(function(secondsRemaining: number)
 end)
 
 ---------------------------------------------------------------------------
+-- Seasonal event handler — server pushes event state on start/change
+---------------------------------------------------------------------------
+local seasonalUpdateRemote = Remotes:WaitForChild(Network.SeasonalUpdate) :: RemoteEvent
+seasonalUpdateRemote.OnClientEvent:Connect(function(eventId: string?, eventName: string?, bannerText: string?)
+	UIController.onSeasonalUpdate(eventId, eventName, bannerText)
+end)
+
+---------------------------------------------------------------------------
 -- Initialise controllers
 ---------------------------------------------------------------------------
 -- UIController needs the state accessor, Remotes, and SoundController

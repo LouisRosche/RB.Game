@@ -32,7 +32,7 @@ Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execu
 ### Skill Building
 - ⬜ Complete Roblox Core Curriculum (~15 hrs)
 - 📝 Publish a trivial game (obby) to complete the full publish cycle — project ready at `roblox/obby/`, follow `roblox/obby/README.md`
-- ✅ Set up Single-Script Architecture template with ProfileService
+- 🔄 Set up Single-Script Architecture template with ProfileService — **CRITICAL: ProfileService stub is non-functional; must be replaced with real ProfileService or ProfileStore (the 2026 successor, recommended for new projects) before any playtesting**
 - ⬜ Create 5 placeholder art assets in MagicaVoxel
 - ⬜ Test sound pipeline (BFXR2, Bosca Ceoil Blue)
 
@@ -52,7 +52,7 @@ The March 2026 audit identified several items that can ship immediately with min
 
 ### Ship Now
 - ⬜ **Ship the obby game** — project is ready at `roblox/obby/`; 1-2 days of work to publish and complete the full Roblox publish cycle
-- ⬜ **Soft-launch Alchemy Academy as Unlisted** — requires ProfileService fix + audio upload first (see Audit Actions below), then publish as unlisted for initial playtesting
+- ⬜ **Soft-launch Alchemy Academy as Unlisted** — requires ProfileService/ProfileStore replacement **(CRITICAL)** + audio upload first (see Audit Actions below), then publish as unlisted for initial playtesting
 - ⬜ **Post community feedback drafts** — posts are already written in `marketing/community-posts/`; copy to DevForum and r/RobloxGameDev
 - ⬜ **Apply to Roblox Incubator program** — time-sensitive opportunity, March 2026 window; submit application before deadline
 
@@ -64,7 +64,7 @@ Phase 0 business items (LLC, bank account, domain) are incomplete but **should n
 ## Phase 1: Roblox MVP (Weeks 7-20)
 *Budget: $0-40/month | Time: 11-14 hrs/week*
 
-> **March 2026 Update:** Most Sprint 1 and Sprint 2 code is complete. Phase 0 business items (LLC, bank account, domain) remain incomplete but **do not block soft launch**. The critical path is: fix ProfileService → upload audio → create store listing assets → publish unlisted → invite testers. Target: soft launch by end of March 2026.
+> **March 2026 Update:** Most Sprint 1 and Sprint 2 code is complete. Phase 0 business items (LLC, bank account, domain) remain incomplete but **do not block soft launch**. The critical path is: **replace ProfileService stub with real ProfileService or ProfileStore (recommended for new projects)** → upload audio → create store listing assets → publish unlisted → invite testers. Target: soft launch by end of March 2026.
 
 ### Sprint 1 — Core Loop (Weeks 7-11)
 - ✅ Build central gameplay loop (plant → grow → harvest → brew → sell)
@@ -81,9 +81,9 @@ Phase 0 business items (LLC, bank account, domain) are incomplete but **should n
 - ✅ Full UI built programmatically — HUD, seed/brew/sell/upgrade/journal panels
 - ✅ Leaderboard sidebar (top-10 by TotalGoldEarned, live broadcasts)
 - ✅ Tutorial/onboarding — `TutorialController.luau`: 5-step overlay, state-diff advancement, skip button, server-saved TutorialCompleted flag
-- ✅ Save system — ProfileService migration (session locking, auto-save, GDPR AddUserId)
-  - ✅ ProfileService stub installed at `roblox/src/server/Vendor/ProfileService.luau` — game runs in Studio now
-  - **⚠ Replace before public launch**: download real ProfileService from GitHub (see INSTALL.md)
+- 🔄 Save system — ProfileService migration (session locking, auto-save, GDPR AddUserId) — **CRITICAL: stub only, no real data persistence; player data WILL BE LOST without replacement**
+  - ✅ ProfileService stub installed at `roblox/src/server/Vendor/ProfileService.luau` — game runs in Studio but **does not persist data**
+  - **🚨 CRITICAL — Replace before ANY playtesting**: download real ProfileService from GitHub (see INSTALL.md), or migrate to **ProfileStore** (the 2026 successor by the same author, recommended for all new projects)
 - ✅ Analytics — funnel tracking (plant/harvest/brew) for D1/D7 measurement via Roblox AnalyticsService
 - ✅ Internationalisation — all strings in `Strings.luau`, UTF-8 ready
 - 🔄 Accessibility Big Four (remappable controls, subtitles, volume sliders, no color-only info)
@@ -196,7 +196,7 @@ These are the blockers before the game can be playtested:
 
 1. **Create Roblox developer account** — follow `docs/platform-setup.md`; start the 30-day DevEx clock now
 2. **Register domain** — `alchemyacademy.gg` or `.game` before any public post; ~$20–35/yr at porkbun.com
-3. **Install ProfileService** — download from https://github.com/MadStudioRoblox/ProfileService/releases, place at `roblox/src/server/Vendor/ProfileService.luau`
+3. **🚨 Install ProfileService or ProfileStore (CRITICAL)** — download ProfileService from https://github.com/MadStudioRoblox/ProfileService/releases, or use **ProfileStore** (the 2026 successor, recommended for new projects) from https://github.com/MadStudioRoblox/ProfileStore; place at `roblox/src/server/Vendor/ProfileService.luau`
 4. **Upload audio** — follow `roblox/AUDIO_ASSETS.md` for exact files needed; replace placeholder IDs in `SoundController.luau`
 5. **Publish the practice obby** — follow `roblox/obby/README.md` to exercise the full publish workflow before the real launch
 6. **Post concept feedback** — copy posts from `marketing/community-posts/` to DevForum and Reddit
@@ -210,7 +210,7 @@ These are the blockers before the game can be playtested:
 
 Identified during the March 2026 codebase and market audit. Items marked **(blocker)** must be resolved before soft launch.
 
-- [ ] Download real ProfileService from GitHub and replace stub **(blocker)** — see `roblox/INSTALL.md`
+- [ ] **🚨 CRITICAL:** Download real ProfileService from GitHub and replace stub **(blocker)** — see `roblox/INSTALL.md`. **Note:** ProfileStore (by the same author, luevent/MadStudioRoblox) is the 2026 successor to ProfileService and is now the recommended choice for new projects. Consider migrating directly to ProfileStore instead of installing legacy ProfileService.
 - [ ] Upload audio assets and replace placeholder IDs in `SoundController.luau` **(blocker)** — see `roblox/AUDIO_ASSETS.md`
 - [ ] Create game icon and thumbnails **(blocker)** — spec in `docs/store-listing.md`
 - [ ] Add testing infrastructure — unit tests for core systems (economy, brewing, progression)

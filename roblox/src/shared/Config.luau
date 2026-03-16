@@ -177,4 +177,9 @@ Config.AD_BOOST_DURATION = 300
 --- Multiplier applied to potion sell value during the 2x boost window.
 Config.AD_BOOST_MULTIPLIER = 2.0
 
+--- Developer Product ID used as the AdReward for rewarded video ads.
+--- Create this product in Creator Dashboard (price doesn't matter — Roblox
+--- handles reward delivery internally). Set to 0 to disable ads.
+Config.AD_REWARD_PRODUCT_ID = 0  -- PLACEHOLDER: replace with real ID
+
 return Config

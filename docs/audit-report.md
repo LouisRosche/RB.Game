@@ -52,11 +52,11 @@ Every sound reference in the codebase points to placeholder IDs. The game will b
 
 **Action:** Source or create audio assets for at minimum: potion brewing, ingredient collection, purchase confirmation, level-up, and ambient background. Upload to Roblox and replace placeholder IDs.
 
-### 3. Zero testing infrastructure
+### 3. Testing infrastructure is incomplete
 
-There are no unit tests, no integration tests, no CI pipeline, and no automated quality gates. The codebase is small enough today that manual testing is feasible, but this will not scale. A single broken ModuleScript can silently break the entire game due to the Single-Script Architecture.
+A test runner and three test suites now exist (`roblox/tests/TestRunner.server.luau`, `RecipeTests.luau`, `EconomyTests.luau`, `SeasonalTests.luau`), covering shared module logic for recipes, economy, and seasonal content. This is a meaningful start. However, there are no integration tests, no CI pipeline, and no automated quality gates. Coverage is limited to shared modules — server and client code paths are untested. A single broken ModuleScript can still silently break the entire game due to the Single-Script Architecture.
 
-**Action:** Add TestEZ (or equivalent) for Luau unit tests. Set up a basic CI pipeline that runs tests on every commit.
+**Action:** Expand test coverage to server and client modules. Add integration tests for critical paths (data loading, economy transactions, inventory operations). Set up a basic CI pipeline that runs tests on every commit.
 
 ### 4. No game has been published
 
@@ -127,9 +127,9 @@ Integrate Rewarded Video Ads for non-paying players. This monetizes the long tai
 
 **Timeline:** Phase 2, but plan the integration points now.
 
-### 5. Add testing infrastructure before the codebase grows further
+### 5. Expand test coverage and add CI before the codebase grows further
 
-TestEZ for Luau, a basic CI pipeline, and smoke tests for critical paths (data loading, economy transactions, inventory operations). The Single-Script Architecture means a single broken module can cascade — automated tests are the safety net.
+Unit tests exist for shared modules (recipes, economy, seasonal content), but there are no integration tests and no CI pipeline. The Single-Script Architecture means a single broken module can cascade — automated tests on every commit are the safety net. Priorities: integration tests for critical paths (data loading, economy transactions, inventory operations), then a CI pipeline that runs all tests before merges.
 
 **Timeline:** Before soft launch.
 

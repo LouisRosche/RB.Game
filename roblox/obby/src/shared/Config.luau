@@ -49,13 +49,6 @@ Config.VIP_CHAT_TAG_TEXT   = "[VIP]"
 Config.VIP_CHAT_TAG_COLOR  = Color3.fromRGB(255, 215, 0) -- gold
 
 --------------------------------------------------------------------------------
--- DataStore keys
---------------------------------------------------------------------------------
-Config.DS_CHECKPOINT_KEY   = "ObbyCheckpoint"
-Config.DS_COINS_KEY        = "ObbyCoins"
-Config.DS_BEST_TIME_KEY    = "ObbyBestTime"
-
---------------------------------------------------------------------------------
 -- Respawn
 --------------------------------------------------------------------------------
 Config.RESPAWN_Y_OFFSET    = 5        -- studs above checkpoint part

@@ -43,10 +43,17 @@ local DataService: any = nil
 local AnalyticsService: any = nil
 
 -- Rewarded ad cooldown tracking: userId -> os.clock() of last completed ad watch
+-- NOTE: In-memory only — resets on server restart (acceptable for Phase 1)
 local adCooldowns: { [number]: number } = {}
 
 -- Active 2x earning boost tracking: userId -> os.clock() expiry timestamp
 local adBoostExpiry: { [number]: number } = {}
+
+-- Tracks whether AdService initialised successfully
+local adsInitialized = false
+
+-- AdReward object for rewarded video ads (created once, reused per Roblox docs)
+local adReward: any = nil
 
 local MonetizationService = {}
 
@@ -206,42 +213,8 @@ local function syncAdCooldown(player: Player)
 	remote:FireClient(player, getAdCooldownRemaining(player.UserId))
 end
 
---- Handles a client's request to watch a rewarded video ad.
---- Validates cooldown, then uses AdService to show the ad.
---- Reward is granted only after server-verified ad completion.
-function MonetizationService.handleAdRewardRequest(player: Player)
-	-- Check cooldown
-	local remaining = getAdCooldownRemaining(player.UserId)
-	if remaining > 0 then
-		DataService.notify(
-			player,
-			Strings.AD_ALREADY_ON_COOLDOWN
-		)
-		syncAdCooldown(player)
-		return
-	end
-
-	-- Show rewarded ad via AdService (server-side)
-	local ok, err = pcall(function()
-		AdService:ShowRewardedAd(player)
-	end)
-
-	if not ok then
-		warn("[MonetizationService] AdService:ShowRewardedAd failed:", err)
-		DataService.notify(player, Strings.AD_WATCH_FAILED)
-	end
-end
-
---- Callback wired to AdService.OnRewardedAdCompleted — only fires when the
---- player has fully watched the ad and Roblox has verified it server-side.
-local function onRewardedAdCompleted(player: Player)
-	-- Double-check cooldown (guard against race conditions)
-	local remaining = getAdCooldownRemaining(player.UserId)
-	if remaining > 0 then
-		syncAdCooldown(player)
-		return
-	end
-
+--- Grants the ad reward to a player (called after successful ad view).
+local function grantAdReward(player: Player)
 	local data = DataService.getData(player)
 	if not data then return end
 
@@ -275,6 +248,47 @@ local function onRewardedAdCompleted(player: Player)
 	end
 end
 
+--- Handles a client's request to watch a rewarded video ad.
+--- Uses the correct Roblox AdService API: ShowRewardedVideoAdAsync +
+--- CreateAdRewardFromDevProductId (per March 2026 Roblox docs).
+--- Reward is granted only after server-verified ad completion.
+function MonetizationService.handleAdRewardRequest(player: Player)
+	-- Guard: ads not initialised (Studio, unsupported region, etc.)
+	if not adsInitialized then
+		DataService.notify(player, Strings.AD_NOT_AVAILABLE)
+		return
+	end
+
+	-- Check cooldown
+	local remaining = getAdCooldownRemaining(player.UserId)
+	if remaining > 0 then
+		DataService.notify(player, Strings.AD_ALREADY_ON_COOLDOWN)
+		syncAdCooldown(player)
+		return
+	end
+
+	-- Show rewarded video ad via AdService (yields until ad completes or fails)
+	task.spawn(function()
+		local ok, result = pcall(function()
+			return AdService:ShowRewardedVideoAdAsync(player, adReward)
+		end)
+
+		if not ok then
+			warn("[MonetizationService] ShowRewardedVideoAdAsync failed:", result)
+			DataService.notify(player, Strings.AD_WATCH_FAILED)
+			return
+		end
+
+		-- ShowRewardedVideoAdAsync returns a ShowAdResult enum
+		-- Reward is granted only on successful completion
+		if result == Enum.ShowAdResult.Completed then
+			grantAdReward(player)
+		else
+			DataService.notify(player, Strings.AD_WATCH_FAILED)
+		end
+	end)
+end
+
 ---------------------------------------------------------------------------
 -- Public API
 ---------------------------------------------------------------------------
@@ -286,12 +300,20 @@ function MonetizationService.init(dataServiceRef: any, analyticsServiceRef: any)
 	AnalyticsService = analyticsServiceRef
 	MarketplaceService.ProcessReceipt = processReceipt
 
-	-- Wire up AdService rewarded ad completion callback (server-verified)
+	-- Create an AdReward object from a Developer Product (per Roblox docs).
+	-- The ad reward is a Dev Product that Roblox grants on verified completion.
+	-- We use Config.AD_REWARD_PRODUCT_ID; if 0 (placeholder), ads stay disabled.
 	local adOk, adErr = pcall(function()
-		AdService.OnRewardedAdCompleted:Connect(onRewardedAdCompleted)
+		if Config.AD_REWARD_PRODUCT_ID and Config.AD_REWARD_PRODUCT_ID > 0 then
+			adReward = AdService:CreateAdRewardFromDevProductId(Config.AD_REWARD_PRODUCT_ID)
+			adsInitialized = true
+		else
+			warn("[MonetizationService] AD_REWARD_PRODUCT_ID is 0 (placeholder) — ads disabled until set")
+		end
 	end)
 	if not adOk then
 		warn("[MonetizationService] AdService setup failed (ads may not be enabled):", adErr)
+		adsInitialized = false
 	end
 
 	-- Clean up ad state when a player leaves

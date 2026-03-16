@@ -2213,4 +2213,24 @@ function UIController.updateAdCooldown(secondsRemaining: number)
 	end)
 end
 
+---------------------------------------------------------------------------
+-- Seasonal event update — called when the server broadcasts a seasonal
+-- event start/change/end. Updates the seed shop to show seasonal seeds.
+---------------------------------------------------------------------------
+function UIController.onSeasonalUpdate(eventId: string?, eventName: string?, bannerText: string?)
+	if eventId and eventName then
+		UIController.showNotification(
+			bannerText or ("Seasonal Event: " .. eventName .. " is now active!"),
+			Color3.fromRGB(100, 200, 255)
+		)
+	else
+		UIController.showNotification(
+			"The seasonal event has ended. See you next time!",
+			Color3.fromRGB(200, 200, 200)
+		)
+	end
+	-- Re-sync state to refresh shop panel with seasonal ingredients
+	-- (The server will send a StateSync shortly after SeasonalUpdate)
+end
+
 return UIController

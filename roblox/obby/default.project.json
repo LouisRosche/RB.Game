@@ -1,5 +1,5 @@
 {
-  "name": "PublishPracticeObby",
+  "name": "Alchemy Academy Obby",
   "tree": {
     "$className": "DataModel",
     "ServerScriptService": {
