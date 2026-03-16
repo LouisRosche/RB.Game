@@ -14,6 +14,7 @@
 local Players            = game:GetService("Players")
 local ReplicatedStorage  = game:GetService("ReplicatedStorage")
 local MarketplaceService = game:GetService("MarketplaceService")
+local RunService         = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
 
@@ -42,8 +43,10 @@ local PurchaseResult    = waitRemote("PurchaseResult")
 local currentCheckpoint = 0
 local totalCoins        = 0
 local deaths            = 0
-local elapsed           = 0
+local timerRunning      = false
+local timerStart        = 0
 local courseComplete     = false
+local isVIP             = false
 
 --------------------------------------------------------------------------------
 -- HUD
@@ -85,8 +88,14 @@ local function makeLabel(parent: Frame, text: string): TextLabel
 	return label
 end
 
+local function formatTime(seconds: number): string
+	local mins = math.floor(seconds / 60)
+	local secs = seconds - (mins * 60)
+	return string.format("%d:%05.2f", mins, secs)
+end
+
 -- Top-left: Stats panel
-local statsPanel = makePanel(UDim2.new(0, 240, 0, 140), UDim2.new(0, 16, 0, 16), screenGui)
+local statsPanel = makePanel(UDim2.new(0, 240, 0, 172), UDim2.new(0, 16, 0, 16), screenGui)
 
 local checkpointLabel = makeLabel(
 	makePanel(UDim2.new(1, -16, 0, 28), UDim2.new(0, 8, 0, 8), statsPanel),
@@ -97,16 +106,27 @@ local coinLabel = makeLabel(
 	makePanel(UDim2.new(1, -16, 0, 28), UDim2.new(0, 8, 0, 40), statsPanel),
 	"Coins: 0"
 )
+coinLabel.TextColor3 = Color3.fromRGB(255, 200, 50)
 
 local timerLabel = makeLabel(
 	makePanel(UDim2.new(1, -16, 0, 28), UDim2.new(0, 8, 0, 72), statsPanel),
-	"Time: 0:00"
+	"Time: 0:00.00"
 )
 
 local deathLabel = makeLabel(
 	makePanel(UDim2.new(1, -16, 0, 28), UDim2.new(0, 8, 0, 104), statsPanel),
 	"Deaths: 0"
 )
+deathLabel.TextColor3 = Color3.fromRGB(255, 85, 85)
+
+-- VIP badge (only visible when VIP)
+local vipPanel = makePanel(UDim2.new(1, -16, 0, 24), UDim2.new(0, 8, 0, 138), statsPanel)
+vipPanel.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+vipPanel.BackgroundTransparency = 0.15
+vipPanel.Visible = false
+local vipLabel = makeLabel(vipPanel, "VIP")
+vipLabel.TextColor3 = Color3.fromRGB(30, 30, 30)
+vipLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 -- Top-right: Shop button
 local shopBtn = Instance.new("TextButton")
@@ -174,17 +194,27 @@ closeCorner.CornerRadius = UDim.new(0, 8)
 closeCorner.Parent = closeShopBtn
 
 -- Cross-promo banner (hidden until world 1 complete)
-local promoBanner = makePanel(UDim2.new(0, 400, 0, 80), UDim2.new(0.5, -200, 0.5, -40), screenGui)
+local promoBanner = makePanel(UDim2.new(0, 440, 0, 120), UDim2.new(0.5, -220, 0.5, -60), screenGui)
 promoBanner.Visible = false
 promoBanner.BackgroundColor3 = Color3.fromRGB(60, 20, 100)
-promoBanner.BackgroundTransparency = 0.15
+promoBanner.BackgroundTransparency = 0.1
 
-local promoLabel = makeLabel(promoBanner, Config.CROSS_PROMO_MESSAGE)
-promoLabel.TextXAlignment = Enum.TextXAlignment.Center
+local promoTitle = makeLabel(promoBanner, "World 1 Complete!")
+promoTitle.Size = UDim2.new(1, -12, 0, 30)
+promoTitle.Position = UDim2.new(0, 6, 0, 6)
+promoTitle.TextXAlignment = Enum.TextXAlignment.Center
+promoTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
+
+local promoDesc = makeLabel(promoBanner, Config.CROSS_PROMO_MESSAGE)
+promoDesc.Size = UDim2.new(1, -12, 0, 24)
+promoDesc.Position = UDim2.new(0, 6, 0, 36)
+promoDesc.TextXAlignment = Enum.TextXAlignment.Center
+promoDesc.Font = Enum.Font.Gotham
 
 local promoPlayBtn = Instance.new("TextButton")
-promoPlayBtn.Size = UDim2.new(0, 120, 0, 30)
-promoPlayBtn.Position = UDim2.new(0.5, -60, 1, 8)
+promoPlayBtn.Size = UDim2.new(0, 140, 0, 34)
+promoPlayBtn.Position = UDim2.new(0.5, -75, 1, -10)
+promoPlayBtn.AnchorPoint = Vector2.new(0, 1)
 promoPlayBtn.BackgroundColor3 = Color3.fromRGB(80, 200, 80)
 promoPlayBtn.BorderSizePixel = 0
 promoPlayBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -198,14 +228,79 @@ promoCorner.CornerRadius = UDim.new(0, 8)
 promoCorner.Parent = promoPlayBtn
 
 local promoDismissBtn = Instance.new("TextButton")
-promoDismissBtn.Size = UDim2.new(0, 24, 0, 24)
-promoDismissBtn.Position = UDim2.new(1, -28, 0, 4)
-promoDismissBtn.BackgroundTransparency = 1
+promoDismissBtn.Size = UDim2.new(0, 100, 0, 34)
+promoDismissBtn.Position = UDim2.new(0.5, 75, 1, -10)
+promoDismissBtn.AnchorPoint = Vector2.new(0, 1)
+promoDismissBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+promoDismissBtn.BorderSizePixel = 0
 promoDismissBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
 promoDismissBtn.TextScaled = true
 promoDismissBtn.Font = Enum.Font.GothamBold
-promoDismissBtn.Text = "X"
+promoDismissBtn.Text = "Later"
 promoDismissBtn.Parent = promoBanner
+
+local promoDismissCorner = Instance.new("UICorner")
+promoDismissCorner.CornerRadius = UDim.new(0, 8)
+promoDismissCorner.Parent = promoDismissBtn
+
+-- Completion overlay (shown when course is finished)
+local completionGui = Instance.new("ScreenGui")
+completionGui.Name = "ObbyCompletion"
+completionGui.ResetOnSpawn = false
+completionGui.DisplayOrder = 8
+completionGui.Enabled = false
+completionGui.Parent = playerGui
+
+local completionBackdrop = Instance.new("Frame")
+completionBackdrop.Size = UDim2.new(1, 0, 1, 0)
+completionBackdrop.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+completionBackdrop.BackgroundTransparency = 0.5
+completionBackdrop.BorderSizePixel = 0
+completionBackdrop.Parent = completionGui
+
+local completionPanel = makePanel(UDim2.new(0, 380, 0, 240), UDim2.new(0.5, -190, 0.5, -120), completionGui)
+completionPanel.BackgroundTransparency = 0.05
+
+local completionTitle = makeLabel(completionPanel, "Course Complete!")
+completionTitle.Size = UDim2.new(1, -12, 0, 36)
+completionTitle.Position = UDim2.new(0, 6, 0, 12)
+completionTitle.TextXAlignment = Enum.TextXAlignment.Center
+completionTitle.TextColor3 = Color3.fromRGB(255, 215, 0)
+
+local completionTimeLabel = makeLabel(completionPanel, "Time: 0:00.00")
+completionTimeLabel.Size = UDim2.new(1, -12, 0, 28)
+completionTimeLabel.Position = UDim2.new(0, 6, 0, 56)
+completionTimeLabel.TextXAlignment = Enum.TextXAlignment.Center
+
+local completionBestLabel = makeLabel(completionPanel, "Best: 0:00.00")
+completionBestLabel.Size = UDim2.new(1, -12, 0, 24)
+completionBestLabel.Position = UDim2.new(0, 6, 0, 88)
+completionBestLabel.TextXAlignment = Enum.TextXAlignment.Center
+completionBestLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+completionBestLabel.Font = Enum.Font.GothamMedium
+
+local completionStatsLabel = makeLabel(completionPanel, "Coins: 0  |  Deaths: 0")
+completionStatsLabel.Size = UDim2.new(1, -12, 0, 24)
+completionStatsLabel.Position = UDim2.new(0, 6, 0, 118)
+completionStatsLabel.TextXAlignment = Enum.TextXAlignment.Center
+completionStatsLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+completionStatsLabel.Font = Enum.Font.GothamMedium
+
+local closeCompletionBtn = Instance.new("TextButton")
+closeCompletionBtn.Size = UDim2.new(1, -32, 0, 40)
+closeCompletionBtn.Position = UDim2.new(0, 16, 1, -16)
+closeCompletionBtn.AnchorPoint = Vector2.new(0, 1)
+closeCompletionBtn.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+closeCompletionBtn.BorderSizePixel = 0
+closeCompletionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeCompletionBtn.TextScaled = true
+closeCompletionBtn.Font = Enum.Font.GothamBold
+closeCompletionBtn.Text = "Close"
+closeCompletionBtn.Parent = completionPanel
+
+local closeCompletionCorner = Instance.new("UICorner")
+closeCompletionCorner.CornerRadius = UDim.new(0, 8)
+closeCompletionCorner.Parent = closeCompletionBtn
 
 --------------------------------------------------------------------------------
 -- UI interactions
@@ -223,7 +318,7 @@ skipBtn.Activated:Connect(function()
 	if Config.SKIP_STAGE_PRODUCT_ID > 0 then
 		MarketplaceService:PromptProductPurchase(player, Config.SKIP_STAGE_PRODUCT_ID)
 	else
-		-- Placeholder: fire skip request directly for testing
+		-- Fallback: fire skip request for testing when product ID not set
 		RequestSkip:FireServer()
 	end
 	shopPanel.Visible = false
@@ -237,41 +332,62 @@ vipBtn.Activated:Connect(function()
 end)
 
 promoPlayBtn.Activated:Connect(function()
-	if Config.ALCHEMY_ACADEMY_PLACE_ID > 0 then
-		local TeleportService = game:GetService("TeleportService")
-		TeleportService:Teleport(Config.ALCHEMY_ACADEMY_PLACE_ID, player)
-	end
+	-- Ask server to teleport (server-authoritative)
+	CrossPromo:FireServer()
 end)
 
 promoDismissBtn.Activated:Connect(function()
 	promoBanner.Visible = false
 end)
 
+closeCompletionBtn.Activated:Connect(function()
+	completionGui.Enabled = false
+end)
+
 --------------------------------------------------------------------------------
 -- Remote event handlers
 --------------------------------------------------------------------------------
-CheckpointReached.OnClientEvent:Connect(function(num: number)
+CheckpointReached.OnClientEvent:Connect(function(num: number, total: number?)
 	currentCheckpoint = num
-	if num >= Config.TOTAL_STAGES then
+	local stages = total or Config.TOTAL_STAGES
+
+	if num >= stages then
 		checkpointLabel.Text = "Course Complete!"
 		checkpointLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
 		courseComplete = true
+		timerRunning = false
 	else
-		checkpointLabel.Text = "Stage: " .. num .. " / " .. Config.TOTAL_STAGES
+		checkpointLabel.Text = "Stage: " .. num .. " / " .. stages
 		checkpointLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end
+
+	-- Start timer on first real checkpoint
+	if num >= 2 and not timerRunning and not courseComplete then
+		timerRunning = true
+		timerStart = os.clock()
 	end
 end)
 
-CoinCollected.OnClientEvent:Connect(function(newTotal: number)
+CoinCollected.OnClientEvent:Connect(function(coinName: string, newTotal: number)
 	totalCoins = newTotal
 	coinLabel.Text = "Coins: " .. newTotal
-end)
 
-TimerSync.OnClientEvent:Connect(function(seconds: number)
-	elapsed = seconds
-	local mins = math.floor(seconds / 60)
-	local secs = seconds % 60
-	timerLabel.Text = string.format("Time: %d:%02d", mins, secs)
+	-- Hide the coin locally
+	local coinsFolder = workspace:FindFirstChild("Coins")
+	if coinsFolder then
+		local coin = coinsFolder:FindFirstChild(coinName)
+		if coin and coin:IsA("BasePart") then
+			coin.Transparency = 1
+			coin.CanCollide = false
+			for _, child in coin:GetChildren() do
+				pcall(function()
+					if child:IsA("BasePart") or child:IsA("Decal") or child:IsA("ParticleEmitter") then
+						child.Transparency = 1
+					end
+				end)
+			end
+		end
+	end
 end)
 
 PlayerDied.OnClientEvent:Connect(function(deathCount: number)
@@ -283,25 +399,51 @@ CrossPromo.OnClientEvent:Connect(function()
 	promoBanner.Visible = true
 end)
 
-StatsSync.OnClientEvent:Connect(function(stats: { checkpoint: number, coins: number, deaths: number, elapsed: number })
+StatsSync.OnClientEvent:Connect(function(stats)
 	currentCheckpoint = stats.checkpoint or 0
 	totalCoins = stats.coins or 0
 	deaths = stats.deaths or 0
-	elapsed = stats.elapsed or 0
+	isVIP = stats.isVIP or false
 
 	checkpointLabel.Text = "Stage: " .. currentCheckpoint .. " / " .. Config.TOTAL_STAGES
 	coinLabel.Text = "Coins: " .. totalCoins
 	deathLabel.Text = "Deaths: " .. deaths
-	local mins = math.floor(elapsed / 60)
-	local secs = elapsed % 60
-	timerLabel.Text = string.format("Time: %d:%02d", mins, secs)
+	vipPanel.Visible = isVIP
+
+	if stats.completed then
+		courseComplete = true
+		timerRunning = false
+		checkpointLabel.Text = "Course Complete!"
+		checkpointLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+
+		local elapsed = stats.elapsed or 0
+		local bestTime = stats.bestTime or 0
+		completionTimeLabel.Text = "Time: " .. formatTime(elapsed)
+		completionBestLabel.Text = "Best: " .. formatTime(bestTime > 0 and bestTime or elapsed)
+		completionStatsLabel.Text = "Coins: " .. totalCoins .. "  |  Deaths: " .. deaths
+		completionGui.Enabled = true
+	end
 end)
 
-PurchaseResult.OnClientEvent:Connect(function(success: boolean, message: string)
-	-- Brief feedback toast
+PurchaseResult.OnClientEvent:Connect(function(purchaseType: string, success: boolean, data: any?)
+	if purchaseType == "vip" and success then
+		isVIP = true
+		vipPanel.Visible = true
+	end
+
+	-- Brief toast notification
+	local toastColor = success and Color3.fromRGB(40, 140, 40) or Color3.fromRGB(180, 40, 40)
+	local toastText = success and "Purchase successful!" or "Purchase failed."
+	if purchaseType == "skip" and success then
+		toastText = "Stage skipped!"
+	elseif purchaseType == "vip" and success then
+		toastText = "VIP activated! Speed boost + 2x coins"
+	end
+
 	local toast = makePanel(UDim2.new(0, 300, 0, 40), UDim2.new(0.5, -150, 1, -60), screenGui)
-	toast.BackgroundColor3 = success and Color3.fromRGB(40, 140, 40) or Color3.fromRGB(180, 40, 40)
-	local toastLabel = makeLabel(toast, message)
+	toast.BackgroundColor3 = toastColor
+	toast.BackgroundTransparency = 0.15
+	local toastLabel = makeLabel(toast, toastText)
 	toastLabel.TextXAlignment = Enum.TextXAlignment.Center
 	task.delay(3, function()
 		if toast and toast.Parent then
@@ -309,3 +451,18 @@ PurchaseResult.OnClientEvent:Connect(function(success: boolean, message: string)
 		end
 	end)
 end)
+
+--------------------------------------------------------------------------------
+-- Timer update loop (client-side for smooth display)
+--------------------------------------------------------------------------------
+RunService.Heartbeat:Connect(function()
+	if timerRunning then
+		local elapsed = os.clock() - timerStart
+		timerLabel.Text = "Time: " .. formatTime(elapsed)
+	end
+end)
+
+--------------------------------------------------------------------------------
+-- Init
+--------------------------------------------------------------------------------
+print("[Obby Client] HUD initialized")
