@@ -19,6 +19,7 @@
 local Players           = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService      = game:GetService("TweenService")
+local PolicyService     = game:GetService("PolicyService")
 
 ---------------------------------------------------------------------------
 -- Shared modules
@@ -89,6 +90,13 @@ local particleController: any = nil
 
 -- Leaderboard row labels (reused on each update to avoid re-creating UI)
 local leaderboardRowLabels: { TextLabel } = {}
+
+-- Rewarded ad button state
+local adButton: TextButton = nil :: any
+local adCooldownLabel: TextLabel = nil :: any
+local adCooldownRemaining: number = 0
+local adsAllowed: boolean = false
+local adCooldownConnection: RBXScriptConnection? = nil
 
 -- Brewing selection state
 local selectedIngredients: { number } = {}
@@ -287,7 +295,7 @@ local function createHUD()
 	-- Container
 	local hud = Instance.new("Frame")
 	hud.Name = "HUD"
-	hud.Size = UDim2.new(0, 220, 0, 196)
+	hud.Size = UDim2.new(0, 220, 0, 232)
 	hud.Position = UDim2.new(0, 10, 0, 10)
 	hud.BackgroundColor3 = PANEL_BG_COLOR
 	hud.BackgroundTransparency = PANEL_BG_TRANSPARENCY
@@ -409,6 +417,65 @@ local function createHUD()
 
 	cosmeticBtn.Activated:Connect(function()
 		UIController.openCosmeticPanel()
+	end)
+
+	-- Watch Ad button (hidden by default; shown only if ads are allowed for this player)
+	adButton = createButton("AdBtn", Strings.AD_WATCH_BUTTON, UDim2.new(1, 0, 0, 26), hud)
+	adButton.Position = UDim2.new(0, 0, 0, 182)
+	adButton.TextSize = 13
+	adButton.BackgroundColor3 = Color3.fromRGB(40, 130, 60)
+	adButton.ZIndex = 6
+	adButton.Visible = false -- hidden until PolicyService confirms ads are allowed
+
+	adButton.MouseEnter:Connect(function()
+		if adCooldownRemaining <= 0 then
+			adButton.BackgroundColor3 = Color3.fromRGB(60, 160, 80)
+		end
+	end)
+	adButton.MouseLeave:Connect(function()
+		if adCooldownRemaining <= 0 then
+			adButton.BackgroundColor3 = Color3.fromRGB(40, 130, 60)
+		end
+	end)
+
+	adButton.Activated:Connect(function()
+		if adCooldownRemaining > 0 then return end
+		if not remotes then return end
+		local remote = remotes:FindFirstChild(Network.RequestAdReward) :: RemoteEvent
+		if remote then
+			remote:FireServer()
+		end
+	end)
+
+	-- Cooldown sub-label (shows remaining time beneath the button text)
+	adCooldownLabel = Instance.new("TextLabel")
+	adCooldownLabel.Name = "AdCooldownLabel"
+	adCooldownLabel.Size = UDim2.new(1, 0, 0, 14)
+	adCooldownLabel.Position = UDim2.new(0, 0, 1, -14)
+	adCooldownLabel.BackgroundTransparency = 1
+	adCooldownLabel.Font = FONT_BODY
+	adCooldownLabel.TextSize = 11
+	adCooldownLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+	adCooldownLabel.Text = ""
+	adCooldownLabel.ZIndex = 7
+	adCooldownLabel.Visible = false
+	adCooldownLabel.Parent = adButton
+
+	-- Check PolicyService to determine if ads are allowed for this player
+	task.spawn(function()
+		local ok, policyInfo = pcall(function()
+			return PolicyService:GetPolicyInfoForPlayerAsync(Players.LocalPlayer)
+		end)
+		if ok and policyInfo and policyInfo.AreAdsAllowed then
+			adsAllowed = true
+			adButton.Visible = true
+			-- Expand HUD to show the ad button
+		else
+			adsAllowed = false
+			adButton.Visible = false
+			-- Shrink HUD back if ads not allowed
+			hud.Size = UDim2.new(0, 220, 0, 196)
+		end
 	end)
 end
 
@@ -2068,6 +2135,82 @@ function UIController.closePanels()
 	if journalPanel then journalPanel.Visible = false end
 	if settingsPanel then settingsPanel.Visible = false end
 	if cosmeticPanel then cosmeticPanel.Visible = false end
+end
+
+---------------------------------------------------------------------------
+-- Rewarded Ad cooldown display
+---------------------------------------------------------------------------
+
+--- Called when the server sends an ad cooldown update.
+--- Starts or stops a local tick loop to count down the button label.
+function UIController.updateAdCooldown(secondsRemaining: number)
+	adCooldownRemaining = secondsRemaining
+
+	if not adButton then return end
+	if not adsAllowed then return end
+
+	-- Cancel any existing countdown loop
+	if adCooldownConnection then
+		adCooldownConnection:Disconnect()
+		adCooldownConnection = nil
+	end
+
+	if secondsRemaining <= 0 then
+		-- Ready to watch
+		adButton.Text = Strings.AD_WATCH_BUTTON
+		adButton.BackgroundColor3 = Color3.fromRGB(40, 130, 60)
+		if adCooldownLabel then
+			adCooldownLabel.Visible = false
+		end
+		adCooldownRemaining = 0
+		return
+	end
+
+	-- Start cooldown display
+	local endTime = os.clock() + secondsRemaining
+
+	local function updateCooldownDisplay()
+		local remaining = math.ceil(endTime - os.clock())
+		if remaining <= 0 then
+			adCooldownRemaining = 0
+			adButton.Text = Strings.AD_WATCH_BUTTON
+			adButton.BackgroundColor3 = Color3.fromRGB(40, 130, 60)
+			if adCooldownLabel then
+				adCooldownLabel.Visible = false
+			end
+			if adCooldownConnection then
+				adCooldownConnection:Disconnect()
+				adCooldownConnection = nil
+			end
+			return
+		end
+		adCooldownRemaining = remaining
+		local minutes = math.floor(remaining / 60)
+		local seconds = remaining % 60
+		local timeStr = string.gsub(
+			string.gsub(Strings.AD_COOLDOWN_SHORT, "{minutes}", tostring(minutes)),
+			"{seconds}", string.format("%02d", seconds)
+		)
+		adButton.Text = Strings.AD_WATCH_BUTTON
+		adButton.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+		if adCooldownLabel then
+			adCooldownLabel.Text = timeStr
+			adCooldownLabel.Visible = true
+		end
+	end
+
+	-- Immediate update
+	updateCooldownDisplay()
+
+	-- Tick every second via Heartbeat
+	local RunService = game:GetService("RunService")
+	local lastTick = os.clock()
+	adCooldownConnection = RunService.Heartbeat:Connect(function()
+		if os.clock() - lastTick >= 1 then
+			lastTick = os.clock()
+			updateCooldownDisplay()
+		end
+	end)
 end
 
 return UIController

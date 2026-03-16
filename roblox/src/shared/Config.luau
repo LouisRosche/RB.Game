@@ -157,4 +157,24 @@ Config.AUTO_HARVEST_ENABLED = true
 --- Chat tag prefix shown for VIP pass owners. Set to "" to disable.
 Config.VIP_CHAT_TAG = "[VIP] "
 
+--============================================================================--
+-- Rewarded Video Ads
+-- Players opt-in to watch a short ad in exchange for in-game rewards.
+-- Monetises the ~95% of players who never spend Robux.
+--============================================================================--
+
+--- Essence bonus awarded after watching a rewarded video ad.
+Config.AD_REWARD_ESSENCE = 50
+
+--- Cooldown in seconds between rewarded ad watches (per player).
+--- 600 = 10 minutes.
+Config.AD_COOLDOWN_SECONDS = 600
+
+--- Duration in seconds for the 2x earnings boost option (alternative reward).
+--- 300 = 5 minutes.
+Config.AD_BOOST_DURATION = 300
+
+--- Multiplier applied to potion sell value during the 2x boost window.
+Config.AD_BOOST_MULTIPLIER = 2.0
+
 return Config

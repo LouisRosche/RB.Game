@@ -124,4 +124,18 @@ Strings.MAX_CAULDRON_LEVEL  = "Your cauldron is at its finest. Master alchemist 
 Strings.UPGRADE_PREVIEW_LAB      = "+{plots} more growing plots → {name}"
 Strings.UPGRADE_PREVIEW_CAULDRON = "{time}s brew time, +{bonus}% value → {name}"
 
+--============================================================================--
+-- Rewarded Video Ads — opt-in, celebratory, never pressuring
+--============================================================================--
+
+Strings.AD_WATCH_BUTTON           = "Watch Ad for Reward"
+Strings.AD_WATCH_PROMPT           = "Watch a short video for {reward} bonus Essence!"
+Strings.AD_COOLDOWN               = "Ad reward cooldown: {minutes}m {seconds}s"
+Strings.AD_COOLDOWN_SHORT         = "{minutes}m {seconds}s"
+Strings.AD_REWARD_GRANTED         = "Thanks for watching! +{reward} Essence bonus!"
+Strings.AD_BOOST_GRANTED          = "2x Earnings activated for {minutes} minutes! Brew and sell now!"
+Strings.AD_NOT_AVAILABLE          = "Video ads aren't available for you right now."
+Strings.AD_ALREADY_ON_COOLDOWN    = "You've recently watched an ad. Try again in a few minutes!"
+Strings.AD_WATCH_FAILED           = "Something went wrong with the ad. No worries — try again later!"
+
 return Strings

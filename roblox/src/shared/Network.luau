@@ -42,6 +42,10 @@ Network.EquipCosmetic = "EquipCosmetic"
 --- Payload: passId (number). Server calls UserOwnsGamePassAsync and updates OwnedPasses.
 Network.VerifyGamePass = "VerifyGamePass"
 
+--- Client requests a rewarded video ad reward after watching an ad.
+--- No payload — server validates via AdService callback, never trusts client.
+Network.RequestAdReward = "RequestAdReward"
+
 --============================================================================--
 -- Server -> Client events
 --============================================================================--
@@ -81,6 +85,11 @@ Network.BrewEffect = "BrewEffect"
 --- nil values mean no event is currently active.
 Network.SeasonalUpdate = "SeasonalUpdate"
 
+--- Server notifies client of rewarded ad cooldown remaining (seconds).
+--- Sent on join and after each ad watch so client can update the button state.
+--- Payload: cooldownRemaining (number, 0 = ready)
+Network.AdCooldownSync = "AdCooldownSync"
+
 --============================================================================--
 -- Helpers
 --============================================================================--
@@ -101,6 +110,7 @@ function Network.getAllEventNames(): { string }
 		Network.TutorialComplete,
 		Network.EquipCosmetic,
 		Network.VerifyGamePass,
+		Network.RequestAdReward,
 		-- Server -> Client
 		Network.StateSync,
 		Network.Notification,
@@ -109,6 +119,7 @@ function Network.getAllEventNames(): { string }
 		Network.HarvestEffect,
 		Network.BrewEffect,
 		Network.SeasonalUpdate,
+		Network.AdCooldownSync,
 	}
 end
 

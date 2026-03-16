@@ -29,14 +29,24 @@
 local Players           = game:GetService("Players")
 local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedStorage  = game:GetService("ReplicatedStorage")
+local AdService          = game:GetService("AdService")
 
 local Shared     = ReplicatedStorage:WaitForChild("Shared")
+local Config     = require(Shared:WaitForChild("Config"))
 local Cosmetics  = require(Shared:WaitForChild("Cosmetics"))
 local GamePasses = require(Shared:WaitForChild("GamePasses"))
+local Network    = require(Shared:WaitForChild("Network"))
+local Strings    = require(Shared:WaitForChild("Strings"))
 
 -- DataService and AnalyticsService are required at call time (avoids circular require at module load)
 local DataService: any = nil
 local AnalyticsService: any = nil
+
+-- Rewarded ad cooldown tracking: userId -> os.clock() of last completed ad watch
+local adCooldowns: { [number]: number } = {}
+
+-- Active 2x earning boost tracking: userId -> os.clock() expiry timestamp
+local adBoostExpiry: { [number]: number } = {}
 
 local MonetizationService = {}
 
@@ -156,6 +166,116 @@ function MonetizationService.equipCosmetic(player: Player, cosmeticId: string)
 end
 
 ---------------------------------------------------------------------------
+-- Rewarded Video Ads
+-- Players opt-in to watch a short ad for an in-game reward (Essence bonus).
+-- Server-side validation only — the client request merely triggers the ad
+-- prompt; rewards are granted exclusively through the AdService callback.
+---------------------------------------------------------------------------
+
+--- Returns seconds remaining on the ad cooldown for a player (0 = ready).
+local function getAdCooldownRemaining(userId: number): number
+	local lastWatch = adCooldowns[userId]
+	if not lastWatch then return 0 end
+	local elapsed = os.clock() - lastWatch
+	local remaining = Config.AD_COOLDOWN_SECONDS - elapsed
+	return if remaining > 0 then math.ceil(remaining) else 0
+end
+
+--- Returns true if the player currently has an active 2x earnings boost.
+function MonetizationService.hasAdBoost(player: Player): boolean
+	local expiry = adBoostExpiry[player.UserId]
+	if not expiry then return false end
+	return os.clock() < expiry
+end
+
+--- Returns the 2x boost multiplier if active, otherwise 1.0.
+--- Called by sell logic (e.g., EconomyService) to apply the boost.
+function MonetizationService.getAdBoostMultiplier(player: Player): number
+	if MonetizationService.hasAdBoost(player) then
+		return Config.AD_BOOST_MULTIPLIER
+	end
+	return 1.0
+end
+
+--- Sends the current ad cooldown to a specific player's client.
+local function syncAdCooldown(player: Player)
+	local remotesFolder = ReplicatedStorage:FindFirstChild("Remotes")
+	if not remotesFolder then return end
+	local remote = remotesFolder:FindFirstChild(Network.AdCooldownSync) :: RemoteEvent
+	if not remote then return end
+	remote:FireClient(player, getAdCooldownRemaining(player.UserId))
+end
+
+--- Handles a client's request to watch a rewarded video ad.
+--- Validates cooldown, then uses AdService to show the ad.
+--- Reward is granted only after server-verified ad completion.
+function MonetizationService.handleAdRewardRequest(player: Player)
+	-- Check cooldown
+	local remaining = getAdCooldownRemaining(player.UserId)
+	if remaining > 0 then
+		DataService.notify(
+			player,
+			Strings.AD_ALREADY_ON_COOLDOWN
+		)
+		syncAdCooldown(player)
+		return
+	end
+
+	-- Show rewarded ad via AdService (server-side)
+	local ok, err = pcall(function()
+		AdService:ShowRewardedAd(player)
+	end)
+
+	if not ok then
+		warn("[MonetizationService] AdService:ShowRewardedAd failed:", err)
+		DataService.notify(player, Strings.AD_WATCH_FAILED)
+	end
+end
+
+--- Callback wired to AdService.OnRewardedAdCompleted — only fires when the
+--- player has fully watched the ad and Roblox has verified it server-side.
+local function onRewardedAdCompleted(player: Player)
+	-- Double-check cooldown (guard against race conditions)
+	local remaining = getAdCooldownRemaining(player.UserId)
+	if remaining > 0 then
+		syncAdCooldown(player)
+		return
+	end
+
+	local data = DataService.getData(player)
+	if not data then return end
+
+	-- Set cooldown
+	adCooldowns[player.UserId] = os.clock()
+
+	-- Grant Essence reward
+	data.Essence = (data.Essence or 0) + Config.AD_REWARD_ESSENCE
+
+	-- Also activate 2x earnings boost
+	adBoostExpiry[player.UserId] = os.clock() + Config.AD_BOOST_DURATION
+
+	-- Notify the player
+	local rewardMsg = string.gsub(Strings.AD_REWARD_GRANTED, "{reward}", tostring(Config.AD_REWARD_ESSENCE))
+	DataService.notify(player, rewardMsg)
+
+	local boostMinutes = math.ceil(Config.AD_BOOST_DURATION / 60)
+	local boostMsg = string.gsub(Strings.AD_BOOST_GRANTED, "{minutes}", tostring(boostMinutes))
+	DataService.notify(player, boostMsg)
+
+	-- Sync updated state and cooldown to client
+	DataService.syncToClient(player)
+	syncAdCooldown(player)
+
+	-- Analytics
+	if AnalyticsService then
+		AnalyticsService.trackEvent(player, "RewardedAdWatched", {
+			rewardEssence = Config.AD_REWARD_ESSENCE,
+			boostDuration = Config.AD_BOOST_DURATION,
+		})
+	end
+end
+
+---------------------------------------------------------------------------
 -- Public API
 ---------------------------------------------------------------------------
 
@@ -165,6 +285,20 @@ function MonetizationService.init(dataServiceRef: any, analyticsServiceRef: any)
 	DataService = dataServiceRef
 	AnalyticsService = analyticsServiceRef
 	MarketplaceService.ProcessReceipt = processReceipt
+
+	-- Wire up AdService rewarded ad completion callback (server-verified)
+	local adOk, adErr = pcall(function()
+		AdService.OnRewardedAdCompleted:Connect(onRewardedAdCompleted)
+	end)
+	if not adOk then
+		warn("[MonetizationService] AdService setup failed (ads may not be enabled):", adErr)
+	end
+
+	-- Clean up ad state when a player leaves
+	Players.PlayerRemoving:Connect(function(player: Player)
+		adCooldowns[player.UserId] = nil
+		adBoostExpiry[player.UserId] = nil
+	end)
 end
 
 --- Check game pass ownership for a player after their profile loads.
@@ -177,6 +311,8 @@ function MonetizationService.checkPassesOnJoin(player: Player)
 		checkPassesAsync(player, data)
 		-- Re-sync so the client knows which passes are active
 		DataService.syncToClient(player)
+		-- Send initial ad cooldown state (always 0 for a fresh join)
+		syncAdCooldown(player)
 	end)
 end
 
