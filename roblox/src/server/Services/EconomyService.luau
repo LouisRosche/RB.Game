@@ -10,11 +10,21 @@ local Shared      = ReplicatedStorage:WaitForChild("Shared")
 local Config      = require(Shared.Config)
 local Ingredients = require(Shared.Ingredients)
 
-local DataService      = require(script.Parent.DataService)
-local PlotService      = require(script.Parent.PlotService)
-local SeasonalService  = require(script.Parent.SeasonalService)
+local DataService           = require(script.Parent.DataService)
+local PlotService           = require(script.Parent.PlotService)
+local SeasonalService       = require(script.Parent.SeasonalService)
+
+-- MonetizationService is injected via init() to avoid tight coupling
+-- (MonetizationService already uses injection for DataService/AnalyticsService)
+local MonetizationService: any = nil
 
 local EconomyService = {}
+
+--- Inject MonetizationService reference. Called from Main.server.luau after
+--- all services are required, before any player joins.
+function EconomyService.init(monetizationServiceRef: any)
+	MonetizationService = monetizationServiceRef
+end
 
 ---------------------------------------------------------------------------
 -- Public API
@@ -78,7 +88,9 @@ function EconomyService.sellPotion(player: Player, potionIndex: number)
 		return
 	end
 
-	local value = potion.Value or 0
+	local baseValue = potion.Value or 0
+	local boostMultiplier = if MonetizationService then MonetizationService.getAdBoostMultiplier(player) else 1.0
+	local value = math.floor(baseValue * boostMultiplier)
 	data.Essence += value
 	data.Stats.TotalEssenceEarned += value
 
@@ -86,7 +98,8 @@ function EconomyService.sellPotion(player: Player, potionIndex: number)
 	table.remove(data.Potions, potionIndex)
 
 	DataService.syncToClient(player)
-	DataService.notify(player, "Sold " .. displayName .. " for " .. value .. " Essence!")
+	local boostLabel = if boostMultiplier > 1 then " (2x boost!)" else ""
+	DataService.notify(player, "Sold " .. displayName .. " for " .. value .. " Essence!" .. boostLabel)
 end
 
 --- Sell all potions at once. Returns total value earned.
@@ -99,10 +112,11 @@ function EconomyService.sellAll(player: Player): number
 		return 0
 	end
 
+	local boostMultiplier = if MonetizationService then MonetizationService.getAdBoostMultiplier(player) else 1.0
 	local totalValue = 0
 	local count = #data.Potions
 	for _, potion in data.Potions do
-		totalValue += (potion.Value or 0)
+		totalValue += math.floor((potion.Value or 0) * boostMultiplier)
 	end
 
 	data.Essence += totalValue
@@ -110,7 +124,8 @@ function EconomyService.sellAll(player: Player): number
 	data.Potions = {}
 
 	DataService.syncToClient(player)
-	DataService.notify(player, "Sold " .. count .. " potions for " .. totalValue .. " Essence!")
+	local boostLabel = if boostMultiplier > 1 then " (2x boost!)" else ""
+	DataService.notify(player, "Sold " .. count .. " potions for " .. totalValue .. " Essence!" .. boostLabel)
 
 	return totalValue
 end

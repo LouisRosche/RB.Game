@@ -75,6 +75,7 @@ local RATE_COOLDOWN: { [string]: number } = {
 	[Network.SellAll]        = 1.0,
 	[Network.UpgradeLab]     = 1.0,
 	[Network.UpgradeCauldron] = 1.0,
+	[Network.RequestAdReward] = 2.0,
 }
 
 -- lastFire[userId][eventName] = tick()
@@ -125,7 +126,8 @@ AnalyticsService.init()
 LeaderboardService.init()
 MonetizationService.init(DataService, AnalyticsService)
 SeasonalService.init(DataService)
--- BrewingService, EconomyService, DiscoveryService are stateless; no init required.
+EconomyService.init(MonetizationService)
+-- BrewingService, DiscoveryService are stateless; no init required.
 
 ---------------------------------------------------------------------------
 -- Player lifecycle
@@ -333,4 +335,12 @@ end)
 remotes[Network.VerifyGamePass].OnServerEvent:Connect(function(player: Player, passId: number)
 	if typeof(passId) ~= "number" then return end
 	MonetizationService.checkPassesOnJoin(player)  -- re-verifies all passes
+end)
+
+-- RequestAdReward: player opted in to watch a rewarded video ad.
+-- Server handles the entire flow — cooldown check, ad prompt via AdService,
+-- and reward grant only after verified ad completion.
+remotes[Network.RequestAdReward].OnServerEvent:Connect(function(player: Player)
+	if isRateLimited(player, Network.RequestAdReward) then return end
+	MonetizationService.handleAdRewardRequest(player)
 end)

@@ -1,8 +1,16 @@
 # 18-Month Roadmap Tracker
 
-*Last updated: 2026-03-07*
+*Last updated: 2026-03-16*
 
 Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execute manually) · ⬜ Not started
+
+> **Market Context (March 2026 Audit)**
+>
+> - Roblox has reached **380M MAU**; the 18-34 demographic is growing **50%+ YoY**, making it viable for broader audiences
+> - 2026 paradigm: **Market → Validate → Build → Launch → Scale** — validate demand before heavy development
+> - D1 retention of **42% is achievable** with a solid tutorial (industry baseline 20% is the floor, not the ceiling)
+> - Solo obby developers have proven **$20-27K/month** revenue — simple games with strong retention outperform complex ones
+> - Rewarded Video Ads have **87% player approval** on Roblox; they monetize non-paying players with zero friction
 
 ---
 
@@ -24,7 +32,7 @@ Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execu
 ### Skill Building
 - ⬜ Complete Roblox Core Curriculum (~15 hrs)
 - 📝 Publish a trivial game (obby) to complete the full publish cycle — project ready at `roblox/obby/`, follow `roblox/obby/README.md`
-- ✅ Set up Single-Script Architecture template with ProfileService
+- 🔄 Set up Single-Script Architecture template with ProfileService — **CRITICAL: ProfileService stub is non-functional; must be replaced with real ProfileService or ProfileStore (the 2026 successor, recommended for new projects) before any playtesting**
 - ⬜ Create 5 placeholder art assets in MagicaVoxel
 - ⬜ Test sound pipeline (BFXR2, Bosca Ceoil Blue)
 
@@ -37,8 +45,26 @@ Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execu
 
 ---
 
+## Phase 0.5: Quick Wins (1-2 Weeks)
+*Budget: $0 | Time: focused sprint before Phase 1 soft launch*
+
+The March 2026 audit identified several items that can ship immediately with minimal effort. These build momentum, exercise the publish pipeline, and unlock time-sensitive opportunities.
+
+### Ship Now
+- ⬜ **Ship the obby game** — project is ready at `roblox/obby/`; 1-2 days of work to publish and complete the full Roblox publish cycle
+- ⬜ **Soft-launch Alchemy Academy as Unlisted** — requires ProfileService/ProfileStore replacement **(CRITICAL)** + audio upload first (see Audit Actions below), then publish as unlisted for initial playtesting
+- ⬜ **Post community feedback drafts** — posts are already written in `marketing/community-posts/`; copy to DevForum and r/RobloxGameDev
+- ⬜ **Apply to Roblox Incubator program** — time-sensitive opportunity, March 2026 window; submit application before deadline
+
+### Why This Phase Exists
+Phase 0 business items (LLC, bank account, domain) are incomplete but **should not block** the soft launch. A game running unlisted with 10-20 testers generates real retention data, which informs every decision downstream. Ship first, incorporate later.
+
+---
+
 ## Phase 1: Roblox MVP (Weeks 7-20)
 *Budget: $0-40/month | Time: 11-14 hrs/week*
+
+> **March 2026 Update:** Most Sprint 1 and Sprint 2 code is complete. Phase 0 business items (LLC, bank account, domain) remain incomplete but **do not block soft launch**. The critical path is: **replace ProfileService stub with real ProfileService or ProfileStore (recommended for new projects)** → upload audio → create store listing assets → publish unlisted → invite testers. Target: soft launch by end of March 2026.
 
 ### Sprint 1 — Core Loop (Weeks 7-11)
 - ✅ Build central gameplay loop (plant → grow → harvest → brew → sell)
@@ -55,9 +81,9 @@ Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execu
 - ✅ Full UI built programmatically — HUD, seed/brew/sell/upgrade/journal panels
 - ✅ Leaderboard sidebar (top-10 by TotalGoldEarned, live broadcasts)
 - ✅ Tutorial/onboarding — `TutorialController.luau`: 5-step overlay, state-diff advancement, skip button, server-saved TutorialCompleted flag
-- ✅ Save system — ProfileService migration (session locking, auto-save, GDPR AddUserId)
-  - ✅ ProfileService stub installed at `roblox/src/server/Vendor/ProfileService.luau` — game runs in Studio now
-  - **⚠ Replace before public launch**: download real ProfileService from GitHub (see INSTALL.md)
+- 🔄 Save system — ProfileService migration (session locking, auto-save, GDPR AddUserId) — **CRITICAL: stub only, no real data persistence; player data WILL BE LOST without replacement**
+  - ✅ ProfileService stub installed at `roblox/src/server/Vendor/ProfileService.luau` — game runs in Studio but **does not persist data**
+  - **🚨 CRITICAL — Replace before ANY playtesting**: download real ProfileService from GitHub (see INSTALL.md), or migrate to **ProfileStore** (the 2026 successor by the same author, recommended for all new projects)
 - ✅ Analytics — funnel tracking (plant/harvest/brew) for D1/D7 measurement via Roblox AnalyticsService
 - ✅ Internationalisation — all strings in `Strings.luau`, UTF-8 ready
 - 🔄 Accessibility Big Four (remappable controls, subtitles, volume sliders, no color-only info)
@@ -101,6 +127,11 @@ Legend: ✅ Done · 🔄 In progress · 📝 Ready (docs/code prepared — execu
   - ✅ GrowthService applies Speed Brew (2× faster growth) and Auto-Harvest (plots self-collect)
   - ✅ MonetizationService checks passes on join, re-verifies after purchase prompt
   - **⚠ Action required**: create Game Passes in Creator Hub, replace placeholder IDs in `GamePasses.luau`
+- ⬜ **Rewarded Video Ads** — 87% player approval rate; monetizes non-paying players without friction
+  - Requires **100K+ visits** to enable (Roblox policy threshold)
+  - Reward options: 2× growth speed for 10 min, bonus gold, free seed pack
+  - No-ad game pass as premium alternative for paying players
+  - Implementation: integrate Roblox `PolicyService` ad API once visit threshold is met
 - ⬜ A/B price testing — run first for 2 weeks post-launch before changing prices
 - ⬜ Monitor retention post-monetisation (no significant drop acceptable)
 - ⬜ Optional: seasonal event with dual-track battle pass
@@ -165,10 +196,26 @@ These are the blockers before the game can be playtested:
 
 1. **Create Roblox developer account** — follow `docs/platform-setup.md`; start the 30-day DevEx clock now
 2. **Register domain** — `alchemyacademy.gg` or `.game` before any public post; ~$20–35/yr at porkbun.com
-3. **Install ProfileService** — download from https://github.com/MadStudioRoblox/ProfileService/releases, place at `roblox/src/server/Vendor/ProfileService.luau`
+3. **🚨 Install ProfileService or ProfileStore (CRITICAL)** — download ProfileService from https://github.com/MadStudioRoblox/ProfileService/releases, or use **ProfileStore** (the 2026 successor, recommended for new projects) from https://github.com/MadStudioRoblox/ProfileStore; place at `roblox/src/server/Vendor/ProfileService.luau`
 4. **Upload audio** — follow `roblox/AUDIO_ASSETS.md` for exact files needed; replace placeholder IDs in `SoundController.luau`
 5. **Publish the practice obby** — follow `roblox/obby/README.md` to exercise the full publish workflow before the real launch
 6. **Post concept feedback** — copy posts from `marketing/community-posts/` to DevForum and Reddit
 7. **Set up business basics** — LLC, bank account, tax savings account (see `business/legal/checklist.md`)
 8. **Start Discord server** — follow `community/discord/setup.md`; live before any public TikTok posts
 9. **Start TikTok** — first video before the public launch, not after (see `marketing/tiktok/content-calendar.md`)
+
+---
+
+## Audit Actions (March 2026)
+
+Identified during the March 2026 codebase and market audit. Items marked **(blocker)** must be resolved before soft launch.
+
+- [ ] **🚨 CRITICAL:** Download real ProfileService from GitHub and replace stub **(blocker)** — see `roblox/INSTALL.md`. **Note:** ProfileStore (by the same author, luevent/MadStudioRoblox) is the 2026 successor to ProfileService and is now the recommended choice for new projects. Consider migrating directly to ProfileStore instead of installing legacy ProfileService.
+- [ ] Upload audio assets and replace placeholder IDs in `SoundController.luau` **(blocker)** — see `roblox/AUDIO_ASSETS.md`
+- [ ] Create game icon and thumbnails **(blocker)** — spec in `docs/store-listing.md`
+- [ ] Add testing infrastructure — unit tests for core systems (economy, brewing, progression)
+- [ ] Ship obby game — exercise full publish pipeline; `roblox/obby/README.md`
+- [ ] Apply to Roblox Incubator — March 2026 window, time-sensitive
+- [ ] Register domain — `alchemyacademy.gg` or `.game`; ~$20-35/yr at porkbun.com
+- [ ] Form LLC — see `business/legal/checklist.md`
+- [ ] Soft launch with 10-20 testers — publish as unlisted, invite testers, measure D1 retention

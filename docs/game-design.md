@@ -81,12 +81,12 @@ Virality comes from **joy and generosity**, not manipulation:
 
 ## Ingredients (4 for vertical slice)
 
-| Ingredient  | Color      | Growth Time | Seed Cost  | Base Value  |
-| ----------- | ---------- | ----------- | ---------- | ----------- |
-| Moonpetal   | Blue       | 30s         | 5 Essence  | 10 Essence  |
-| Fireroot    | Red/Orange | 45s         | 10 Essence | 15 Essence  |
-| Shadowmoss  | Purple     | 60s         | 20 Essence | 20 Essence  |
-| Starbloom   | Gold       | 90s         | 40 Essence | 30 Essence  |
+| Ingredient  | Color      | Growth Time | Seed Cost   | Base Value  |
+| ----------- | ---------- | ----------- | ----------- | ----------- |
+| Moonpetal   | Blue       | 45s         | 5 Essence   | 10 Essence  |
+| Fireroot    | Red/Orange | 120s (2m)   | 15 Essence  | 18 Essence  |
+| Shadowmoss  | Purple     | 300s (5m)   | 35 Essence  | 28 Essence  |
+| Starbloom   | Gold       | 900s (15m)  | 75 Essence  | 45 Essence  |
 
 ---
 
@@ -225,7 +225,7 @@ a chore.
 2. They see 2 empty plots, a cauldron, and a shop station
 3. ProximityPrompt on empty plot says "Plant" -- opens seed selection
 4. Player buys cheapest seed (Moonpetal, 5 Essence out of starting 200 Essence)
-5. Seed starts growing -- visual feedback (small sprout appears, grows over 30s)
+5. Seed starts growing -- visual feedback (small sprout appears, grows over 45s)
 6. Player plants second plot while waiting
 7. First plant ready -- "Harvest" prompt -- player harvests -- "You harvested an Uncommon Moonpetal!" notification
 8. Second harvest -- now has 2 ingredients

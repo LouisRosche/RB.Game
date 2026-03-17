@@ -112,6 +112,22 @@ leaderboardRemote.OnClientEvent:Connect(function(entries: { { rank: number, name
 end)
 
 ---------------------------------------------------------------------------
+-- Ad cooldown handler — server pushes remaining cooldown seconds
+---------------------------------------------------------------------------
+local adCooldownRemote = Remotes:WaitForChild(Network.AdCooldownSync) :: RemoteEvent
+adCooldownRemote.OnClientEvent:Connect(function(secondsRemaining: number)
+	UIController.updateAdCooldown(secondsRemaining)
+end)
+
+---------------------------------------------------------------------------
+-- Seasonal event handler — server pushes event state on start/change
+---------------------------------------------------------------------------
+local seasonalUpdateRemote = Remotes:WaitForChild(Network.SeasonalUpdate) :: RemoteEvent
+seasonalUpdateRemote.OnClientEvent:Connect(function(eventId: string?, eventName: string?, bannerText: string?)
+	UIController.onSeasonalUpdate(eventId, eventName, bannerText)
+end)
+
+---------------------------------------------------------------------------
 -- Initialise controllers
 ---------------------------------------------------------------------------
 -- UIController needs the state accessor, Remotes, and SoundController
