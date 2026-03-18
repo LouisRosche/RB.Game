@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-luau:
+    name: Lint Luau (Selene)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Run Selene on roblox/
+        run: selene roblox/src/ roblox/tests/
+
+      - name: Run Selene on obby/
+        run: selene roblox/obby/src/
+
+  format-check:
+    name: Format Check (StyLua)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Check formatting — roblox/
+        run: stylua --check roblox/src/ roblox/tests/
+
+      - name: Check formatting — obby/
+        run: stylua --check roblox/obby/src/
+
+  validate-rojo:
+    name: Validate Rojo Projects
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Validate main project
+        working-directory: roblox
+        run: rojo sourcemap default.project.json --output /dev/null
+
+      - name: Validate obby project
+        working-directory: roblox/obby
+        run: rojo sourcemap default.project.json --output /dev/null
+
+  validate-godot:
+    name: Validate GDScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.3.0
+          use-dotnet: false
+
+      - name: Parse GDScript files
+        working-directory: godot
+        run: |
+          errors=0
+          for f in $(find src/ -name "*.gd"); do
+            if ! godot --headless --script "$f" --check-only 2>/dev/null; then
+              echo "::error file=$f::GDScript parse error"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ "$errors" -gt 0 ]; then
+            echo "::error::$errors GDScript file(s) failed validation"
+            exit 1
+          fi
+
+  repo-hygiene:
+    name: Repository Hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for accidental binary commits
+        run: |
+          binaries=$(git ls-files '*.rbxl' '*.rbxlx' '*.rbxm' '*.rbxmx' '*.exe' '*.dll' '*.so')
+          if [ -n "$binaries" ]; then
+            echo "::error::Binary files committed: $binaries"
+            exit 1
+          fi
+
+      - name: Check for placeholder IDs in production code
+        run: |
+          # Warn (don't fail) about placeholder asset IDs
+          grep -rn "000000000\|PLACEHOLDER\|TODO.*ID\|REPLACE_ME" \
+            roblox/src/ roblox/obby/src/ \
+            --include="*.luau" || true
+
+      - name: Ensure no secrets committed
+        run: |
+          secrets=$(git ls-files '*.env' '.env.*' 'credentials*' '*.pem' '*.key')
+          if [ -n "$secrets" ]; then
+            echo "::error::Potential secrets committed: $secrets"
+            exit 1
+          fi
