@@ -1,0 +1,77 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/scenes/journal/Journal.gd" id="1_script"]
+
+[node name="Journal" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.059, 0.047, 0.102, 1)
+
+[node name="Header" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 16.0
+offset_right = 200.0
+offset_bottom = 48.0
+grow_horizontal = 2
+horizontal_alignment = 1
+text = "Alchemist's Journal"
+
+[node name="ProgressLabel" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 52.0
+offset_right = 200.0
+offset_bottom = 72.0
+grow_horizontal = 2
+horizontal_alignment = 1
+text = "0 / 0 recipes discovered"
+
+[node name="TabContainer" type="TabContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 80.0
+offset_right = -16.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Recipes" type="ScrollContainer" parent="TabContainer"]
+layout_mode = 2
+
+[node name="RecipeList" type="VBoxContainer" parent="TabContainer/Recipes"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Ingredients" type="ScrollContainer" parent="TabContainer"]
+layout_mode = 2
+
+[node name="IngredientList" type="VBoxContainer" parent="TabContainer/Ingredients"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseButton" type="Button" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -40.0
+offset_right = 80.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Close (J / Esc)"

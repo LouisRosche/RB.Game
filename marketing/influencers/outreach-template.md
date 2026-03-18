@@ -5,9 +5,9 @@
 Don't chase big Roblox YouTubers (10M+ subs). They're expensive, unreliable,
 and their audiences are broad. Instead target:
 
-1. **Science/education creators** (50K–500K) who would genuinely love the concept
-2. **Indie game discovery** channels (10K–200K) that review small games
-3. **Roblox mid-tier** creators (5K–100K) with engaged audiences
+1. **Science/education creators** (50K-500K) who would genuinely love the concept
+2. **Indie game discovery** channels (10K-200K) that review small games
+3. **Roblox mid-tier** creators (5K-100K) with engaged audiences
 4. **Speedrunning/challenge** creators (any size) — Legendary drop rate challenges are tailor-made for them
 
 ROI principle from research: one authentic creator post from a 50K science
@@ -23,12 +23,12 @@ Ask: "Try it free, share if you enjoy it" — no payment, no obligation
 
 ### Tier 2 — Revenue Share (Phase 3, after proof of income)
 Target: Roblox content creators
-Deal: 10–20% of DevEx revenue attributable to their referral code
+Deal: 10-20% of DevEx revenue attributable to their referral code
 (Roblox doesn't have built-in referral tracking — use a promo code in the game
 that players can type for a starting bonus, tied to a creator's handle)
 
 ### Tier 3 — Paid Sponsors (Phase 3, only after $500/month sustained)
-Maximum: $50–200 per sponsored post
+Maximum: $50-200 per sponsored post
 Only if creator genuinely fits (science, education, or cozy games audience)
 
 ---
@@ -75,7 +75,7 @@ What's different from the genre:
 - All mutation odds are shown upfront — no mystery mechanics
 - No pay-to-win, no FOMO timers, no loot boxes
 
-It's [X] MB, runs on low-end hardware, session length ~10 minutes.
+It runs on low-end hardware, session length ~10 minutes.
 
 If it sounds like something your audience would enjoy: [link]
 Happy to answer any questions.
@@ -87,8 +87,6 @@ Happy to answer any questions.
 
 ## Tracking Sheet
 
-Keep a simple spreadsheet with:
-
 | Creator | Platform | Subs/views | Date reached | Response | Outcome |
 |---------|----------|-----------|--------------|----------|---------|
 | | | | | | |
@@ -99,7 +97,7 @@ Keep a simple spreadsheet with:
 
 **Science educators on YouTube/TikTok**:
 - Search: "bioluminescence explained", "geothermal energy kids", "nuclear fusion simple"
-- Filter: 10K–500K subscribers, last upload < 30 days, engagement rate > 3%
+- Filter: 10K-500K subscribers, last upload < 30 days, engagement rate > 3%
 
 **Indie game discovery**:
 - Search: "hidden gem Roblox games 2025", "best indie games under $10 Steam"

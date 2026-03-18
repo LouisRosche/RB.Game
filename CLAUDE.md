@@ -22,11 +22,19 @@ RB.Game is a solo indie game development project following an 18-month, 4-phase 
 ## Tech Conventions
 
 - Roblox: Single-Script Architecture — one ServerScript + one LocalScript requiring ModuleScripts
-- Data persistence: ProfileService/ProfileStore (never raw DataStoreService)
+- Data persistence: ProfileService with MemoryStoreService session locking (never raw DataStoreService)
 - Strings: externalized in ModuleScript lookup tables (i18n-ready from day one)
 - Performance: part count < 75K, StreamingEnabled on, anchor static parts
 - Monetization: cosmetics and convenience only — no loot boxes, no pay-to-win
 - Godot: GDScript, 2D-first, MIT license (zero royalties)
+
+## Tooling
+
+- CI: GitHub Actions — Selene lint, StyLua format, Rojo validation, repo hygiene (`.github/workflows/ci.yml`)
+- Toolchain: Aftman (`aftman.toml`) — pins Rojo, Selene, StyLua versions
+- Build: `make lint`, `make format`, `make format-fix`, `make rojo`, `make clean`
+- Formatting: StyLua (120-col, tabs, Unix line endings) — see `stylua.toml`
+- Linting: Selene with `roblox` standard library — see `selene.toml`
 
 ## Key Metrics
 

@@ -64,7 +64,7 @@ Welcome to the Alchemy Academy Discord! 🧪
 This is where alchemists share discoveries, report bugs, and talk science.
 
 📌 Quick links:
-• Play free on Roblox: [link]
+• Play free on Roblox: [paste Roblox game URL here after publishing]
 • Report a bug: #bug-reports
 • Share a Legendary: #screenshots
 • Read the roadmap: #roadmap
@@ -75,7 +75,7 @@ A few house rules:
 3. No discussion of exploits or cheating
 4. Spoiler-tag recipe combinations (use ||text|| in Discord) so new players can discover them naturally
 
-The dev ([your handle]) reads every message here. Say hi!
+The dev reads every message here. Say hi!
 ```
 
 ---

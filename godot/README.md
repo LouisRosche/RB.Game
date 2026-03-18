@@ -38,29 +38,15 @@ File → Open → select /godot/project.godot
 
 Godot will import assets and generate the `.godot/` folder automatically.
 
-### 3. Create the scenes
+### 3. Wire @export references
 
-All scripts are written; you need to create the matching scene files (`.tscn`)
-in the editor. Follow `scenes/SCENE_STRUCTURE.md` for the node tree of each scene.
+Scene files (`.tscn`) are committed with full node hierarchies and scripts attached.
+Open each scene in the editor and wire the `@export` variables by selecting the root
+node and dragging child nodes into the export slots in the **Inspector**.
 
-Quick start order:
-1. Create `res://scenes/MainMenu.tscn` — attach `src/scenes/main_menu/MainMenu.gd`
-2. Create `res://scenes/Lab.tscn`      — attach `src/scenes/lab/Lab.gd`
-3. Create `res://scenes/Journal.tscn`  — attach `src/scenes/journal/Journal.gd`
-4. Create `res://scenes/Settings.tscn` — attach `src/scenes/settings/Settings.gd`
+See `scenes/SCENE_STRUCTURE.md` for the mapping of which node goes to which export.
 
-### 4. Wire @export references
-
-Each scene script uses `@export` variables. After attaching the script to the root
-node, select the root node and use the **Inspector** to drag-and-drop child nodes
-into the export slots (e.g., drag `GoldLabel` into the `gold_label` slot).
-
-### 5. Placeholder art
-
-For MVP, use `ColorRect` nodes with the colours from `scenes/SCENE_STRUCTURE.md`.
-No external art is required to run the game.
-
-### 6. Run the game
+### 4. Run the game
 
 Press **F5** or click the Play button. The entry point is `res://scenes/MainMenu.tscn`
 (set in `project.godot → application/run/main_scene`).
@@ -88,8 +74,11 @@ godot/
       settings/
         Settings.gd          ← Volume, fullscreen, delete save
   scenes/
-    SCENE_STRUCTURE.md       ← Scene tree reference for creating .tscn files
-    (*.tscn files created in editor — not committed until scenes are built)
+    SCENE_STRUCTURE.md       ← Scene tree reference (node → @export mapping)
+    MainMenu.tscn            ← Main menu scene
+    Lab.tscn                 ← Core gameplay scene
+    Journal.tscn             ← Recipe book / ingredient index
+    Settings.tscn            ← Audio / display settings
   assets/
     (art, sounds, fonts — to be added)
 ```
@@ -162,7 +151,7 @@ system can help catch typos. To add an ingredient:
 
 | Milestone | Target | Status |
 |-----------|--------|--------|
-| Core loop working in editor | Week 41 | Scripts written — scenes pending |
+| Core loop working in editor | Week 41 | Scripts + scenes done — wire @exports |
 | Chapter 1 complete + playable | Week 43 | ⬜ |
 | All 4 chapters complete | Week 50 | ⬜ |
 | Art pass (placeholder → real) | Week 52 | ⬜ |

@@ -1,8 +1,6 @@
 # DevForum Post — Concept Feedback
 
-**Target forum:** devforum.roblox.com → #development-discussion or #cool-creations
-**Post when:** before soft launch (Phase 0 checklist item)
-**Goal:** validate concept with the developer community, get suggestions, identify blindspots
+**Target forum:** devforum.roblox.com > #development-discussion or #cool-creations
 
 ---
 
@@ -27,9 +25,9 @@ nuclear fusion, geothermal energy) displayed in an in-game Alchemist's Journal.
 
 **Core loop:**
 1. Buy ingredient seeds (4 ingredients: Moonpetal, Fireroot, Shadowmoss, Starbloom)
-2. Plant → wait → harvest (mutation rarity rolled at harvest: Common to Legendary, 5 tiers)
-3. Combine 2 ingredients at cauldron → discover one of 10 recipes → sell for gold
-4. Upgrade lab (2→4→6 plots) and cauldron (Basic→Copper→Silver)
+2. Plant > wait > harvest (mutation rarity rolled at harvest: Common to Legendary, 5 tiers)
+3. Combine 2 ingredients at cauldron > discover one of 10 recipes > sell for gold
+4. Upgrade lab (2>4>6 plots) and cauldron (Basic>Copper>Silver)
 5. Repeat — trying for higher rarity mutations (1% Legendary chance, shown transparently)
 
 **What makes it different from other "Grow a" games:**
@@ -51,8 +49,3 @@ Cosmetics only — cauldron skins, lab decorations, potion bottle styles. No pay
 5. Honest take: is the educational angle a strength (widens audience) or a weakness (makes it feel like homework)?
 
 Thanks in advance — I'll reply to every comment.
-
----
-
-*Note: Replace `[your handle]` with your Roblox DevForum username before posting.*
-*Delete this note block before posting.*

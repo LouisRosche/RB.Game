@@ -7,17 +7,9 @@ A free educational idle game where players grow magical ingredients, brew potion
 ### Prerequisites
 
 1. **Roblox Studio** — [Download](https://www.roblox.com/create)
-2. **Aftman** (toolchain manager) — install then run:
+2. **Aftman** (toolchain manager) — installs Rojo, Selene, and StyLua from `aftman.toml`:
    ```sh
-   aftman init
-   aftman add rojo-rbx/rojo
    aftman install
-   ```
-3. Or install **Rojo** directly:
-   ```sh
-   # via cargo
-   cargo install rojo
-   # or download from https://github.com/rojo-rbx/rojo/releases
    ```
 4. Install the **Rojo plugin** in Roblox Studio (Plugins → Manage Plugins → search "Rojo")
 

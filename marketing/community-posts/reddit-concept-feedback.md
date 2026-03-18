@@ -21,7 +21,7 @@ lives in an Alchemist's Journal inside the game — it's optional depth, not
 a quiz mechanic.
 
 **Stats:**
-- 4 ingredients × 5 rarity tiers × 10 recipes = large outcome space from small content set
+- 4 ingredients x 5 rarity tiers x 10 recipes = large outcome space from small content set
 - Mutation odds shown transparently (no hidden loot-box feeling)
 - No FOMO timers — plants grow offline and wait indefinitely at harvest
 - Cosmetics-only monetization planned (Phase 2)
@@ -61,11 +61,3 @@ or does it sound like homework?
 
 Launching soon-ish, just want to know if I'm onto something or if I should
 drop the science angle and just make it a pure idle game.
-
----
-
-*Posting tips:*
-*- r/RobloxGameDev: post on a weekday, 10am–2pm EST. Tag as [Feedback].*
-*- r/roblox: keep it short, lead with the curiosity angle. Don't post a link until the game is live.*
-*- Reply to every comment within 24 hours — engagement signals matter for Reddit ranking.*
-*- Delete this tips block before posting.*

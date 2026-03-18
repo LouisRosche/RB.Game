@@ -75,13 +75,28 @@ RB.Game/
 |------|---------|
 | Roblox Studio / Luau | Phase 1-2 game development |
 | Godot 4 / GDScript | Phase 3 standalone game |
-| ProfileService | Roblox data persistence |
+| ProfileService | Roblox data persistence (session-locked via MemoryStoreService) |
+| Selene + StyLua | Luau linting and formatting |
+| GitHub Actions | CI pipeline (lint, format, build validation) |
+| Aftman | Roblox toolchain manager (Rojo, Selene, StyLua) |
 | MagicaVoxel | Voxel art (free) |
-| Leonardo AI | AI-generated game assets |
 | BFXR2 / Bosca Ceoil Blue | Sound effects & music (free) |
-| GameAnalytics | Player analytics (free) |
 | Discord | Community hub |
 | TikTok / Reddit | Discovery & marketing |
+
+## Development
+
+```sh
+# Install toolchain
+aftman install
+
+# Common commands
+make lint         # Lint all Luau with Selene
+make format       # Check formatting (no changes)
+make format-fix   # Auto-format all Luau files
+make rojo         # Serve main project to Roblox Studio
+make clean        # Remove build artifacts
+```
 
 ## Educational Science Map
 
@@ -100,8 +115,9 @@ RB.Game/
 
 ## Research
 
-The `research/` folder contains three comprehensive reports:
+The `research/` folder contains four reports:
 
 1. **Strategic Foundation** — Platform economics, genre selection, ethical monetization framework, art strategy, IP & brand building
 2. **Reality Check** — Market failure rates, Roblox platform risks, retention benchmarks, burnout prevention, technical architecture
 3. **Execution Playbook** — Phase-gated 18-month plan with go/no-go criteria, weekly schedules, financial projections, risk registry
+4. **Metaverse Platform Analysis** — Roblox platform economics, competitor landscape, case studies

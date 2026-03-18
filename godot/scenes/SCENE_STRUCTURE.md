@@ -1,8 +1,9 @@
 # Scene Structure — Alchemy Academy: Origins
 
-This file documents the scene tree layout to recreate in the Godot editor.
-Scripts are already written in `src/scenes/`; just create the scenes and
-attach the scripts, then wire the `@export` node references.
+This file documents the scene tree layout and the mapping between scene nodes
+and `@export` variables. Scene files (`.tscn`) are committed with node
+hierarchies and scripts attached. Open each scene in the Godot editor and
+wire the `@export` references by dragging nodes into the Inspector slots.
 
 ---
 
