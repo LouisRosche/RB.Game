@@ -1,0 +1,17 @@
+# Selene — Luau static analysis
+# https://kampfkarren.github.io/selene/
+
+std = "roblox"
+
+[lints]
+# Error-level: catch real bugs
+undefined_variable = "deny"
+unused_variable = "warn"
+shadowing = "warn"
+empty_if = "warn"
+parenthese_conditions = "warn"
+unscoped_variables = "deny"
+incorrect_standard_library_use = "deny"
+
+# Allow common Roblox patterns
+global_usage = "allow"

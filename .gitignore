@@ -19,3 +19,21 @@ Thumbs.db
 
 # Node (if any tooling is added)
 node_modules/
+
+# Build artifacts
+roblox/build.rbxl
+
+# Aftman binaries
+.aftman/
+
+# Godot
+godot/.godot/
+godot/export/
+*.import
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+credentials*.json

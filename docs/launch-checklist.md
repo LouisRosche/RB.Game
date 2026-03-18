@@ -1,14 +1,16 @@
 # Alchemy Academy — Launch Readiness Checklist
 
-> Last updated: March 16, 2026
+> Last updated: March 18, 2026
 
 ## Pre-Launch Blockers (Must Do Before Any Players)
 
-- [ ] Download real ProfileService from GitHub (current file is a stub) — replace `roblox/src/server/Vendor/ProfileService.luau`
+- [x] Replace ProfileService stub with session-locked production module
+- [x] Set up CI pipeline (Selene lint, StyLua format, Rojo validation)
+- [x] Create Godot scene files (.tscn) for all 4 game screens
 - [ ] Upload 13 audio assets to Roblox and replace placeholder IDs in `SoundController.luau` (see `roblox/AUDIO_ASSETS.md`)
 - [ ] Create game icon (512x512) and 5 thumbnails (1920x1080) per `docs/store-listing.md`
 - [ ] Test full game loop in Roblox Studio (plant -> grow -> harvest -> brew -> sell -> upgrade)
-- [ ] Verify ProfileService session-locking works with 2+ test accounts
+- [ ] Verify session-locking works with 2+ test accounts
 - [ ] Test all 10 recipes brew correctly with expected value output
 - [ ] Test all game passes purchase flow (use sandbox/test mode)
 - [ ] Verify tutorial completes without errors for new player
@@ -35,10 +37,10 @@
 
 ## Quick-Win: Obby Game
 
-- [ ] Expand `roblox/obby/` with checkpoint system, skip game pass, cosmetic trail shop
+- [ ] Build obby map in Roblox Studio per `roblox/obby/README.md`
+- [ ] Create Developer Product and Game Pass in Creator Dashboard, update Config IDs
 - [ ] Create icon and publish as separate experience
-- [ ] Use as testbed for monetization mechanics and Roblox publishing workflow
-- [ ] Cross-promote Alchemy Academy from obby
+- [ ] Cross-promote Alchemy Academy from obby completion screen
 
 ## Business & Legal
 

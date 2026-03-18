@@ -1,0 +1,82 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/scenes/main_menu/MainMenu.gd" id="1_script"]
+
+[node name="MainMenu" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.102, 0.071, 0.157, 1)
+
+[node name="TitleLabel" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 80.0
+offset_right = 300.0
+offset_bottom = 200.0
+grow_horizontal = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "ALCHEMY ACADEMY
+Origins"
+
+[node name="SubtitleLabel" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 210.0
+offset_right = 250.0
+offset_bottom = 240.0
+grow_horizontal = 2
+horizontal_alignment = 1
+text = "A narrative alchemy puzzle game"
+
+[node name="ButtonContainer" type="VBoxContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -60.0
+offset_right = 100.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NewGameButton" type="Button" parent="ButtonContainer"]
+layout_mode = 2
+text = "New Game"
+
+[node name="ContinueButton" type="Button" parent="ButtonContainer"]
+layout_mode = 2
+text = "Continue"
+
+[node name="SettingsButton" type="Button" parent="ButtonContainer"]
+layout_mode = 2
+text = "Settings"
+
+[node name="QuitButton" type="Button" parent="ButtonContainer"]
+layout_mode = 2
+text = "Quit"
+
+[node name="VersionLabel" type="Label" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+horizontal_alignment = 2
+text = "v0.1.0"

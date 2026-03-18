@@ -1,0 +1,247 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/scenes/lab/Lab.gd" id="1_script"]
+
+[node name="Lab" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.102, 0.071, 0.157, 1)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="GoldLabel" type="Label" parent="HUD"]
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 250.0
+offset_bottom = 36.0
+text = "Essence: 100"
+
+[node name="ChapterLabel" type="Label" parent="HUD"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 12.0
+offset_right = 200.0
+offset_bottom = 36.0
+grow_horizontal = 2
+horizontal_alignment = 1
+text = "Chapter 1: The Newcomer"
+
+[node name="JournalButton" type="Button" parent="HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_top = 8.0
+offset_right = -96.0
+offset_bottom = 36.0
+grow_horizontal = 0
+text = "Journal (J)"
+
+[node name="MenuButton" type="Button" parent="HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -88.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 36.0
+grow_horizontal = 0
+text = "Menu"
+
+[node name="IngredientPanel" type="Panel" parent="."]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 48.0
+offset_right = 340.0
+offset_bottom = -8.0
+grow_vertical = 2
+
+[node name="PanelHeader" type="Label" parent="IngredientPanel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 32.0
+grow_horizontal = 2
+text = "Ingredients"
+horizontal_alignment = 1
+
+[node name="IngredientScroll" type="ScrollContainer" parent="IngredientPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 36.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="IngredientList" type="VBoxContainer" parent="IngredientPanel/IngredientScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CauldronArea" type="Node2D" parent="."]
+position = Vector2(540, 200)
+
+[node name="CauldronRect" type="ColorRect" parent="CauldronArea"]
+offset_left = -60.0
+offset_top = 0.0
+offset_right = 60.0
+offset_bottom = 120.0
+color = Color(0.239, 0.102, 0.431, 1)
+
+[node name="SelectionLabel" type="Label" parent="CauldronArea"]
+offset_left = -120.0
+offset_top = 130.0
+offset_right = 120.0
+offset_bottom = 160.0
+horizontal_alignment = 1
+text = "Select 2 ingredients to brew."
+
+[node name="BrewButton" type="Button" parent="CauldronArea"]
+offset_left = -50.0
+offset_top = 170.0
+offset_right = 50.0
+offset_bottom = 200.0
+text = "Brew"
+
+[node name="PotionPanel" type="Panel" parent="."]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = 48.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="PanelHeader" type="Label" parent="PotionPanel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 32.0
+grow_horizontal = 2
+text = "Potions"
+horizontal_alignment = 1
+
+[node name="PotionScroll" type="ScrollContainer" parent="PotionPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 36.0
+offset_right = -4.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PotionList" type="VBoxContainer" parent="PotionPanel/PotionScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SellAllButton" type="Button" parent="PotionPanel"]
+layout_mode = 1
+anchors_preset = 12
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -36.0
+offset_right = 50.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Sell All"
+
+[node name="DiscoveryOverlay" type="CanvasLayer" parent="."]
+layer = 20
+visible = false
+
+[node name="OverlayBackground" type="ColorRect" parent="DiscoveryOverlay"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.75)
+
+[node name="DiscoveryLabel" type="Label" parent="DiscoveryOverlay"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -80.0
+offset_right = 250.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "NEW DISCOVERY!"
+
+[node name="ScienceLabel" type="Label" parent="DiscoveryOverlay"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -10.0
+offset_right = 250.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Science note goes here."
+
+[node name="CloseButton" type="Button" parent="DiscoveryOverlay"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = 60.0
+offset_right = 50.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Continue"
+
+[node name="Notification" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 48.0
+offset_right = 250.0
+offset_bottom = 72.0
+grow_horizontal = 2
+horizontal_alignment = 1
+autowrap_mode = 2
+visible = false
