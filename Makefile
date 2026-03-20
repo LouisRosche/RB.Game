@@ -1,7 +1,7 @@
 # RB.Game — Build & Development Automation
 # Usage: make <target>
 
-.PHONY: help install lint format format-fix rojo rojo-obby test clean
+.PHONY: help install lint format format-fix rojo rojo-obby test validate check clean
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
@@ -46,12 +46,20 @@ rojo-build: ## Build main project to .rbxl (for CI or headless testing)
 # Testing
 # --------------------------------------------------------------------------
 
-test: ## Run tests (reminder — currently in-Studio only)
-	@echo "Tests run inside Roblox Studio."
+test: ## Run in-Studio tests (manual — see instructions)
+	@echo "In-Studio tests run inside Roblox Studio."
 	@echo "1. rojo serve (or: make rojo)"
 	@echo "2. Open Studio, connect to Rojo"
 	@echo "3. Place TestRunner.server.luau in ServerScriptService"
 	@echo "4. Click Run → check Output window"
+	@echo ""
+	@echo "Test modules: EconomyTests, RecipeTests, SeasonalTests,"
+	@echo "  NetworkTests, StringsTests, JournalTests, DataIntegrityTests"
+
+validate: ## Run CI data integrity checks locally
+	bash scripts/validate-data-integrity.sh
+
+check: lint format validate ## Run all CI checks locally (lint + format + validate)
 
 # --------------------------------------------------------------------------
 # Housekeeping
