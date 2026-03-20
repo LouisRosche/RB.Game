@@ -2,14 +2,14 @@
 
 **Game:** Alchemy Academy
 **Developer:** Solo indie (RB.Game)
-**Date:** March 16, 2026
+**Date:** March 20, 2026
 **Program:** Roblox Incubator (announced March 9, 2026)
 
 ---
 
 ## Why Alchemy Academy Qualifies
 
-- **Novel mechanic:** Combinatorial ingredient discovery system. Players do not follow fixed recipes — they experiment by combining 10+ base ingredients through a brewing system grounded in real chemistry concepts (solubility, reactions, catalysts). This creates a massive discovery space from a small content set, rewarding curiosity over guides.
+- **Novel mechanic:** Combinatorial ingredient discovery system. Players experiment by combining 4 base ingredients through a brewing system that produces 10 recipes across 5 rarity tiers. This creates a large discovery space from a lean content set, rewarding curiosity over guides.
 - **Underrepresented genre:** Educational tycoon with science theming. Roblox has thousands of tycoons and simulators, but almost none that blend tycoon progression with genuine science-education crossover mechanics. This directly fits the Incubator's call for "Novel Games" in underrepresented genres.
 - **Already built:** 27 production-quality Luau files across server, client, and shared modules. Full game loop implemented — ingredient growing, experimental brewing, potion selling, and lab upgrades are all functional. Single-Script Architecture, ProfileService for data persistence, server-authoritative economy.
 - **Solo developer with professional codebase quality:** i18n-ready from day one (all strings externalized in ModuleScript lookup tables), StreamingEnabled, part count managed under 75K, and ethical monetization baked into the architecture — not bolted on.
@@ -21,7 +21,7 @@
 
 *Target length: ~300 words. Suitable for pasting into the Incubator application form.*
 
-Alchemy Academy is a tycoon-simulator where players build and manage a magical alchemy lab — but the core loop is built on genuine discovery, not prescriptive crafting. Players grow magical ingredients, combine them in a brewing system inspired by real chemistry principles, and uncover recipes through experimentation rather than following a wiki. Ten base ingredients generate a combinatorial explosion of possible recipes, meaning the game ships deep content from a lean design surface.
+Alchemy Academy is a tycoon-simulator where players build and manage a magical alchemy lab — but the core loop is built on genuine discovery, not prescriptive crafting. Players grow magical ingredients, combine them in a brewing system inspired by real chemistry principles, and uncover recipes through experimentation rather than following a wiki. Four base ingredients with five rarity tiers generate 10 recipes and thousands of unique value outcomes, meaning the game ships deep content from a lean design surface.
 
 This is a systems-over-content game. Instead of shipping hundreds of hand-authored recipes that players memorize in a week, we built a brewing engine where ingredient properties (volatility, affinity, catalytic behavior) interact dynamically. Players form hypotheses, test combinations, record results in their in-game journal, and share discoveries with friends. The result is a tycoon that feels like a science lab — and that is the point.
 
@@ -29,7 +29,7 @@ The game is not a prototype. We have 27 production Luau files in a Single-Script
 
 Our target audience is 13-to-24-year-old players who are science-curious and underserved by current Roblox offerings. We monetize through cosmetics (lab skins, ingredient particle effects, cauldron styles) and convenience game passes (extra garden plots, recipe journal upgrades). There are no loot boxes, no pay-to-win mechanics, no artificial scarcity timers. Odds for any cosmetic system are transparent and published in-game.
 
-With Incubator support, we would focus on three areas: expanding the ingredient system to 25+ bases with community-suggested elements, building multiplayer co-op brewing sessions, and preparing a polished launch targeting sustained $500+/month revenue. Alchemy Academy is built, it is novel, and it is ready to grow.
+With Incubator support, we would focus on three areas: expanding the ingredient system from 4 to 12+ bases with community-suggested elements, building multiplayer co-op brewing sessions, and preparing a polished launch targeting sustained $500+/month revenue. Alchemy Academy is built, it is novel, and it is ready to grow.
 
 ---
 
@@ -61,9 +61,9 @@ With Incubator support, we would focus on three areas: expanding the ingredient 
 
 | Date | Action |
 |---|---|
-| March 16, 2026 | This preparation document created |
-| Week of March 16-22 | Record gameplay demo video, finalize retention one-pager |
-| Week of March 23-29 | Submit Incubator application (target: within 1 week of this document) |
+| March 16, 2026 | Preparation document created |
+| Week of March 20-26 | Record gameplay demo video, finalize retention one-pager |
+| Week of March 27-31 | Submit Incubator application |
 | Application deadline | TBD — check [roblox.com](https://www.roblox.com) for 2026 cohort status |
 | Ongoing | Monitor for Jumpstart program details as a backup track |
 
