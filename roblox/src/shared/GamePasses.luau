@@ -84,7 +84,7 @@ GamePasses.DEFS: { GamePassDef } = {
 			"Celestial Lab theme (always unlocked)",
 			"Gold [VIP] chat tag",
 			"Glowing nameplate above your lab",
-			"Early access to future VIP-only cosmetics",
+			"Support the developer — thank you!",
 		},
 	},
 }

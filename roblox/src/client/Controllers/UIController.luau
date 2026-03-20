@@ -94,12 +94,13 @@ local leaderboardRowLabels: { TextLabel } = {}
 -- PolicyService flags (set asynchronously during HUD creation)
 local adsAllowed: boolean = false
 local externalLinksAllowed: boolean = true -- default true, overridden by PolicyService
+local paidRandomItemsRestricted: boolean = false -- precautionary; no loot boxes but rarity rolls exist
 
 -- Rewarded ad button state
 local adButton: TextButton = nil :: any
 local adCooldownLabel: TextLabel = nil :: any
 local adCooldownRemaining: number = 0
-local adsAllowed: boolean = false
+-- NOTE: adsAllowed is defined above (line 95) with PolicyService flags
 local adCooldownConnection: RBXScriptConnection? = nil
 
 -- Brewing selection state
@@ -483,6 +484,11 @@ local function createHUD()
 			-- External links (Discord, website) — respect AllowedExternalLinkReferences
 			if policyInfo.AllowedExternalLinkReferences then
 				externalLinksAllowed = #policyInfo.AllowedExternalLinkReferences > 0
+			end
+			-- Paid random items (precautionary — game has no loot boxes but rarity
+			-- rolls on harvest could be interpreted as paid-random in strict jurisdictions)
+			if policyInfo.ArePaidRandomItemsRestricted then
+				paidRandomItemsRestricted = true
 			end
 		else
 			adsAllowed = false

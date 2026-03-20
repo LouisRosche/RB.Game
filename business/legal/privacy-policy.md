@@ -109,7 +109,7 @@ The UK's Age Appropriate Design Code applies to information society services lik
 
 ### 4.5 Parental Rights
 
-Parents and guardians who have questions about their child's data should contact the relevant platform directly (Roblox or Steam) for account-level data. For questions about in-game progress data stored by our game, parents may contact us at the address listed in Section 9.
+Parents and guardians who have questions about their child's data should contact the relevant platform directly (Roblox or Steam) for account-level data. For questions about in-game progress data stored by our game, parents may contact us at the address listed in Section 10.
 
 ## 5. GDPR Compliance (European Economic Area)
 

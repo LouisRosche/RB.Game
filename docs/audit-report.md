@@ -43,6 +43,12 @@ The core problem is straightforward: the project is optimizing for perfection in
 | Game design doc values don't match Config.luau | MEDIUM | **RESOLVED** — GDD updated to match Config.luau source of truth |
 | Missing CCPA/CARU/FTC compliance documentation | MEDIUM | **RESOLVED** — added to business/legal/checklist.md |
 | Discord setup missing age verification requirement | MEDIUM | **RESOLVED** — COPPA-compliant age notice added to community/discord/setup.md |
+| Privacy Policy Section 4.5 cross-reference error | MEDIUM | **RESOLVED** — fixed "Section 9" → "Section 10" |
+| REFUND_NOTICE claims USD values displayed (they aren't) | MEDIUM | **RESOLVED** — removed inaccurate claim |
+| Missing ArePaidRandomItemsRestricted PolicyService check | LOW | **RESOLVED** — precautionary check added to UIController |
+| VIP pass lists undeliverable "future cosmetics" benefit | LOW | **RESOLVED** — replaced with honest benefit text |
+| No DPIA document for UK AADC compliance | LOW | OPEN — create before Phase 3 |
+| No data breach response plan document | LOW | OPEN — create before Phase 2 |
 
 ---
 

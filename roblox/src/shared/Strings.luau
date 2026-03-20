@@ -142,7 +142,7 @@ Strings.AD_WATCH_FAILED           = "Something went wrong with the ad. No worrie
 -- Legal / compliance
 --============================================================================--
 
-Strings.REFUND_NOTICE             = "All purchases are final. Prices shown in Robux (approximate USD value displayed). For billing issues, contact Roblox Support at roblox.com/support."
+Strings.REFUND_NOTICE             = "All purchases are final. Prices shown in Robux. For billing issues, contact Roblox Support at roblox.com/support."
 Strings.EXTERNAL_LINK_BLOCKED     = "External links are not available in your region."
 Strings.PRIVACY_POLICY_LINK       = "Privacy Policy: alchemyacademy.game/privacy"
 Strings.TERMS_OF_SERVICE_LINK     = "Terms of Service: alchemyacademy.game/terms"
