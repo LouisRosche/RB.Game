@@ -173,8 +173,14 @@ local function setupCoins()
 		return
 	end
 
+	-- Assign stable unique IDs to each coin at setup time.
+	-- coin.Name alone is not unique when multiple coins share a name.
+	local coinIndex = 0
 	for _, coin in folder:GetChildren() do
 		if coin:IsA("BasePart") then
+			coinIndex += 1
+			local coinId = coin.Name .. "_" .. tostring(coinIndex)
+
 			coin.Touched:Connect(function(hit: BasePart)
 				local character = hit.Parent
 				local player = Players:GetPlayerFromCharacter(character)
@@ -183,9 +189,6 @@ local function setupCoins()
 				local state = playerStates[player]
 				if not state then return end
 
-				-- Use GetDebugId for a unique key per coin instance
-				-- (coin.Name is not unique when multiple coins share a name)
-				local coinId = coin:GetDebugId()
 				-- Prevent double-collect
 				if state.collectedCoins[coinId] then return end
 				state.collectedCoins[coinId] = true

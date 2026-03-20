@@ -112,3 +112,16 @@ jobs:
             echo "::error::Potential secrets committed: $secrets"
             exit 1
           fi
+
+      - name: Verify legal compliance documents exist
+        run: |
+          missing=0
+          for f in LICENSE business/legal/privacy-policy.md business/legal/terms-of-service.md business/legal/checklist.md; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Required legal document missing: $f"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ "$missing" -gt 0 ]; then
+            exit 1
+          fi
