@@ -59,7 +59,10 @@ test: ## Run in-Studio tests (manual — see instructions)
 validate: ## Run CI data integrity checks locally
 	bash scripts/validate-data-integrity.sh
 
-check: lint format validate ## Run all CI checks locally (lint + format + validate)
+compliance: ## Run legal & compliance checks locally
+	bash scripts/validate-compliance.sh
+
+check: lint format validate compliance ## Run all CI checks locally (lint + format + validate + compliance)
 
 # --------------------------------------------------------------------------
 # Housekeeping

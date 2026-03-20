@@ -135,6 +135,15 @@ jobs:
       - name: Run cross-module data integrity checks
         run: bash scripts/validate-data-integrity.sh
 
+  compliance:
+    name: Legal & Compliance Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run compliance checks
+        run: bash scripts/validate-compliance.sh
+
   test-coverage:
     name: Test File Validation
     runs-on: ubuntu-latest
