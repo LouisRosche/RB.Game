@@ -138,4 +138,11 @@ Strings.AD_NOT_AVAILABLE          = "Video ads aren't available for you right no
 Strings.AD_ALREADY_ON_COOLDOWN    = "You've recently watched an ad. Try again in a few minutes!"
 Strings.AD_WATCH_FAILED           = "Something went wrong with the ad. No worries — try again later!"
 
+--============================================================================--
+-- Legal / compliance
+--============================================================================--
+
+Strings.REFUND_NOTICE             = "All purchases are final. For billing issues, contact Roblox Support."
+Strings.EXTERNAL_LINK_BLOCKED     = "External links are not available in your region."
+
 return Strings

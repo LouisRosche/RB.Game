@@ -91,6 +91,10 @@ local particleController: any = nil
 -- Leaderboard row labels (reused on each update to avoid re-creating UI)
 local leaderboardRowLabels: { TextLabel } = {}
 
+-- PolicyService flags (set asynchronously during HUD creation)
+local adsAllowed: boolean = false
+local externalLinksAllowed: boolean = true -- default true, overridden by PolicyService
+
 -- Rewarded ad button state
 local adButton: TextButton = nil :: any
 local adCooldownLabel: TextLabel = nil :: any
@@ -461,19 +465,28 @@ local function createHUD()
 	adCooldownLabel.Visible = false
 	adCooldownLabel.Parent = adButton
 
-	-- Check PolicyService to determine if ads are allowed for this player
+	-- Check PolicyService for region-specific restrictions (ads, external links)
 	task.spawn(function()
 		local ok, policyInfo = pcall(function()
 			return PolicyService:GetPolicyInfoForPlayerAsync(Players.LocalPlayer)
 		end)
-		if ok and policyInfo and policyInfo.AreAdsAllowed then
-			adsAllowed = true
-			adButton.Visible = true
-			-- Expand HUD to show the ad button
+		if ok and policyInfo then
+			-- Ads
+			if policyInfo.AreAdsAllowed then
+				adsAllowed = true
+				adButton.Visible = true
+			else
+				adsAllowed = false
+				adButton.Visible = false
+				hud.Size = UDim2.new(0, 220, 0, 196)
+			end
+			-- External links (Discord, website) — respect AllowedExternalLinkReferences
+			if policyInfo.AllowedExternalLinkReferences then
+				externalLinksAllowed = #policyInfo.AllowedExternalLinkReferences > 0
+			end
 		else
 			adsAllowed = false
 			adButton.Visible = false
-			-- Shrink HUD back if ads not allowed
 			hud.Size = UDim2.new(0, 220, 0, 196)
 		end
 	end)
@@ -1715,10 +1728,21 @@ local function createCosmeticPanel()
 		end)
 	end
 
+	-- Refund notice (legal compliance — CARU/FTC)
+	local refundNotice = createLabel(
+		"RefundNotice",
+		Strings.REFUND_NOTICE,
+		FONT_BODY, 10, cosmeticPanel
+	)
+	refundNotice.Position = UDim2.new(0, 0, 1, -18)
+	refundNotice.Size = UDim2.new(1, 0, 0, 16)
+	refundNotice.TextColor3 = Color3.fromRGB(140, 130, 160)
+	refundNotice.ZIndex = 12
+
 	-- Scrolling item list
 	cosmeticListFrame = createScrollingList(
 		"CosmeticList",
-		UDim2.new(1, 0, 1, -96),
+		UDim2.new(1, 0, 1, -114),
 		UDim2.new(0, 0, 0, 92),
 		cosmeticPanel
 	)
