@@ -54,7 +54,7 @@ RB.Game/
 ├── community/              Community management
 │   └── discord/            Server setup & resources
 ├── business/               Business & legal
-│   ├── legal/              Trademarks, LLC, COPPA
+│   ├── legal/              Privacy policy, ToS, trademarks, LLC, COPPA
 │   └── finance/            Budget tracking, tax prep
 └── docs/                   Plans & guides
     └── roadmap.md          Phase-gated roadmap tracker
