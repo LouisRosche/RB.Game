@@ -110,6 +110,20 @@ Happy to answer any questions.
 
 ---
 
+## FTC Endorsement Disclosure Requirements
+
+Any paid or sponsored content **must** include clear disclosure per FTC 16 CFR Part 255:
+- YouTube/TikTok: "#ad" or "#sponsored" visible in the first line of the description AND stated verbally
+- Twitter/X: "#ad" within the tweet (not buried in a thread)
+- Twitch: "Sponsored" tag enabled + verbal disclosure at start of stream
+
+**Free keys or access with no obligation do NOT require disclosure** — but if
+the creator receives any compensation (Robux, revenue share, or payment), they must disclose.
+
+Document all paid partnerships in the tracking sheet below for FTC compliance records.
+
+---
+
 ## What Not to Do
 
 - Do not mass-email 100+ creators with the same template
@@ -117,3 +131,4 @@ Happy to answer any questions.
 - Do not contact creators whose audience is primarily under 10 years old for the
   Steam version (COPPA/GDPR compliance risk)
 - Do not ask for coverage — offer access and let them decide
+- Do not forget FTC disclosure requirements for any paid partnerships

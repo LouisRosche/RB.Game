@@ -35,7 +35,8 @@ RB.Game/
 ├── research/               Strategy & market research
 │   ├── 01-strategic-foundation.md
 │   ├── 02-reality-check.md
-│   └── 03-execution-playbook.md
+│   ├── 03-execution-playbook.md
+│   └── 04-metaverse-platform-analysis.md
 ├── roblox/                 Roblox game (Phase 1-2)
 │   ├── src/
 │   │   ├── server/         ServerScriptService modules

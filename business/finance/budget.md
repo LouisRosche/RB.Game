@@ -1,6 +1,6 @@
 # Budget Tracker — Alchemy Academy
 
-Last updated: 2026-03-06
+Last updated: 2026-03-20
 Phase: 0 (Foundation)
 
 ---
@@ -9,12 +9,12 @@ Phase: 0 (Foundation)
 
 | Item | Est. Cost | Status | Notes |
 |------|-----------|--------|-------|
-| LLC formation | $50–$500 | ⬜ Not started | Wyoming LLC cheapest (~$50 state fee). Use Registered Agents Inc or similar for ~$120/yr registered agent service. |
+| LLC formation | $100–$220 | ⬜ Not started | Wyoming LLC: $100 state filing fee (online at wyoming.gov/sos) + $120/yr registered agent if non-resident. |
 | Business checking account | $0 | ⬜ Not started | Mercury or Relay — free for solo businesses |
 | Trademark (USPTO) | $250–$350/class | ⬜ Not started | File after reaching $500/month. Class 41 (entertainment) covers games. |
 | Steam developer fee | $100 | ⬜ Not started | One-time per app. Recoups at $1,000 in sales. |
 | Domain name | $10–$15/yr | ⬜ Not started | alchemyacademy.game or .io. Buy early before someone grabs it. |
-| **Total estimated** | **~$600–$1,100** | | Spread across Phase 0–3 |
+| **Total estimated** | **~$470–$785** | | Spread across Phase 0–3 |
 
 ---
 
@@ -102,7 +102,7 @@ Then retention determines whether it sustains
 
 | Phase | Don't spend on | Do spend on |
 |-------|---------------|------------|
-| Phase 0 | Paid ads, art commissions | LLC ($50–500), Steam key ($100) |
+| Phase 0 | Paid ads, art commissions | LLC ($100–220), domain ($10–40/yr) |
 | Phase 1 | Steam key, trademark | Audio (high ROI), 1–2 art assets |
 | Phase 2 | Paid influencers, studio space | Trademark ($350), better audio |
 | Phase 3 | Anything unrelated to Steam launch | Press kit, trailer editing |

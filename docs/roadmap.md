@@ -1,6 +1,6 @@
 # 18-Month Roadmap Tracker
 
-*Last updated: 2026-03-18*
+*Last updated: 2026-03-20*
 
 Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 
@@ -40,7 +40,7 @@ Legend: ✅ Done · 🔄 In progress · ⬜ Not started
 ### Sprint 1 — Core Loop (Weeks 7-11)
 - ✅ Central gameplay loop (plant → grow → harvest → brew → sell)
 - ✅ Server-authoritative Single-Script Architecture
-- ✅ 4 ingredients, 10 recipes, 3 lab levels, 3 cauldron levels
+- ✅ 4 ingredients, 10 recipes, 5 lab levels, 5 cauldron levels
 - ✅ Mutation rarity system (5 tiers, transparent odds)
 - ✅ Rate limiting on all RemoteEvents
 - ✅ Inventory caps (ingredients 30, potions 20, seeds 12)

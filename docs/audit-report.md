@@ -1,6 +1,6 @@
 # Alchemy Academy — Project Audit Report
 
-**Date:** March 16, 2026 (snapshot — see `roadmap.md` for current status)
+**Date:** March 20, 2026 (Living document — updated as gaps are resolved)
 **Project:** RB.Game / Alchemy Academy
 
 ---
@@ -39,6 +39,10 @@ The core problem is straightforward: the project is optimizing for perfection in
 | Godot .tscn scene files did not exist | MEDIUM | **RESOLVED** — 4 scenes created (MainMenu, Lab, Journal, Settings) |
 | No game published | HIGH | OPEN — publish unlisted, recruit 10-20 testers |
 | Business formation not started | MEDIUM | OPEN — LLC, domain, EIN |
+| No Privacy Policy or Terms of Service | HIGH | **RESOLVED** — created at business/legal/privacy-policy.md and business/legal/terms-of-service.md |
+| Game design doc values don't match Config.luau | MEDIUM | **RESOLVED** — GDD updated to match Config.luau source of truth |
+| Missing CCPA/CARU/FTC compliance documentation | MEDIUM | **RESOLVED** — added to business/legal/checklist.md |
+| Discord setup missing age verification requirement | MEDIUM | **RESOLVED** — COPPA-compliant age notice added to community/discord/setup.md |
 
 ---
 

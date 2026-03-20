@@ -1,6 +1,6 @@
 # Alchemy Academy — Launch Readiness Checklist
 
-> Last updated: March 18, 2026
+> Last updated: March 20, 2026
 
 ## Pre-Launch Blockers (Must Do Before Any Players)
 
@@ -44,11 +44,8 @@
 
 ## Business & Legal
 
-- [ ] Form LLC (Wyoming, ~$100)
-- [ ] Get EIN (free, IRS.gov)
-- [ ] Open business bank account
-- [ ] Register domain (alchemyacademy.gg or .game)
-- [ ] Begin USPTO trademark search for Phase 3
+See `business/legal/checklist.md` for the full legal compliance checklist.
+Key Phase 0 blockers: LLC formation, EIN, business bank account, domain registration.
 
 ## Roblox Incubator Application (Time-Sensitive)
 
