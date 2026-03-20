@@ -10,7 +10,7 @@
      platforms are added.
 -->
 
-**Effective Date:** March 20, 2026
+**Effective Date:** March 20, 2026 (revised)
 
 ## 1. Introduction
 
@@ -87,7 +87,27 @@ We take children's privacy seriously. Alchemy Academy is designed for players ag
 
 The Children's Online Privacy Protection Act (COPPA) applies to the online collection of personal information from children under 13. Because we do not directly collect personal information from any user, including children, our practices are consistent with COPPA requirements. Roblox, as the platform operator, handles COPPA-required parental consent and age-gating for users under 13.
 
-### 4.3 Parental Rights
+### 4.3 GDPR Article 8 — Children's Consent (EEA/UK)
+
+Under GDPR Article 8, information society services offered directly to a child require parental consent for processing personal data of children under 16 (or as low as 13 in some EU member states). Because Alchemy Academy targets ages 8-16:
+
+- We rely on the host platform (Roblox or Steam) to obtain and verify parental consent where required.
+- We do not independently process personal data that would trigger Article 8 obligations.
+- The in-game progress data we store (Section 2.1) is associated only with platform-assigned identifiers and does not constitute personal data processing requiring separate consent under most interpretations. However, out of an abundance of caution, we treat AddUserId-linked data as potentially personal and apply data minimization principles.
+
+### 4.4 UK Age Appropriate Design Code (AADC / Children's Code)
+
+The UK's Age Appropriate Design Code applies to information society services likely to be accessed by children under 18. Alchemy Academy is designed with the following AADC principles:
+
+- **Best interests of the child:** The game is educational and does not exploit children's developmental vulnerabilities.
+- **Data minimization:** We collect only the minimum data required for gameplay (Section 2.1).
+- **Default settings:** Privacy-protective settings are on by default — we do not track, profile, or target children.
+- **Transparency:** This policy is written in clear, age-appropriate language.
+- **No detrimental use:** In-game data is used solely for gameplay; never for profiling, behavioural targeting, or advertising.
+- **No nudge techniques:** Purchase prompts do not use dark patterns, pressure tactics, or exploitative design (consistent with CARU guidelines).
+- **Connected toys/devices:** Not applicable — Alchemy Academy does not connect to IoT devices.
+
+### 4.5 Parental Rights
 
 Parents and guardians who have questions about their child's data should contact the relevant platform directly (Roblox or Steam) for account-level data. For questions about in-game progress data stored by our game, parents may contact us at the address listed in Section 9.
 
@@ -123,7 +143,17 @@ To exercise these rights, contact us using the information in Section 9.
 - **Deletion requests** for in-game progress data can be submitted to us at any time. We will process deletion requests within 30 days.
 - Upon shutdown of the game, all in-game progress data stored via ProfileService will be deleted.
 
-## 8. Changes to This Privacy Policy
+## 8. Data Breach Notification
+
+In the unlikely event that in-game progress data is compromised:
+
+- **EEA/UK (GDPR):** We will notify the relevant supervisory authority within 72 hours of becoming aware of a breach involving personal data. If the breach is likely to result in a high risk to affected individuals, we will also notify those individuals without undue delay.
+- **United States:** We will comply with applicable state breach notification laws (including Wyoming's W.S. § 40-12-501 et seq.) and notify affected users as required.
+- **All jurisdictions:** We will post a notice in the game's Roblox description and Discord community server.
+
+Because we store only non-personal in-game progress data (Section 2.1), the risk of a breach involving personal information is minimal. The platform operators (Roblox, Steam) are responsible for breaches of account-level personal data under their own privacy policies.
+
+## 9. Changes to This Privacy Policy
 
 We may update this Privacy Policy from time to time. When we make material changes, we will:
 
@@ -133,11 +163,11 @@ We may update this Privacy Policy from time to time. When we make material chang
 
 We encourage players and parents/guardians to review this policy periodically.
 
-## 9. Contact Us
+## 10. Contact Us
 
 If you have questions, concerns, or requests regarding this Privacy Policy or your data, please contact us at:
 
-**Email:** privacy@alchemyacademy.game *(placeholder — update before publishing)*
+**Email:** legal@alchemyacademy.game *(placeholder — update before publishing)*
 
 We will respond to all inquiries within 30 days.
 

@@ -104,6 +104,21 @@ Complete Phase 2 items before monetising.
 - [ ] Self-rate via IARC (free, integrated into Steamworks)
 - [ ] Ensure rating is displayed in all marketing materials before launch
 
+### UK Age Appropriate Design Code (AADC / Children's Code)
+- [ ] Review the 15 standards of the UK AADC (ico.org.uk/for-organisations/childrens-code)
+- [ ] Confirm: no behavioural profiling of under-18 users
+- [ ] Confirm: privacy-protective defaults are enabled (no opt-in tracking)
+- [ ] Confirm: no nudge techniques or dark patterns in purchase flows
+- [ ] Confirm: Data Protection Impact Assessment (DPIA) completed for child-accessible features
+- [ ] Document AADC compliance in privacy policy (Section 4.4)
+
+### International Data Protection (monitor as player base grows)
+- [ ] **Brazil LGPD** (Lei Geral de Proteção de Dados): If significant Brazilian player base develops, review consent requirements for under-18 users (requires parental consent for under-12s, best-interest standard for 12-18). Appoint a DPO (encarregado) if processing personal data.
+- [ ] **South Korea PIPA** (Personal Information Protection Act): If publishing on Korean platforms, comply with data localization requirements. Stricter parental consent rules for under-14s. Korean Game Rating Board (GRB) rating required.
+- [ ] **China PIPL** (Personal Information Protection Law): If game becomes accessible in mainland China, requires separate consent for minors under 14, data localization, and mandatory security assessment for cross-border data transfers. Note: China also restricts gaming hours for minors.
+- [ ] **Japan APPI** (Act on Protection of Personal Information): Minimal additional obligations if no PII is collected. Monitor for changes.
+- [ ] **Australia Privacy Act**: Online Privacy Code for social media/gaming services. If significant Australian player base, review children's privacy obligations.
+
 ---
 
 ## Ongoing (all phases)
@@ -112,6 +127,11 @@ Complete Phase 2 items before monetising.
 - [ ] Review DevEx payment receipts against bank deposits quarterly
 - [ ] File annual LLC report with Wyoming SOS ($52/yr)
 - [ ] File annual tax return by April 15 (or request extension by April 15)
+- [ ] Review Privacy Policy and ToS annually or when data practices change
+- [ ] Monitor GDPR, CCPA/CPRA, UK AADC regulatory updates for changes affecting children's games
+- [ ] Maintain data breach response plan — test notification procedures annually
+- [ ] Verify all contact emails (legal@alchemyacademy.game) are active and monitored before publishing legal docs
+- [ ] Review influencer partnerships for FTC compliance — audit disclosure practices quarterly
 
 ---
 
@@ -136,6 +156,10 @@ Complete Phase 2 items before monetising.
 - Roblox DevEx: create.roblox.com/dashboard/devex
 - Roblox ToS: en.help.roblox.com/hc/en-us/articles/115004647846
 - Roblox PolicyService: create.roblox.com/docs/reference/engine/classes/PolicyService
+- UK AADC (Children's Code): ico.org.uk/for-organisations/childrens-code
+- GDPR Article 8 (children's consent): gdpr-info.eu/art-8-gdpr
+- Brazil LGPD: gov.br/anpd (Autoridade Nacional de Proteção de Dados)
+- South Korea PIPA: pipc.go.kr (Personal Information Protection Commission)
 
 ---
 

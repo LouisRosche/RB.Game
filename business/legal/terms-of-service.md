@@ -2,7 +2,7 @@
 
 > **Publishing note:** Post this document on the game's website, link it from the Roblox game description, and include it in the Steam store page legal section. On Roblox, also display a brief notice at first join (e.g., "By playing you agree to our Terms of Service — [link]"). Keep a dated changelog whenever this document is updated.
 
-**Effective Date:** March 20, 2026
+**Effective Date:** March 20, 2026 (revised)
 
 These Terms of Service ("Terms") govern your use of Alchemy Academy ("the Game"), developed and published by RB.Game ("we," "us," or "our"). RB.Game operates as a sole proprietorship with a Wyoming LLC to be formed. By accessing or playing the Game, you agree to these Terms. If you do not agree, do not play.
 
@@ -72,7 +72,9 @@ Alchemy Academy does not include a custom chat system. All in-game communication
 
 All content in Alchemy Academy — including but not limited to game code, artwork, music, sound effects, UI design, game mechanics, and text — is the property of RB.Game or its licensors and is protected by applicable intellectual property laws.
 
-You may not copy, modify, distribute, sell, or create derivative works based on any part of the Game without our prior written permission. You may create and share gameplay videos, screenshots, and streaming content for personal, non-commercial use, provided you credit Alchemy Academy by RB.Game.
+You may not copy, modify, distribute, sell, or create derivative works based on any part of the Game without our prior written permission.
+
+**Content Creation License:** You may create and share gameplay videos, screenshots, live streams, and other derivative content featuring Alchemy Academy for both personal and commercial use (including monetized YouTube videos, Twitch streams, and TikTok posts), provided you credit "Alchemy Academy by RB.Game." Paid sponsorships or promotions must comply with FTC Endorsement Guidelines and include appropriate disclosure (e.g., #ad, #sponsored). This license does not extend to redistributing game assets (art, music, code) outside the context of gameplay content.
 
 ## 7. User Data and Privacy
 
@@ -98,9 +100,11 @@ Our total liability to you for any claim arising from these Terms or your use of
 
 ## 10. Termination
 
-We may suspend or terminate your access to the Game at any time, for any reason, with or without notice. Reasons for termination include but are not limited to violations of these Terms, exploiting or cheating, or abusive behavior.
+We may suspend or terminate your access to the Game for cause, including but not limited to violations of these Terms, exploiting or cheating, abusive behavior, or activity that threatens the integrity of the Game or safety of other players. Where practicable, we will provide notice and an explanation of the reason for suspension or termination.
 
-Upon termination, you lose access to all in-game data, virtual items, and purchases associated with your account. We are not obligated to provide refunds for terminated accounts, except as required by applicable law or platform refund policies.
+For players in the European Economic Area or United Kingdom, termination rights are subject to applicable consumer protection laws, including the right to a proportionate remedy. We will not terminate access arbitrarily or without justification.
+
+Upon termination for cause, you lose access to all in-game data, virtual items, and purchases associated with your account. We are not obligated to provide refunds for terminated accounts, except as required by applicable law or platform refund policies.
 
 You may stop using the Game at any time.
 
@@ -108,7 +112,13 @@ You may stop using the Game at any time.
 
 These Terms are governed by and construed in accordance with the laws of the State of Wyoming, USA, without regard to conflict of law principles.
 
-Any dispute arising from these Terms or your use of the Game shall be resolved in the state or federal courts located in Wyoming, USA. You agree to submit to the personal jurisdiction of those courts.
+**Informal Resolution First:** Before filing any formal claim, you agree to contact us at the email address in Section 14 and attempt to resolve the dispute informally for at least 30 days.
+
+**Jurisdiction:** Any dispute arising from these Terms or your use of the Game that cannot be resolved informally shall be resolved in the state or federal courts located in Wyoming, USA. You agree to submit to the personal jurisdiction of those courts.
+
+**Class Action Waiver:** To the maximum extent permitted by applicable law, you agree that any dispute resolution proceedings will be conducted on an individual basis and not as part of a class, consolidated, or representative action. If this waiver is found to be unenforceable in your jurisdiction, the remainder of this Section 11 still applies.
+
+**EEA/UK Users:** Nothing in this section limits your rights under mandatory consumer protection laws in your country of residence, including the right to bring claims in your local courts.
 
 ## 12. Changes to These Terms
 
@@ -124,7 +134,7 @@ If any provision of these Terms is found to be unenforceable or invalid, that pr
 
 If you have questions about these Terms, please contact us at:
 
-**Email:** legal@rbgame.com *(placeholder — update before publication)*
+**Email:** legal@alchemyacademy.game *(placeholder — update before publication)*
 
 ---
 
