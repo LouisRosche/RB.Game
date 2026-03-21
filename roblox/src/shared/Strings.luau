@@ -30,6 +30,11 @@ Strings.SELL              = "Sell"
 Strings.UPGRADE_LAB       = "Expand Lab"
 Strings.UPGRADE_CAULDRON  = "Upgrade Cauldron"
 Strings.CLOSE             = "Close"
+Strings.SKIP              = "Skip"
+Strings.SETTINGS          = "Settings"
+Strings.COSMETIC_SHOP     = "Cosmetic Shop"
+Strings.SELL_ALL          = "Sell All"
+Strings.MUTE_ALL          = "Mute All"
 Strings.PLANT             = "Plant"
 Strings.HARVEST           = "Harvest"
 Strings.JOURNAL           = "Alchemist's Journal"
@@ -82,6 +87,26 @@ Strings.GROWTH_LABEL      = "Grows in: {time}s"
 Strings.SEED_COST_LABEL   = "Seed: {cost} Essence"
 Strings.BREW_TIME_LABEL   = "Brew time: {time}s"
 Strings.BONUS_LABEL       = "Value bonus: +{bonus}%"
+
+-- HUD labels (dynamically populated)
+Strings.HUD_LAB           = "Lab: {name} ({plots} plots)"
+Strings.HUD_LAB_DEFAULT   = "Lab: Starter"
+Strings.HUD_CAULDRON      = "Cauldron: {name}"
+Strings.HUD_CAULDRON_DEFAULT = "Cauldron: Basic"
+
+-- Brew preview
+Strings.BREW_PREVIEW      = "Result: {potion} (Base: {value} Essence)"
+
+-- Upgrade panel info
+Strings.UPGRADE_LAB_INFO  = "+{plots} plots -> {name}"
+Strings.UPGRADE_CAULDRON_INFO = "Brew: {time}s, +{bonus}% value -> {name}"
+
+-- Performance toggle
+Strings.PERF_MODE_ON      = "Performance Mode: ON"
+Strings.PERF_MODE_OFF     = "Performance Mode: OFF"
+
+-- Leaderboard
+Strings.LEADERBOARD_TITLE = "Top Alchemists"
 
 --============================================================================--
 -- Empty / placeholder states
@@ -137,5 +162,14 @@ Strings.AD_BOOST_GRANTED          = "2x Earnings activated for {minutes} minutes
 Strings.AD_NOT_AVAILABLE          = "Video ads aren't available for you right now."
 Strings.AD_ALREADY_ON_COOLDOWN    = "You've recently watched an ad. Try again in a few minutes!"
 Strings.AD_WATCH_FAILED           = "Something went wrong with the ad. No worries — try again later!"
+
+--============================================================================--
+-- Legal / compliance
+--============================================================================--
+
+Strings.REFUND_NOTICE             = "All purchases are final. Prices shown in Robux. For billing issues, contact Roblox Support at roblox.com/support."
+Strings.EXTERNAL_LINK_BLOCKED     = "External links are not available in your region."
+Strings.PRIVACY_POLICY_LINK       = "Privacy Policy: alchemyacademy.game/privacy"
+Strings.TERMS_OF_SERVICE_LINK     = "Terms of Service: alchemyacademy.game/terms"
 
 return Strings

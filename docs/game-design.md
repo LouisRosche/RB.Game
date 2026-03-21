@@ -132,8 +132,8 @@ Rolled at harvest. Higher rarity = higher multiplier on potion value.
 Final potion value = base value x ingredient1 rarity multiplier x ingredient2 rarity multiplier x cauldron bonus
 ```
 
-Example: Celestial Brew with Epic Starbloom (15x) + Legendary Starbloom (50x) in Silver cauldron (1.25x):
-75 x 15 x 50 x 1.25 = **70,312 Essence**
+Example: Celestial Brew with Epic Starbloom (15x) + Legendary Starbloom (50x) in Silver cauldron (1.2x):
+75 x 15 x 50 x 1.2 = **67,500 Essence**
 
 ---
 
@@ -141,19 +141,23 @@ Example: Celestial Brew with Epic Starbloom (15x) + Legendary Starbloom (50x) in
 
 ### Lab Levels
 
-| Level | Name       | Plots | Cost          |
-| ----- | ---------- | ----- | ------------- |
-| 1     | Starter    | 2     | Free          |
-| 2     | Apprentice | 4     | 500 Essence   |
-| 3     | Alchemist  | 6     | 2,000 Essence |
+| Level | Name         | Plots | Cost           |
+| ----- | ------------ | ----- | -------------- |
+| 1     | Starter      | 2     | Free           |
+| 2     | Apprentice   | 3     | 750 Essence    |
+| 3     | Alchemist    | 4     | 3,000 Essence  |
+| 4     | Master       | 5     | 10,000 Essence |
+| 5     | Grand Master | 6     | 30,000 Essence |
 
 ### Cauldron Levels
 
-| Level | Name   | Brew Time | Value Bonus | Cost           |
-| ----- | ------ | --------- | ----------- | -------------- |
-| 1     | Basic  | 10s       | 1.0x        | Free           |
-| 2     | Copper | 7s        | 1.1x        | 300 Essence    |
-| 3     | Silver | 4s        | 1.25x       | 1,500 Essence  |
+| Level | Name      | Brew Time | Value Bonus | Cost           |
+| ----- | --------- | --------- | ----------- | -------------- |
+| 1     | Basic     | 12s       | 1.0x        | Free           |
+| 2     | Copper    | 10s       | 1.1x        | 500 Essence    |
+| 3     | Silver    | 8s        | 1.2x        | 2,500 Essence  |
+| 4     | Gold      | 6s        | 1.35x       | 8,000 Essence  |
+| 5     | Legendary | 4s        | 1.5x        | 25,000 Essence |
 
 ---
 
@@ -192,7 +196,7 @@ a chore.
 - Complete core loop (buy, plant, grow, harvest, brew, sell, upgrade)
 - 4 ingredients with mutation system
 - 10 potion recipes with combinatorial value system
-- 3 lab upgrade tiers + 3 cauldron upgrade tiers
+- 5 lab upgrade tiers + 5 cauldron upgrade tiers
 - Basic UI: HUD, seed shop, brewing panel, sell panel, upgrade options
 - Data persistence (player progress saved across sessions)
 - Offline growth (plants continue growing while logged out)
@@ -224,7 +228,7 @@ a chore.
 1. Player spawns at their empty lab
 2. They see 2 empty plots, a cauldron, and a shop station
 3. ProximityPrompt on empty plot says "Plant" -- opens seed selection
-4. Player buys cheapest seed (Moonpetal, 5 Essence out of starting 200 Essence)
+4. Player buys cheapest seed (Moonpetal, 5 Essence out of starting 50 Essence)
 5. Seed starts growing -- visual feedback (small sprout appears, grows over 45s)
 6. Player plants second plot while waiting
 7. First plant ready -- "Harvest" prompt -- player harvests -- "You harvested an Uncommon Moonpetal!" notification

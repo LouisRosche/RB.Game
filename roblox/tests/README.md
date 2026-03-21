@@ -24,7 +24,8 @@ with Roblox services.
 3. Insert a new **Script** (server script) and paste the contents of
    `TestRunner.server.luau` into it.
 4. Place each test ModuleScript (`RecipeTests`, `EconomyTests`,
-   `SeasonalTests`) as children of the runner script, or anywhere under
+   `SeasonalTests`, `NetworkTests`, `StringsTests`, `JournalTests`,
+   `DataIntegrityTests`) as children of the runner script, or anywhere under
    `ServerScriptService` — the runner discovers them by name suffix `Tests`.
 5. Click **Run** (server-only) or **Play** (full client+server).
 6. Open the **Output** window. The runner prints a colour-coded summary:
@@ -51,6 +52,24 @@ Roblox's built-in **TestService** can also run scripts:
   ```
 - Assertion helpers (`assertEqual`, `assertTrue`, `assertNil`) are provided by
   the test runner and passed into each test function via a context table.
+
+## Test Modules
+
+| Module | What It Tests |
+|--------|--------------|
+| `EconomyTests` | Config values, lab/cauldron levels, mutation tiers, game passes, cosmetics, ingredients |
+| `RecipeTests` | Recipe definitions, lookup() order independence, calculateValue() edge cases |
+| `SeasonalTests` | Seasonal events, date range overlaps, seasonal ingredient/recipe integrity |
+| `NetworkTests` | Event name constants, getAllEventNames() consistency, uniqueness |
+| `StringsTests` | String key existence, placeholder syntax, rarity/legal string coverage |
+| `JournalTests` | Journal ↔ Ingredient/Recipe cross-references, fun facts, how-to-play |
+| `DataIntegrityTests` | Cross-module data integrity: economy balance, cosmetic/pass ID collisions, seasonal isolation |
+
+## CI-Runnable Validation
+
+The `scripts/validate-data-integrity.sh` script runs static cross-module
+checks without Roblox Studio. It's part of the CI pipeline and can also
+be run locally via `make validate`.
 
 ## Adding New Tests
 

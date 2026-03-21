@@ -91,11 +91,16 @@ local particleController: any = nil
 -- Leaderboard row labels (reused on each update to avoid re-creating UI)
 local leaderboardRowLabels: { TextLabel } = {}
 
+-- PolicyService flags (set asynchronously during HUD creation)
+local adsAllowed: boolean = false
+local externalLinksAllowed: boolean = true -- default true, overridden by PolicyService
+local paidRandomItemsRestricted: boolean = false -- precautionary; no loot boxes but rarity rolls exist
+
 -- Rewarded ad button state
 local adButton: TextButton = nil :: any
 local adCooldownLabel: TextLabel = nil :: any
 local adCooldownRemaining: number = 0
-local adsAllowed: boolean = false
+-- NOTE: adsAllowed is defined above (line 95) with PolicyService flags
 local adCooldownConnection: RBXScriptConnection? = nil
 
 -- Brewing selection state
@@ -347,7 +352,7 @@ local function createHUD()
 	hudLabLabel.TextSize = 16
 	hudLabLabel.TextColor3 = TEXT_COLOR
 	hudLabLabel.TextXAlignment = Enum.TextXAlignment.Left
-	hudLabLabel.Text = "Lab: Starter"
+	hudLabLabel.Text = Strings.HUD_LAB_DEFAULT
 	hudLabLabel.ZIndex = 6
 	hudLabLabel.Parent = hud
 
@@ -361,12 +366,12 @@ local function createHUD()
 	hudCauldronLabel.TextSize = 16
 	hudCauldronLabel.TextColor3 = TEXT_COLOR
 	hudCauldronLabel.TextXAlignment = Enum.TextXAlignment.Left
-	hudCauldronLabel.Text = "Cauldron: Basic"
+	hudCauldronLabel.Text = Strings.HUD_CAULDRON_DEFAULT
 	hudCauldronLabel.ZIndex = 6
 	hudCauldronLabel.Parent = hud
 
 	-- Journal button (always accessible from HUD)
-	local journalBtn = createButton("JournalBtn", "Alchemist's Journal", UDim2.new(1, 0, 0, 28), hud)
+	local journalBtn = createButton("JournalBtn", Strings.JOURNAL, UDim2.new(1, 0, 0, 28), hud)
 	journalBtn.Position = UDim2.new(0, 0, 0, 84)
 	journalBtn.TextSize = 14
 	journalBtn.BackgroundColor3 = Color3.fromRGB(50, 80, 130)
@@ -384,7 +389,7 @@ local function createHUD()
 	end)
 
 	-- Settings button (volume / accessibility controls)
-	local settingsBtn = createButton("SettingsBtn", "⚙ Settings", UDim2.new(1, 0, 0, 26), hud)
+	local settingsBtn = createButton("SettingsBtn", "⚙ " .. Strings.SETTINGS, UDim2.new(1, 0, 0, 26), hud)
 	settingsBtn.Position = UDim2.new(0, 0, 0, 118)
 	settingsBtn.TextSize = 13
 	settingsBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 70)
@@ -402,7 +407,7 @@ local function createHUD()
 	end)
 
 	-- Cosmetic Shop button
-	local cosmeticBtn = createButton("CosmeticBtn", "Cosmetic Shop", UDim2.new(1, 0, 0, 26), hud)
+	local cosmeticBtn = createButton("CosmeticBtn", Strings.COSMETIC_SHOP, UDim2.new(1, 0, 0, 26), hud)
 	cosmeticBtn.Position = UDim2.new(0, 0, 0, 150)
 	cosmeticBtn.TextSize = 13
 	cosmeticBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 120)
@@ -461,19 +466,33 @@ local function createHUD()
 	adCooldownLabel.Visible = false
 	adCooldownLabel.Parent = adButton
 
-	-- Check PolicyService to determine if ads are allowed for this player
+	-- Check PolicyService for region-specific restrictions (ads, external links)
 	task.spawn(function()
 		local ok, policyInfo = pcall(function()
 			return PolicyService:GetPolicyInfoForPlayerAsync(Players.LocalPlayer)
 		end)
-		if ok and policyInfo and policyInfo.AreAdsAllowed then
-			adsAllowed = true
-			adButton.Visible = true
-			-- Expand HUD to show the ad button
+		if ok and policyInfo then
+			-- Ads
+			if policyInfo.AreAdsAllowed then
+				adsAllowed = true
+				adButton.Visible = true
+			else
+				adsAllowed = false
+				adButton.Visible = false
+				hud.Size = UDim2.new(0, 220, 0, 196)
+			end
+			-- External links (Discord, website) — respect AllowedExternalLinkReferences
+			if policyInfo.AllowedExternalLinkReferences then
+				externalLinksAllowed = #policyInfo.AllowedExternalLinkReferences > 0
+			end
+			-- Paid random items (precautionary — game has no loot boxes but rarity
+			-- rolls on harvest could be interpreted as paid-random in strict jurisdictions)
+			if policyInfo.ArePaidRandomItemsRestricted then
+				paidRandomItemsRestricted = true
+			end
 		else
 			adsAllowed = false
 			adButton.Visible = false
-			-- Shrink HUD back if ads not allowed
 			hud.Size = UDim2.new(0, 220, 0, 196)
 		end
 	end)
@@ -715,7 +734,10 @@ local function populateBrewIngredients()
 					if ing1 and ing2 then
 						local recipe = Recipes.lookup(ing1.Id, ing2.Id)
 						if recipe then
-							brewPreviewLabel.Text = "Result: " .. recipe.displayName .. " (Base: " .. recipe.baseValue .. " Essence)"
+							brewPreviewLabel.Text = formatString(Strings.BREW_PREVIEW, {
+								potion = recipe.displayName,
+								value = recipe.baseValue,
+							})
 							brewPreviewLabel.TextColor3 = recipe.color
 						else
 							brewPreviewLabel.Text = Strings.UNKNOWN_RECIPE
@@ -899,7 +921,7 @@ local function createSellPanel()
 	)
 
 	-- Sell All button
-	sellAllButton = createButton("SellAllButton", "Sell All", UDim2.new(1, 0, 0, 38), sellPanel)
+	sellAllButton = createButton("SellAllButton", Strings.SELL_ALL, UDim2.new(1, 0, 0, 38), sellPanel)
 	sellAllButton.Position = UDim2.new(0, 0, 1, -42)
 	sellAllButton.Font = FONT_HEADER
 	sellAllButton.TextSize = 18
@@ -947,14 +969,17 @@ local function updateUpgradeButtons()
 		if upgradeLabInfo and nextLab then
 			local currentLab = Config.LAB_LEVELS[labLevel]
 			local extraPlots = nextLab.plots - (currentLab and currentLab.plots or 0)
-			upgradeLabInfo.Text = "+" .. extraPlots .. " plots -> " .. nextLab.name
+			upgradeLabInfo.Text = formatString(Strings.UPGRADE_LAB_INFO, {
+				plots = extraPlots,
+				name = nextLab.name,
+			})
 		end
 	else
 		if upgradeLabBtn then
 			upgradeLabBtn.Visible = false
 		end
 		if upgradeLabInfo then
-			upgradeLabInfo.Text = "Lab: MAX LEVEL"
+			upgradeLabInfo.Text = Strings.MAX_LAB_LEVEL
 		end
 	end
 
@@ -966,14 +991,18 @@ local function updateUpgradeButtons()
 			upgradeCauldronBtn.Visible = true
 		end
 		if upgradeCauldronInfo and nextCauldron then
-			upgradeCauldronInfo.Text = "Brew: " .. nextCauldron.brewTime .. "s, +" .. math.floor((nextCauldron.valueBonus - 1) * 100) .. "% value -> " .. nextCauldron.name
+			upgradeCauldronInfo.Text = formatString(Strings.UPGRADE_CAULDRON_INFO, {
+				time = nextCauldron.brewTime,
+				bonus = math.floor((nextCauldron.valueBonus - 1) * 100),
+				name = nextCauldron.name,
+			})
 		end
 	else
 		if upgradeCauldronBtn then
 			upgradeCauldronBtn.Visible = false
 		end
 		if upgradeCauldronInfo then
-			upgradeCauldronInfo.Text = "Cauldron: MAX LEVEL"
+			upgradeCauldronInfo.Text = Strings.MAX_CAULDRON_LEVEL
 		end
 	end
 end
@@ -1501,7 +1530,7 @@ local function createSettingsPanel()
 	)
 
 	-- Mute all toggle
-	local muteBtn = createButton("MuteBtn", "Mute All", UDim2.new(1, 0, 0, 32), settingsPanel)
+	local muteBtn = createButton("MuteBtn", Strings.MUTE_ALL, UDim2.new(1, 0, 0, 32), settingsPanel)
 	muteBtn.Position = UDim2.new(0, 0, 0, 148)
 	muteBtn.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
 	muteBtn.ZIndex = 12
@@ -1528,7 +1557,7 @@ local function createSettingsPanel()
 	-- Performance Mode toggle — disables bloom, atmosphere, and particles
 	-- on low-end devices. Wired to LightingController + ParticleController
 	-- injected via UIController.setPerformanceControllers().
-	local perfBtn = createButton("PerfModeBtn", "Performance Mode: OFF", UDim2.new(1, 0, 0, 32), settingsPanel)
+	local perfBtn = createButton("PerfModeBtn", Strings.PERF_MODE_OFF, UDim2.new(1, 0, 0, 32), settingsPanel)
 	perfBtn.Position = UDim2.new(0, 0, 0, 190)
 	perfBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 	perfBtn.ZIndex = 12
@@ -1549,12 +1578,12 @@ local function createSettingsPanel()
 		if perfOn then
 			if lightingController then lightingController.disableEffects() end
 			if particleController then particleController.disableAll() end
-			perfBtn.Text = "Performance Mode: ON"
+			perfBtn.Text = Strings.PERF_MODE_ON
 			perfBtn.BackgroundColor3 = Color3.fromRGB(40, 80, 40)
 		else
 			if lightingController then lightingController.init() end
 			if particleController then particleController.enableAll() end
-			perfBtn.Text = "Performance Mode: OFF"
+			perfBtn.Text = Strings.PERF_MODE_OFF
 			perfBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 		end
 	end)
@@ -1715,10 +1744,21 @@ local function createCosmeticPanel()
 		end)
 	end
 
+	-- Refund notice (legal compliance — CARU/FTC)
+	local refundNotice = createLabel(
+		"RefundNotice",
+		Strings.REFUND_NOTICE,
+		FONT_BODY, 10, cosmeticPanel
+	)
+	refundNotice.Position = UDim2.new(0, 0, 1, -18)
+	refundNotice.Size = UDim2.new(1, 0, 0, 16)
+	refundNotice.TextColor3 = Color3.fromRGB(140, 130, 160)
+	refundNotice.ZIndex = 12
+
 	-- Scrolling item list
 	cosmeticListFrame = createScrollingList(
 		"CosmeticList",
-		UDim2.new(1, 0, 1, -96),
+		UDim2.new(1, 0, 1, -114),
 		UDim2.new(0, 0, 0, 92),
 		cosmeticPanel
 	)
@@ -1784,7 +1824,7 @@ local function createLeaderboardPanel()
 	title.TextSize = 13
 	title.TextColor3 = GOLD_TEXT_COLOR
 	title.TextXAlignment = Enum.TextXAlignment.Center
-	title.Text = "Top Alchemists"
+	title.Text = Strings.LEADERBOARD_TITLE
 	title.ZIndex = 6
 	title.Parent = leaderboardPanel
 
@@ -1856,12 +1896,17 @@ function UIController.updateState(newState: { [string]: any })
 	if hudLabLabel then
 		local labLevel = playerState.LabLevel or 1
 		local labDef = Config.LAB_LEVELS[labLevel]
-		hudLabLabel.Text = "Lab: " .. (labDef and labDef.name or "Lv " .. labLevel) .. " (" .. (labDef and labDef.plots or "?") .. " plots)"
+		hudLabLabel.Text = formatString(Strings.HUD_LAB, {
+			name = labDef and labDef.name or "Lv " .. labLevel,
+			plots = labDef and labDef.plots or "?",
+		})
 	end
 	if hudCauldronLabel then
 		local cauldronLevel = playerState.CauldronLevel or 1
 		local cauldronDef = Config.CAULDRON_LEVELS[cauldronLevel]
-		hudCauldronLabel.Text = "Cauldron: " .. (cauldronDef and cauldronDef.name or "Lv " .. cauldronLevel)
+		hudCauldronLabel.Text = formatString(Strings.HUD_CAULDRON, {
+			name = cauldronDef and cauldronDef.name or "Lv " .. cauldronLevel,
+		})
 	end
 
 	-- Update upgrade panel if open

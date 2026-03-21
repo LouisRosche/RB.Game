@@ -112,3 +112,79 @@ jobs:
             echo "::error::Potential secrets committed: $secrets"
             exit 1
           fi
+
+      - name: Verify legal compliance documents exist
+        run: |
+          missing=0
+          for f in LICENSE business/legal/privacy-policy.md business/legal/terms-of-service.md business/legal/checklist.md; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Required legal document missing: $f"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ "$missing" -gt 0 ]; then
+            exit 1
+          fi
+
+  data-integrity:
+    name: Data Integrity Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run cross-module data integrity checks
+        run: bash scripts/validate-data-integrity.sh
+
+  compliance:
+    name: Legal & Compliance Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Roblox compliance checks
+        run: bash scripts/validate-compliance.sh
+
+      - name: Run Godot compliance checks
+        run: bash scripts/validate-godot-compliance.sh
+
+  launch-readiness:
+    name: Launch Readiness Tracker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run launch readiness checks
+        run: bash scripts/validate-launch-readiness.sh
+
+  test-coverage:
+    name: Test File Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify test files parse correctly
+        run: |
+          # Ensure all test files are valid Luau (basic syntax check via Selene)
+          echo "Test files found:"
+          ls -1 roblox/tests/*Tests.luau 2>/dev/null || true
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Lint test files
+        run: selene roblox/tests/
+
+      - name: Check test file formatting
+        run: stylua --check roblox/tests/
+
+      - name: Verify every shared module is tested
+        run: |
+          untested=0
+          for f in roblox/src/shared/*.luau; do
+            mod=$(basename "$f" .luau)
+            if ! grep -rlq "requireShared(\"$mod\")" roblox/tests/ 2>/dev/null; then
+              echo "::warning file=$f::Shared module '$mod' has no test coverage"
+              untested=$((untested + 1))
+            fi
+          done
+          echo "$untested shared module(s) without test coverage"

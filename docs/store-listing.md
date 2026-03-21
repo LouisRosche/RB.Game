@@ -60,7 +60,7 @@ Watch your rank rise as you upgrade your lab and cauldron.
   • Transparent odds — every probability is shown in the Journal
   • No guilt notifications — only warm, celebratory messages
 
-3 lab levels × 3 cauldron levels × 10 recipes × 5 rarity tiers =
+5 lab levels × 5 cauldron levels × 10 recipes × 5 rarity tiers =
 thousands of unique outcomes. This is systems design, not content grind.
 
 Free to play forever. No purchase required for full gameplay.

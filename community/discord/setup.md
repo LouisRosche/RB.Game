@@ -1,9 +1,19 @@
 # Discord Server Setup — Alchemy Academy
 
-Phase 2 go/no-go requires ≥200 engaged members.
+Phase 2 go/no-go requires >=200 engaged members.
 "Engaged" = at least 1 message/month, not just joined.
 
 Set up the server **before soft launch** so you have a community home from day one.
+
+**Age requirement:** Discord requires all users to be 13 or older. Although
+Alchemy Academy targets ages 8-16 on Roblox, the Discord community is limited
+to users aged 13+. This must be stated clearly in:
+- The Discord server welcome message
+- The Roblox game description (where the Discord link appears)
+- Any marketing material that links to Discord
+
+This aligns with COPPA requirements. Players under 13 play the game on Roblox
+(where Roblox handles age verification) but are not directed to Discord.
 
 ---
 
@@ -70,7 +80,7 @@ This is where alchemists share discoveries, report bugs, and talk science.
 • Read the roadmap: #roadmap
 
 A few house rules:
-1. Be kind — this community is for all ages
+1. Be kind — you must be 13 or older to use Discord (ages 8-12 can play on Roblox)
 2. No spam or self-promotion
 3. No discussion of exploits or cheating
 4. Spoiler-tag recipe combinations (use ||text|| in Discord) so new players can discover them naturally

@@ -27,7 +27,7 @@ nuclear fusion, geothermal energy) displayed in an in-game Alchemist's Journal.
 1. Buy ingredient seeds (4 ingredients: Moonpetal, Fireroot, Shadowmoss, Starbloom)
 2. Plant > wait > harvest (mutation rarity rolled at harvest: Common to Legendary, 5 tiers)
 3. Combine 2 ingredients at cauldron > discover one of 10 recipes > sell for gold
-4. Upgrade lab (2>4>6 plots) and cauldron (Basic>Copper>Silver)
+4. Upgrade lab (5 levels, 2-6 plots) and cauldron (5 tiers: Basic to Legendary)
 5. Repeat — trying for higher rarity mutations (1% Legendary chance, shown transparently)
 
 **What makes it different from other "Grow a" games:**
