@@ -227,9 +227,13 @@ remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotInde
 		return
 	end
 
+	-- Clamp rarity at the source — defends against corrupted profile data
+	local rawRarity = plot.Rarity or "Common"
+	local rarity = if RARITY_HARVEST_STRINGS[rawRarity] then rawRarity else "Common"
+
 	local entry = {
 		Id = plot.IngredientId,
-		Rarity = plot.Rarity or "Common",
+		Rarity = rarity,
 	}
 	table.insert(data.Ingredients, entry)
 
@@ -241,16 +245,14 @@ remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotInde
 	plot.Rarity = nil
 
 	PlotService.updatePlotVisual(player, plotIndex)
-	AnalyticsService.onHarvest(player, entry.Id, entry.Rarity)
+	AnalyticsService.onHarvest(player, entry.Id, rarity)
 	DataService.syncToClient(player)
 
 	-- Notify the client so it can play localised particle burst
-	remotes[Network.HarvestEffect]:FireClient(player, plotIndex, entry.Rarity)
+	remotes[Network.HarvestEffect]:FireClient(player, plotIndex, rarity)
 
 	local displayName = ingredientId_toDisplayName(entry.Id)
-	local rarity = entry.Rarity
-
-	local template = RARITY_HARVEST_STRINGS[rarity] or ("Harvested {item}! (" .. rarity .. ")")
+	local template = RARITY_HARVEST_STRINGS[rarity]
 	local message = string.gsub(template, "{item}", displayName)
 	remotes[Network.Notification]:FireClient(player, message)
 end)

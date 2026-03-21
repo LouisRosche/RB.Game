@@ -56,16 +56,17 @@ func save_game() -> void:
 	if err != OK:
 		push_warning("[SaveManager] Failed to write temp save: error %d" % err)
 		return
-	# Rename is atomic on most filesystems
+	# Rename is atomic on most filesystems; use globalized paths for DirAccess
+	var abs_tmp  := ProjectSettings.globalize_path(tmp_path)
+	var abs_save := ProjectSettings.globalize_path(SAVE_PATH)
 	var dir := DirAccess.open("user://")
 	if dir:
-		var rename_err := dir.rename(
-			ProjectSettings.globalize_path(tmp_path),
-			ProjectSettings.globalize_path(SAVE_PATH)
-		)
+		var rename_err := dir.rename(abs_tmp, abs_save)
 		if rename_err != OK:
 			push_warning("[SaveManager] Rename failed (error %d), falling back to direct save" % rename_err)
 			cfg.save(SAVE_PATH)
+			# Clean up orphaned temp file
+			DirAccess.remove_absolute(abs_tmp)
 
 func save_settings() -> void:
 	var cfg := ConfigFile.new()
@@ -185,3 +186,7 @@ func has_save() -> bool:
 
 func delete_save() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
+	# Clean up orphaned temp file from a previously interrupted save
+	var tmp := SAVE_PATH + ".tmp"
+	if FileAccess.file_exists(tmp):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(tmp))

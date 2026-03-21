@@ -213,8 +213,8 @@ func _on_brew_pressed() -> void:
 		_show_notification("Potion shelf full! Sell some potions first.")
 		return
 
-	# Discovery check (first time brewing this recipe)
-	var is_new := GameState.discover_recipe(recipe_id)
+	# Discovery check (first time brewing this recipe); side-effect: emits signal
+	GameState.discover_recipe(recipe_id)
 	# Always show brew confirmation; discovery overlay shows additionally for new finds
 	_show_notification("Brewed %s! Worth %d Essence." % [potion_name, value])
 
