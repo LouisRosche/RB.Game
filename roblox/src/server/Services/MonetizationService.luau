@@ -92,11 +92,15 @@ local function processReceipt(receiptInfo: { [string]: any }): Enum.ProductPurch
 	end
 	data.OwnedCosmetics[cosmetic.id] = true
 
-	-- Auto-equip the newly purchased item in its category
+	-- Auto-equip only if the player has no item equipped in this category.
+	-- This prevents re-delivery of the same receipt from clobbering a
+	-- different cosmetic the player manually equipped in the meantime.
 	if not data.ActiveCosmetic then
 		data.ActiveCosmetic = {}
 	end
-	data.ActiveCosmetic[cosmetic.category] = cosmetic.id
+	if not data.ActiveCosmetic[cosmetic.category] then
+		data.ActiveCosmetic[cosmetic.category] = cosmetic.id
+	end
 
 	-- Force a save so PurchaseGranted is backed by durable storage
 	DataService.saveData(player)
@@ -309,6 +313,20 @@ function MonetizationService.init(dataServiceRef: any, analyticsServiceRef: any)
 	DataService = dataServiceRef
 	AnalyticsService = analyticsServiceRef
 	MarketplaceService.ProcessReceipt = processReceipt
+
+	-- Startup validation: warn about every placeholder ID so they can't
+	-- be shipped accidentally. These warnings show in Studio output and
+	-- server logs, making placeholders impossible to miss during QA.
+	for _, def in GamePasses.DEFS do
+		if def.id >= 11111000 and def.id <= 11111999 then
+			warn("[MonetizationService] PLACEHOLDER Game Pass ID:", def.name, "=", def.id, "— replace before launch")
+		end
+	end
+	for _, def in Cosmetics.ALL do
+		if def.productId >= 9990000 and def.productId <= 9999999 then
+			warn("[MonetizationService] PLACEHOLDER Developer Product ID:", def.name, "=", def.productId, "— replace before launch")
+		end
+	end
 
 	-- Create an AdReward object from a Developer Product (per Roblox docs).
 	-- The ad reward is a Dev Product that Roblox grants on verified completion.

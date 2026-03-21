@@ -231,18 +231,21 @@ remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotInde
 	local rawRarity = plot.Rarity or "Common"
 	local rarity = if RARITY_HARVEST_STRINGS[rawRarity] then rawRarity else "Common"
 
-	local entry = {
-		Id = plot.IngredientId,
-		Rarity = rarity,
-	}
-	table.insert(data.Ingredients, entry)
-
-	-- Reset plot to empty
+	-- Capture harvest data and reset plot BEFORE modifying inventory.
+	-- This ensures GrowthService's Heartbeat (which checks plot.State)
+	-- cannot see a "Ready" plot after we've started processing it.
+	local harvestedId = plot.IngredientId
 	plot.State = "Empty"
 	plot.IngredientId = nil
 	plot.PlantedAt = nil
 	plot.GrowthDuration = nil
 	plot.Rarity = nil
+
+	local entry = {
+		Id = harvestedId,
+		Rarity = rarity,
+	}
+	table.insert(data.Ingredients, entry)
 
 	PlotService.updatePlotVisual(player, plotIndex)
 	AnalyticsService.onHarvest(player, entry.Id, rarity)
