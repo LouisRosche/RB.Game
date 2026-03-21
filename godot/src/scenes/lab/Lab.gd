@@ -154,7 +154,7 @@ func _update_brew_button() -> void:
 			selection_label.text = "Select 2 ingredients to brew."
 		elif count == 1:
 			var idx: int = GameState.selected_indices[0]
-			var entry: Dictionary = GameState.ingredients[idx] if idx < GameState.ingredients.size() else {}
+			var entry: Dictionary = GameState.ingredients[idx] if (idx >= 0 and idx < GameState.ingredients.size()) else {}
 			var ing_def: Dictionary = Ingredients.get_ingredient(entry.get("id", ""))
 			selection_label.text = "1 selected: %s. Pick one more." % ing_def.get("display_name", "?")
 		else:
@@ -180,8 +180,8 @@ func _on_brew_pressed() -> void:
 	var idx_a: int = GameState.selected_indices[0]
 	var idx_b: int = GameState.selected_indices[1]
 
-	# Guard: indices still valid (state may have changed)
-	if idx_a >= GameState.ingredients.size() or idx_b >= GameState.ingredients.size():
+	# Guard: indices still valid (state may have changed); also reject negatives
+	if idx_a < 0 or idx_b < 0 or idx_a >= GameState.ingredients.size() or idx_b >= GameState.ingredients.size():
 		GameState.clear_selection()
 		_refresh_ui()
 		return
@@ -215,8 +215,8 @@ func _on_brew_pressed() -> void:
 
 	# Discovery check (first time brewing this recipe)
 	var is_new := GameState.discover_recipe(recipe_id)
-	if not is_new:
-		_show_notification("Brewed %s! Worth %d Essence." % [potion_name, value])
+	# Always show brew confirmation; discovery overlay shows additionally for new finds
+	_show_notification("Brewed %s! Worth %d Essence." % [potion_name, value])
 
 	GameState.clear_selection()
 	_refresh_ui()

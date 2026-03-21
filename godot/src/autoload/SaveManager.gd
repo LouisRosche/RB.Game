@@ -49,9 +49,23 @@ func save_game() -> void:
 	# Compute integrity hash over progress fields to detect tampering
 	cfg.set_value("meta", "checksum", _compute_checksum(cfg))
 
-	var err := cfg.save(SAVE_PATH)
+	# Atomic save: write to temp file first, then rename to prevent
+	# data loss if the process crashes mid-write.
+	var tmp_path := SAVE_PATH + ".tmp"
+	var err := cfg.save(tmp_path)
 	if err != OK:
-		push_warning("[SaveManager] Failed to save game: error %d" % err)
+		push_warning("[SaveManager] Failed to write temp save: error %d" % err)
+		return
+	# Rename is atomic on most filesystems
+	var dir := DirAccess.open("user://")
+	if dir:
+		var rename_err := dir.rename(
+			ProjectSettings.globalize_path(tmp_path),
+			ProjectSettings.globalize_path(SAVE_PATH)
+		)
+		if rename_err != OK:
+			push_warning("[SaveManager] Rename failed (error %d), falling back to direct save" % rename_err)
+			cfg.save(SAVE_PATH)
 
 func save_settings() -> void:
 	var cfg := ConfigFile.new()
@@ -97,7 +111,14 @@ func load_settings() -> void:
 		return  # defaults from GameState.settings are fine
 
 	for key: String in GameState.settings:
-		GameState.settings[key] = cfg.get_value("settings", key, GameState.settings[key])
+		var loaded_val = cfg.get_value("settings", key, GameState.settings[key])
+		# Reject type mismatches (e.g., string "loud" for a float volume)
+		if typeof(loaded_val) == typeof(GameState.settings[key]):
+			GameState.settings[key] = loaded_val
+		else:
+			push_warning("[SaveManager] Settings type mismatch for '%s': expected %s, got %s" % [
+				key, type_string(typeof(GameState.settings[key])), type_string(typeof(loaded_val))
+			])
 
 	_apply_settings()
 
@@ -127,10 +148,10 @@ func _load_dict(cfg: ConfigFile, section: String, key: String, default_val: Dict
 	return val
 
 func _compute_checksum(cfg: ConfigFile) -> String:
-	# Hash all progress fields concatenated with a secret salt.
+	# Hash ALL progress fields concatenated with a secret salt.
 	# This is a deterrent, not DRM — the game is single-player.
 	var payload := ""
-	for key in ["gold", "chapter"]:
+	for key in ["gold", "chapter", "ingredients", "potions", "discovered_recipes", "stats"]:
 		payload += str(cfg.get_value("progress", key, ""))
 	payload += _INTEGRITY_SECRET
 	return payload.sha256_text()

@@ -100,6 +100,14 @@ local function isRateLimited(player: Player, eventName: string): boolean
 	return false
 end
 
+--- Returns true if a number is a finite integer-like value (rejects NaN, Inf).
+local function isFiniteNumber(n: number): boolean
+	return n == n and math.abs(n) ~= math.huge
+end
+
+--- Maximum allowed string length for client-sent identifiers.
+local MAX_ID_LENGTH = 64
+
 ---------------------------------------------------------------------------
 -- Create Remotes folder & RemoteEvent instances
 ---------------------------------------------------------------------------
@@ -168,6 +176,7 @@ end
 remotes[Network.BuySeed].OnServerEvent:Connect(function(player: Player, ingredientId: string)
 	if isRateLimited(player, Network.BuySeed) then return end
 	if typeof(ingredientId) ~= "string" then return end
+	if #ingredientId > MAX_ID_LENGTH then return end
 	-- Allow base ingredients OR active seasonal ingredients
 	if not Ingredients[ingredientId] and not SeasonalService.getActiveIngredient(ingredientId) then
 		return -- reject unknown IDs
@@ -185,8 +194,9 @@ end)
 -- PlantSeed: player plants a seed (from inventory or buy-and-plant in one step)
 remotes[Network.PlantSeed].OnServerEvent:Connect(function(player: Player, plotIndex: number, ingredientId: string)
 	if isRateLimited(player, Network.PlantSeed) then return end
-	if typeof(plotIndex) ~= "number" then return end
+	if typeof(plotIndex) ~= "number" or not isFiniteNumber(plotIndex) then return end
 	if typeof(ingredientId) ~= "string" then return end
+	if #ingredientId > MAX_ID_LENGTH then return end
 	-- Allow base ingredients OR active seasonal ingredients
 	if not Ingredients[ingredientId] and not SeasonalService.getActiveIngredient(ingredientId) then
 		return -- reject unknown IDs
@@ -200,7 +210,7 @@ end)
 -- Harvest: player harvests a ready plant
 remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotIndex: number)
 	if isRateLimited(player, Network.Harvest) then return end
-	if typeof(plotIndex) ~= "number" then return end
+	if typeof(plotIndex) ~= "number" or not isFiniteNumber(plotIndex) then return end
 	plotIndex = math.floor(plotIndex)
 	if plotIndex < 1 then return end
 
@@ -249,6 +259,7 @@ end)
 remotes[Network.BrewPotion].OnServerEvent:Connect(function(player: Player, idx1: number, idx2: number)
 	if isRateLimited(player, Network.BrewPotion) then return end
 	if typeof(idx1) ~= "number" or typeof(idx2) ~= "number" then return end
+	if not isFiniteNumber(idx1) or not isFiniteNumber(idx2) then return end
 	idx1 = math.floor(idx1)
 	idx2 = math.floor(idx2)
 	if idx1 < 1 or idx2 < 1 then return end
@@ -266,7 +277,7 @@ end)
 -- SellPotion: player sells a potion
 remotes[Network.SellPotion].OnServerEvent:Connect(function(player: Player, potionIndex: number)
 	if isRateLimited(player, Network.SellPotion) then return end
-	if typeof(potionIndex) ~= "number" then return end
+	if typeof(potionIndex) ~= "number" or not isFiniteNumber(potionIndex) then return end
 	potionIndex = math.floor(potionIndex)
 	if potionIndex < 1 then return end
 
@@ -332,14 +343,15 @@ end)
 -- Server validates ownership; if valid, updates ActiveCosmetic and syncs state.
 remotes[Network.EquipCosmetic].OnServerEvent:Connect(function(player: Player, cosmeticId: string)
 	if typeof(cosmeticId) ~= "string" then return end
+	if #cosmeticId > MAX_ID_LENGTH then return end
 	MonetizationService.equipCosmetic(player, cosmeticId)
 end)
 
 -- VerifyGamePass: client fires after a purchase prompt is dismissed to ask
 -- the server to re-check ownership. Server calls UserOwnsGamePassAsync (async).
-remotes[Network.VerifyGamePass].OnServerEvent:Connect(function(player: Player, passId: number)
-	if typeof(passId) ~= "number" then return end
-	MonetizationService.checkPassesOnJoin(player)  -- re-verifies all passes
+remotes[Network.VerifyGamePass].OnServerEvent:Connect(function(player: Player, _passId: number)
+	-- passId is unused; server re-verifies all passes regardless (never trust client)
+	MonetizationService.checkPassesOnJoin(player)
 end)
 
 -- RequestAdReward: player opted in to watch a rewarded video ad.

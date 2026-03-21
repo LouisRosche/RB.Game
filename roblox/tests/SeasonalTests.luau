@@ -183,8 +183,8 @@ function Tests.test_seasonal_ingredients_have_valid_fields(t)
 			t:assertPositive(ing.seedCost, ing.id .. " seedCost")
 			t:assertPositive(ing.growthTime, ing.id .. " growthTime")
 			t:assertPositive(ing.baseValue, ing.id .. " baseValue")
-			t:assertType(ing.scienceFact, "string", ing.id .. " scienceFact type")
-			t:assertTrue(#ing.scienceFact > 0, ing.id .. " scienceFact non-empty")
+			t:assertType(ing.scienceHook, "string", ing.id .. " scienceHook type")
+			t:assertTrue(#ing.scienceHook > 0, ing.id .. " scienceHook non-empty")
 		end
 	end
 end
@@ -242,7 +242,7 @@ function Tests.test_seasonal_recipes_have_valid_fields(t)
 			t:assertTrue(#recipe.displayName > 0, recipe.id .. " displayName non-empty")
 			t:assertPositive(recipe.baseValue, recipe.id .. " baseValue")
 			t:assertType(recipe.description, "string", recipe.id .. " description type")
-			t:assertType(recipe.scienceFact, "string", recipe.id .. " scienceFact type")
+			t:assertType(recipe.scienceHook, "string", recipe.id .. " scienceHook type")
 		end
 	end
 end

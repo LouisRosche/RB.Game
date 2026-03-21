@@ -264,6 +264,11 @@ function MonetizationService.handleAdRewardRequest(player: Player)
 		return
 	end
 
+	-- Set cooldown BEFORE spawning the async ad task to prevent double-requests
+	-- while the ad is being shown. If the ad fails, we clear the cooldown.
+	adCooldowns[player.UserId] = os.clock()
+	syncAdCooldown(player)
+
 	-- Show rewarded video ad via AdService (yields until ad completes or fails)
 	task.spawn(function()
 		local ok, result = pcall(function()
@@ -272,6 +277,9 @@ function MonetizationService.handleAdRewardRequest(player: Player)
 
 		if not ok then
 			warn("[MonetizationService] ShowRewardedVideoAdAsync failed:", result)
+			-- Clear the pre-set cooldown so the player can try again
+			adCooldowns[player.UserId] = nil
+			syncAdCooldown(player)
 			DataService.notify(player, Strings.AD_WATCH_FAILED)
 			return
 		end
@@ -283,6 +291,9 @@ function MonetizationService.handleAdRewardRequest(player: Player)
 			if not player.Parent then return end
 			grantAdReward(player)
 		else
+			-- Ad was skipped/closed — clear the pre-set cooldown
+			adCooldowns[player.UserId] = nil
+			syncAdCooldown(player)
 			DataService.notify(player, Strings.AD_WATCH_FAILED)
 		end
 	end)
