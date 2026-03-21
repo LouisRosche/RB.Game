@@ -144,6 +144,12 @@ func _apply_settings() -> void:
 		AudioServer.get_bus_index("Master"),
 		linear_to_db(GameState.settings.get("master_volume", 1.0))
 	)
+	var sfx_idx := AudioServer.get_bus_index("SFX")
+	if sfx_idx >= 0:
+		AudioServer.set_bus_volume_db(sfx_idx, linear_to_db(GameState.settings.get("sfx_volume", 0.8)))
+	var music_idx := AudioServer.get_bus_index("Music")
+	if music_idx >= 0:
+		AudioServer.set_bus_volume_db(music_idx, linear_to_db(GameState.settings.get("music_volume", 0.4)))
 	if GameState.settings.get("fullscreen", false):
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 	else:

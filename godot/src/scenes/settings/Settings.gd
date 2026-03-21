@@ -96,12 +96,16 @@ func _on_master_changed(value: float) -> void:
 
 func _on_sfx_changed(value: float) -> void:
 	GameState.settings["sfx_volume"] = value
-	# SFX bus: adjust here once a separate SFX bus is set up in the audio layout
+	var bus_idx := AudioServer.get_bus_index("SFX")
+	if bus_idx >= 0:
+		AudioServer.set_bus_volume_db(bus_idx, linear_to_db(value))
 	_update_labels()
 
 func _on_music_changed(value: float) -> void:
 	GameState.settings["music_volume"] = value
-	# Music bus: adjust here once a Music bus is set up in the audio layout
+	var bus_idx := AudioServer.get_bus_index("Music")
+	if bus_idx >= 0:
+		AudioServer.set_bus_volume_db(bus_idx, linear_to_db(value))
 	_update_labels()
 
 func _on_fullscreen_toggled(toggled: bool) -> void:
@@ -116,11 +120,18 @@ func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file(return_scene)
 
 func _on_delete_save_pressed() -> void:
-	# Production: show a confirmation dialog (AcceptDialog) first.
-	# MVP: delete immediately.
-	SaveManager.delete_save()
-	GameState.new_game()
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	var dialog := AcceptDialog.new()
+	dialog.title = "Delete Save?"
+	dialog.dialog_text = "This will permanently erase all progress. This cannot be undone."
+	dialog.ok_button_text = "Delete"
+	dialog.add_cancel_button("Keep")
+	dialog.confirmed.connect(func():
+		SaveManager.delete_save()
+		GameState.new_game()
+		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	)
+	add_child(dialog)
+	dialog.popup_centered()
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):

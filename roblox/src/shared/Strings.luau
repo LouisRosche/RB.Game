@@ -38,6 +38,10 @@ Strings.MUTE_ALL          = "Mute All"
 Strings.PLANT             = "Plant"
 Strings.HARVEST           = "Harvest"
 Strings.JOURNAL           = "Alchemist's Journal"
+Strings.EMPTY_PLOT        = "Empty Plot"
+Strings.UPGRADES          = "Upgrades"
+Strings.SELL_POTIONS      = "Sell Potions"
+Strings.SELL_STATION      = "Sell Station"
 
 -- Journal tabs
 Strings.TAB_BASICS        = "How to Play"

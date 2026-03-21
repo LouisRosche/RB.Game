@@ -225,6 +225,3 @@ func get_available_ids(chapter: int) -> Array[String]:
 			result.append(id)
 	return result
 
-## Returns the total recipe count (used for journal completeness display).
-func total_count() -> int:
-	return db.size()

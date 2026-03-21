@@ -11,6 +11,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared      = ReplicatedStorage:WaitForChild("Shared")
 local Config      = require(Shared.Config)
 local Ingredients = require(Shared.Ingredients)
+local Strings     = require(Shared.Strings)
 
 local DataService = require(script.Parent.DataService)
 
@@ -158,9 +159,9 @@ function PlotService.createLab(player: Player)
 		Color = Color3.fromRGB(120, 80, 50),
 	})
 	shop.Parent = labModel
-	addSurfaceLabel(shop, "Upgrades")
+	addSurfaceLabel(shop, Strings.UPGRADES)
 
-	local shopPrompt = addPrompt(shop, "Upgrades", "Shop")
+	local shopPrompt = addPrompt(shop, Strings.UPGRADES, Strings.SHOP)
 	shopPrompt.Name = "ShopPrompt"
 
 	-- Sell station
@@ -172,9 +173,9 @@ function PlotService.createLab(player: Player)
 		Color = Color3.fromRGB(50, 150, 80),
 	})
 	sell.Parent = labModel
-	addSurfaceLabel(sell, "Sell Potions")
+	addSurfaceLabel(sell, Strings.SELL_POTIONS)
 
-	local sellPrompt = addPrompt(sell, "Sell", "Sell Station")
+	local sellPrompt = addPrompt(sell, Strings.SELL, Strings.SELL_STATION)
 	sellPrompt.Name = "SellPrompt"
 
 	-- Spawn the player at their lab
@@ -205,7 +206,7 @@ function PlotService._createPlotParts(labModel: Model, labOrigin: Vector3, plotC
 		plotPart:SetAttribute("PlotIndex", i)
 		plotPart.Parent = labModel
 
-		local prompt = addPrompt(plotPart, "Plant", "Empty Plot")
+		local prompt = addPrompt(plotPart, Strings.PLANT, Strings.EMPTY_PLOT)
 		prompt.Name = "PlotPrompt"
 	end
 end
@@ -244,8 +245,8 @@ function PlotService.updatePlotVisual(player: Player, plotIndex: number)
 		plotPart.Color = Color3.fromRGB(100, 65, 30)
 		if prompt then
 			prompt.Enabled = true
-			prompt.ActionText = "Plant"
-			prompt.ObjectText = "Empty Plot"
+			prompt.ActionText = Strings.PLANT
+			prompt.ObjectText = Strings.EMPTY_PLOT
 		end
 
 	elseif plot.State == "Growing" then
@@ -295,7 +296,7 @@ function PlotService.updatePlotVisual(player: Player, plotIndex: number)
 		local displayName = if ingredientDef then ingredientDef.displayName else plot.IngredientId
 		if prompt then
 			prompt.Enabled = true
-			prompt.ActionText = "Harvest"
+			prompt.ActionText = Strings.HARVEST
 			prompt.ObjectText = displayName .. " (" .. (plot.Rarity or "Common") .. ")"
 		end
 	end
@@ -341,7 +342,7 @@ function PlotService.upgradeLab(player: Player)
 		plotPart:SetAttribute("PlotIndex", i)
 		plotPart.Parent = lab
 
-		local prompt = addPrompt(plotPart, "Plant", "Empty Plot")
+		local prompt = addPrompt(plotPart, Strings.PLANT, Strings.EMPTY_PLOT)
 		prompt.Name = "PlotPrompt"
 	end
 end
@@ -352,12 +353,6 @@ function PlotService.destroyLab(player: Player)
 		lab:Destroy()
 		playerLabs[player.UserId] = nil
 	end
-end
-
-function PlotService.getPlotPart(player: Player, plotIndex: number): BasePart?
-	local lab = playerLabs[player.UserId]
-	if not lab then return nil end
-	return lab:FindFirstChild("Plot_" .. plotIndex)
 end
 
 ---------------------------------------------------------------------------

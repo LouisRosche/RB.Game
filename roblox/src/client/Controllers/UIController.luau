@@ -34,7 +34,7 @@ local Strings     = require(Shared:WaitForChild("Strings"))
 local Network     = require(Shared:WaitForChild("Network"))
 local Journal     = require(Shared:WaitForChild("Journal"))
 local Cosmetics   = require(Shared:WaitForChild("Cosmetics"))
-local GamePasses  = require(Shared:WaitForChild("GamePasses"))
+
 
 ---------------------------------------------------------------------------
 -- Constants — UI Style Guide
