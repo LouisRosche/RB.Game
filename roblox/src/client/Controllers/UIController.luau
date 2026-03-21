@@ -352,7 +352,7 @@ local function createHUD()
 	hudLabLabel.TextSize = 16
 	hudLabLabel.TextColor3 = TEXT_COLOR
 	hudLabLabel.TextXAlignment = Enum.TextXAlignment.Left
-	hudLabLabel.Text = "Lab: Starter"
+	hudLabLabel.Text = Strings.HUD_LAB_DEFAULT
 	hudLabLabel.ZIndex = 6
 	hudLabLabel.Parent = hud
 
@@ -366,7 +366,7 @@ local function createHUD()
 	hudCauldronLabel.TextSize = 16
 	hudCauldronLabel.TextColor3 = TEXT_COLOR
 	hudCauldronLabel.TextXAlignment = Enum.TextXAlignment.Left
-	hudCauldronLabel.Text = "Cauldron: Basic"
+	hudCauldronLabel.Text = Strings.HUD_CAULDRON_DEFAULT
 	hudCauldronLabel.ZIndex = 6
 	hudCauldronLabel.Parent = hud
 
@@ -734,7 +734,7 @@ local function populateBrewIngredients()
 					if ing1 and ing2 then
 						local recipe = Recipes.lookup(ing1.Id, ing2.Id)
 						if recipe then
-							brewPreviewLabel.Text = "Result: " .. recipe.displayName .. " (Base: " .. recipe.baseValue .. " Essence)"
+							brewPreviewLabel.Text = string.gsub(string.gsub(Strings.BREW_PREVIEW, "{potion}", recipe.displayName), "{value}", tostring(recipe.baseValue))
 							brewPreviewLabel.TextColor3 = recipe.color
 						else
 							brewPreviewLabel.Text = Strings.UNKNOWN_RECIPE
@@ -966,14 +966,14 @@ local function updateUpgradeButtons()
 		if upgradeLabInfo and nextLab then
 			local currentLab = Config.LAB_LEVELS[labLevel]
 			local extraPlots = nextLab.plots - (currentLab and currentLab.plots or 0)
-			upgradeLabInfo.Text = "+" .. extraPlots .. " plots -> " .. nextLab.name
+			upgradeLabInfo.Text = string.gsub(string.gsub(Strings.UPGRADE_LAB_INFO, "{plots}", tostring(extraPlots)), "{name}", nextLab.name)
 		end
 	else
 		if upgradeLabBtn then
 			upgradeLabBtn.Visible = false
 		end
 		if upgradeLabInfo then
-			upgradeLabInfo.Text = "Lab: MAX LEVEL"
+			upgradeLabInfo.Text = Strings.MAX_LAB_LEVEL
 		end
 	end
 
@@ -985,14 +985,14 @@ local function updateUpgradeButtons()
 			upgradeCauldronBtn.Visible = true
 		end
 		if upgradeCauldronInfo and nextCauldron then
-			upgradeCauldronInfo.Text = "Brew: " .. nextCauldron.brewTime .. "s, +" .. math.floor((nextCauldron.valueBonus - 1) * 100) .. "% value -> " .. nextCauldron.name
+			upgradeCauldronInfo.Text = string.gsub(string.gsub(string.gsub(Strings.UPGRADE_CAULDRON_INFO, "{time}", tostring(nextCauldron.brewTime)), "{bonus}", tostring(math.floor((nextCauldron.valueBonus - 1) * 100))), "{name}", nextCauldron.name)
 		end
 	else
 		if upgradeCauldronBtn then
 			upgradeCauldronBtn.Visible = false
 		end
 		if upgradeCauldronInfo then
-			upgradeCauldronInfo.Text = "Cauldron: MAX LEVEL"
+			upgradeCauldronInfo.Text = Strings.MAX_CAULDRON_LEVEL
 		end
 	end
 end
@@ -1568,12 +1568,12 @@ local function createSettingsPanel()
 		if perfOn then
 			if lightingController then lightingController.disableEffects() end
 			if particleController then particleController.disableAll() end
-			perfBtn.Text = "Performance Mode: ON"
+			perfBtn.Text = Strings.PERF_MODE_ON
 			perfBtn.BackgroundColor3 = Color3.fromRGB(40, 80, 40)
 		else
 			if lightingController then lightingController.init() end
 			if particleController then particleController.enableAll() end
-			perfBtn.Text = "Performance Mode: OFF"
+			perfBtn.Text = Strings.PERF_MODE_OFF
 			perfBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 		end
 	end)
@@ -1814,7 +1814,7 @@ local function createLeaderboardPanel()
 	title.TextSize = 13
 	title.TextColor3 = GOLD_TEXT_COLOR
 	title.TextXAlignment = Enum.TextXAlignment.Center
-	title.Text = "Top Alchemists"
+	title.Text = Strings.LEADERBOARD_TITLE
 	title.ZIndex = 6
 	title.Parent = leaderboardPanel
 
@@ -1886,12 +1886,12 @@ function UIController.updateState(newState: { [string]: any })
 	if hudLabLabel then
 		local labLevel = playerState.LabLevel or 1
 		local labDef = Config.LAB_LEVELS[labLevel]
-		hudLabLabel.Text = "Lab: " .. (labDef and labDef.name or "Lv " .. labLevel) .. " (" .. (labDef and labDef.plots or "?") .. " plots)"
+		hudLabLabel.Text = string.gsub(string.gsub(Strings.HUD_LAB, "{name}", labDef and labDef.name or "Lv " .. labLevel), "{plots}", tostring(labDef and labDef.plots or "?"))
 	end
 	if hudCauldronLabel then
 		local cauldronLevel = playerState.CauldronLevel or 1
 		local cauldronDef = Config.CAULDRON_LEVELS[cauldronLevel]
-		hudCauldronLabel.Text = "Cauldron: " .. (cauldronDef and cauldronDef.name or "Lv " .. cauldronLevel)
+		hudCauldronLabel.Text = string.gsub(Strings.HUD_CAULDRON, "{name}", cauldronDef and cauldronDef.name or "Lv " .. cauldronLevel)
 	end
 
 	-- Update upgrade panel if open

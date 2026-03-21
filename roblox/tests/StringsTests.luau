@@ -58,10 +58,14 @@ end
 function Tests.test_no_nil_values(t)
 	-- Catch typos where a key was defined but assigned nil
 	local expectedKeys = {
-		"GOLD", "SHOP", "INVENTORY", "BREW", "SELL", "CLOSE", "PLANT", "HARVEST",
+		"GOLD", "SHOP", "INVENTORY", "BREW", "SELL", "CLOSE", "PLANT", "HARVEST", "SKIP",
 		"PURCHASED_ITEM", "PLANTED_ITEM", "BREWED_POTION", "SOLD_POTION",
 		"NOT_ENOUGH_GOLD", "NO_EMPTY_PLOTS", "INVENTORY_FULL",
 		"REFUND_NOTICE", "EXTERNAL_LINK_BLOCKED",
+		-- HUD / UI labels (externalized from hardcoded strings)
+		"HUD_LAB", "HUD_LAB_DEFAULT", "HUD_CAULDRON", "HUD_CAULDRON_DEFAULT",
+		"BREW_PREVIEW", "UPGRADE_LAB_INFO", "UPGRADE_CAULDRON_INFO",
+		"PERF_MODE_ON", "PERF_MODE_OFF", "LEADERBOARD_TITLE",
 	}
 	for _, key in expectedKeys do
 		t:assertNotNil(Strings[key], "Strings." .. key .. " exists")

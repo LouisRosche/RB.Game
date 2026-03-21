@@ -188,9 +188,11 @@ fi
 echo "[S3] Hardcoded UI strings"
 HARDCODED=$(grep -rnP '(\.Text)\s*=\s*"[A-Z][a-z]' \
     "$SRC/client/" "$SRC/server/" 2>/dev/null | \
-    grep -v "Strings\." | grep -v "^\s*--" | wc -l || echo "0")
+    grep -v "Strings\." | grep -v "^\s*--" | wc -l || true)
+HARDCODED="${HARDCODED:-0}"
+HARDCODED=$(echo "$HARDCODED" | tr -d '[:space:]')
 
-if [ "$HARDCODED" -eq 0 ]; then
+if [ "$HARDCODED" -eq 0 ] 2>/dev/null; then
     pass "No hardcoded UI strings"
 else
     warn_ "$HARDCODED potential hardcoded UI string(s) — should use Strings module"

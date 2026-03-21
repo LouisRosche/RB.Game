@@ -28,6 +28,7 @@ local TweenService      = game:GetService("TweenService")
 
 local Shared  = ReplicatedStorage:WaitForChild("Shared")
 local Network = require(Shared:WaitForChild("Network"))
+local Strings = require(Shared:WaitForChild("Strings"))
 
 local TutorialController = {}
 
@@ -231,7 +232,7 @@ local function buildOverlay()
 	-- Skip button (top-right of bar)
 	local skipBtn = Instance.new("TextButton")
 	skipBtn.Name = "SkipBtn"
-	skipBtn.Text = "Skip"
+	skipBtn.Text = Strings.SKIP
 	skipBtn.Font = Enum.Font.GothamMedium
 	skipBtn.TextSize = 12
 	skipBtn.TextColor3 = Color3.fromRGB(140, 140, 160)
