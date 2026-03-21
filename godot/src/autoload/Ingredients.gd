@@ -165,6 +165,3 @@ func get_available_ids(chapter: int) -> Array[String]:
 			result.append(id)
 	return result
 
-## Returns all ingredient ids (for journal / debug).
-func get_all_ids() -> Array[String]:
-	return db.keys()

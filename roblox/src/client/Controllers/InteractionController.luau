@@ -158,9 +158,4 @@ function InteractionController.init(
 	ProximityPromptService.PromptTriggered:Connect(onPromptTriggered)
 end
 
---- Returns the current state of a specific plot (convenience for other code).
-function InteractionController.getPlotState(plotIndex: number)
-	return getPlotState(plotIndex)
-end
-
 return InteractionController

@@ -78,14 +78,8 @@ function DiscoveryService.onRecipeBrewed(player: Player, recipeId: string): bool
 	-- Mark as discovered in persistent data
 	data.DiscoveredRecipes[recipeId] = true
 
-	-- Get recipe info for announcement
-	local recipe = nil
-	for _, recipeDef in Recipes.Map do
-		if recipeDef.id == recipeId then
-			recipe = recipeDef
-			break
-		end
-	end
+	-- Get recipe info for announcement (O(1) via Recipes.BY_ID)
+	local recipe = Recipes.BY_ID[recipeId]
 	local recipeName = recipe and recipe.displayName or recipeId
 
 	-- Check if this is the server-session first discovery
@@ -138,13 +132,15 @@ function DiscoveryService.getDiscoveryCount(player: Player): number
 	return count
 end
 
+-- Cache the total recipe count (constant after module load)
+local cachedTotalRecipes: number = 0
+for _ in Recipes.Map do
+	cachedTotalRecipes += 1
+end
+
 --- Returns the total number of discoverable recipes.
 function DiscoveryService.getTotalRecipeCount(): number
-	local count = 0
-	for _ in Recipes.Map do
-		count += 1
-	end
-	return count
+	return cachedTotalRecipes
 end
 
 return DiscoveryService

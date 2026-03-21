@@ -101,6 +101,7 @@ end)
 local brewEffectRemote = Remotes:WaitForChild(Network.BrewEffect) :: RemoteEvent
 brewEffectRemote.OnClientEvent:Connect(function()
 	ParticleController.onBrewComplete()
+	SoundController.onBrewComplete()
 end)
 
 ---------------------------------------------------------------------------

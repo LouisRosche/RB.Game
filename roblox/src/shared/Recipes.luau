@@ -102,6 +102,31 @@ Recipes.Map: { [string]: RecipeDef } = {
 }
 
 --============================================================================--
+-- Lookup by recipe id (O(1) access for DiscoveryService etc.)
+--============================================================================--
+
+Recipes.BY_ID: { [string]: RecipeDef } = {}
+for _, def in Recipes.Map do
+	Recipes.BY_ID[def.id] = def
+end
+
+--- Flat list of all recipes with their ingredient pairs (derived from Map keys).
+--- Each entry: { id, displayName, baseValue, ..., ingredients = { string, string } }
+Recipes.ALL: { { [string]: any } } = {}
+for key, def in Recipes.Map do
+	local parts = string.split(key, "+")
+	local entry = {
+		id = def.id,
+		displayName = def.displayName,
+		baseValue = def.baseValue,
+		color = def.color,
+		scienceHook = def.scienceHook,
+		ingredients = parts,
+	}
+	table.insert(Recipes.ALL, entry)
+end
+
+--============================================================================--
 -- Helpers
 --============================================================================--
 

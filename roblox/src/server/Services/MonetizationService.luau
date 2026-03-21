@@ -92,11 +92,15 @@ local function processReceipt(receiptInfo: { [string]: any }): Enum.ProductPurch
 	end
 	data.OwnedCosmetics[cosmetic.id] = true
 
-	-- Auto-equip the newly purchased item in its category
+	-- Auto-equip only if the player has no item equipped in this category.
+	-- This prevents re-delivery of the same receipt from clobbering a
+	-- different cosmetic the player manually equipped in the meantime.
 	if not data.ActiveCosmetic then
 		data.ActiveCosmetic = {}
 	end
-	data.ActiveCosmetic[cosmetic.category] = cosmetic.id
+	if not data.ActiveCosmetic[cosmetic.category] then
+		data.ActiveCosmetic[cosmetic.category] = cosmetic.id
+	end
 
 	-- Force a save so PurchaseGranted is backed by durable storage
 	DataService.saveData(player)
@@ -221,8 +225,8 @@ local function grantAdReward(player: Player)
 	-- Set cooldown
 	adCooldowns[player.UserId] = os.clock()
 
-	-- Grant Essence reward
-	data.Essence = (data.Essence or 0) + Config.AD_REWARD_ESSENCE
+	-- Grant Essence reward (capped to prevent economy inflation)
+	data.Essence = math.min((data.Essence or 0) + Config.AD_REWARD_ESSENCE, Config.MAX_ESSENCE)
 
 	-- Also activate 2x earnings boost
 	adBoostExpiry[player.UserId] = os.clock() + Config.AD_BOOST_DURATION
@@ -264,6 +268,11 @@ function MonetizationService.handleAdRewardRequest(player: Player)
 		return
 	end
 
+	-- Set cooldown BEFORE spawning the async ad task to prevent double-requests
+	-- while the ad is being shown. If the ad fails, we clear the cooldown.
+	adCooldowns[player.UserId] = os.clock()
+	syncAdCooldown(player)
+
 	-- Show rewarded video ad via AdService (yields until ad completes or fails)
 	task.spawn(function()
 		local ok, result = pcall(function()
@@ -272,6 +281,9 @@ function MonetizationService.handleAdRewardRequest(player: Player)
 
 		if not ok then
 			warn("[MonetizationService] ShowRewardedVideoAdAsync failed:", result)
+			-- Clear the pre-set cooldown so the player can try again
+			adCooldowns[player.UserId] = nil
+			syncAdCooldown(player)
 			DataService.notify(player, Strings.AD_WATCH_FAILED)
 			return
 		end
@@ -283,6 +295,9 @@ function MonetizationService.handleAdRewardRequest(player: Player)
 			if not player.Parent then return end
 			grantAdReward(player)
 		else
+			-- Ad was skipped/closed — clear the pre-set cooldown
+			adCooldowns[player.UserId] = nil
+			syncAdCooldown(player)
 			DataService.notify(player, Strings.AD_WATCH_FAILED)
 		end
 	end)
@@ -298,6 +313,20 @@ function MonetizationService.init(dataServiceRef: any, analyticsServiceRef: any)
 	DataService = dataServiceRef
 	AnalyticsService = analyticsServiceRef
 	MarketplaceService.ProcessReceipt = processReceipt
+
+	-- Startup validation: warn about every placeholder ID so they can't
+	-- be shipped accidentally. These warnings show in Studio output and
+	-- server logs, making placeholders impossible to miss during QA.
+	for _, def in GamePasses.DEFS do
+		if def.id >= 11111000 and def.id <= 11111999 then
+			warn("[MonetizationService] PLACEHOLDER Game Pass ID:", def.name, "=", def.id, "— replace before launch")
+		end
+	end
+	for _, def in Cosmetics.ALL do
+		if def.productId >= 9990000 and def.productId <= 9999999 then
+			warn("[MonetizationService] PLACEHOLDER Developer Product ID:", def.name, "=", def.productId, "— replace before launch")
+		end
+	end
 
 	-- Create an AdReward object from a Developer Product (per Roblox docs).
 	-- The ad reward is a Dev Product that Roblox grants on verified completion.

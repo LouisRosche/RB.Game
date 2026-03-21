@@ -166,20 +166,34 @@ else
 fi
 
 #---------------------------------------------------------------------------
-# S2. Audio asset placeholders
+# S2. Audio asset placeholders (SoundController)
 #---------------------------------------------------------------------------
 echo "[S2] Audio asset IDs"
-AUDIO_MD="$REPO_ROOT/roblox/AUDIO_ASSETS.md"
-if [ -f "$AUDIO_MD" ]; then
-    AUDIO_PLACEHOLDER=$(grep -cP '(TBD|TODO|000000|placeholder)' "$AUDIO_MD" 2>/dev/null || true)
-    AUDIO_PLACEHOLDER="${AUDIO_PLACEHOLDER:-0}"
-    if [ "$AUDIO_PLACEHOLDER" -gt 0 ]; then
-        warn_ "$AUDIO_PLACEHOLDER audio asset(s) still need IDs"
+SOUND_CTRL="$SRC/client/Controllers/SoundController.luau"
+if [ -f "$SOUND_CTRL" ]; then
+    # Count distinct asset IDs used — if most map to the same ID, they're placeholders
+    DISTINCT_IDS=$(grep -oP 'rbxassetid://\d+' "$SOUND_CTRL" 2>/dev/null | sort -u | wc -l || echo "0")
+    TOTAL_IDS=$(grep -cP 'rbxassetid://\d+' "$SOUND_CTRL" 2>/dev/null || echo "0")
+    if [ "$DISTINCT_IDS" -lt 4 ] && [ "$TOTAL_IDS" -gt 5 ]; then
+        warn_ "$TOTAL_IDS audio references but only $DISTINCT_IDS distinct IDs — likely placeholders"
     else
-        pass "All audio asset IDs populated"
+        pass "SoundController has $DISTINCT_IDS distinct audio assets"
     fi
 else
-    warn_ "AUDIO_ASSETS.md not found (audio asset tracking file)"
+    warn_ "SoundController.luau not found"
+fi
+
+#---------------------------------------------------------------------------
+# S2b. AD_REWARD_PRODUCT_ID placeholder
+#---------------------------------------------------------------------------
+echo "[S2b] Ad reward product ID"
+AD_ID=$(grep -oP 'AD_REWARD_PRODUCT_ID\s*=\s*\K\d+' "$SHARED/Config.luau" 2>/dev/null || echo "")
+if [ "$AD_ID" = "0" ]; then
+    warn_ "AD_REWARD_PRODUCT_ID = 0 (placeholder) — ads disabled until set"
+elif [ -n "$AD_ID" ]; then
+    pass "AD_REWARD_PRODUCT_ID = $AD_ID"
+else
+    warn_ "Could not read AD_REWARD_PRODUCT_ID from Config.luau"
 fi
 
 #---------------------------------------------------------------------------

@@ -209,11 +209,16 @@ func lookup(id_a: String, id_b: String) -> Dictionary:
 ## @param recipe       The recipe dict from lookup()
 ## @param rarity_a     Rarity string of the first ingredient
 ## @param rarity_b     Rarity string of the second ingredient
+##
+## NOTE: Uses averaged multipliers (not multiplicative like Roblox). This is
+## intentional — the standalone game has 10 ingredients and 16 recipes vs
+## Roblox's 4/10, so averaged scaling prevents late-game economy explosion.
+## Roblox formula: base * mult1 * mult2 * cauldronBonus (quadratic scaling).
+## Godot formula:  base * (mult1 + mult2) / 2           (linear scaling).
 func calculate_value(recipe: Dictionary, rarity_a: String, rarity_b: String) -> int:
 	var base: int = recipe.get("base_value", 10)
 	var mult_a: int = RARITY_MULTIPLIER.get(rarity_a, 1)
 	var mult_b: int = RARITY_MULTIPLIER.get(rarity_b, 1)
-	# Average of the two multipliers applied to base value
 	var combined := (mult_a + mult_b) / 2.0
 	return int(base * combined)
 
@@ -225,6 +230,3 @@ func get_available_ids(chapter: int) -> Array[String]:
 			result.append(id)
 	return result
 
-## Returns the total recipe count (used for journal completeness display).
-func total_count() -> int:
-	return db.size()

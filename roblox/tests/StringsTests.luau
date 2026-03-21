@@ -67,6 +67,8 @@ function Tests.test_no_nil_values(t)
 		"HUD_LAB", "HUD_LAB_DEFAULT", "HUD_CAULDRON", "HUD_CAULDRON_DEFAULT",
 		"BREW_PREVIEW", "UPGRADE_LAB_INFO", "UPGRADE_CAULDRON_INFO",
 		"PERF_MODE_ON", "PERF_MODE_OFF", "LEADERBOARD_TITLE",
+		-- PlotService / 3D world labels
+		"EMPTY_PLOT", "UPGRADES", "SELL_POTIONS", "SELL_STATION",
 	}
 	for _, key in expectedKeys do
 		t:assertNotNil(Strings[key], "Strings." .. key .. " exists")

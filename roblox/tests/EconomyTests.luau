@@ -209,6 +209,34 @@ function Tests.test_inventory_caps_are_positive(t)
 end
 
 ---------------------------------------------------------------------------
+-- Config: Essence cap (security boundary)
+---------------------------------------------------------------------------
+
+function Tests.test_max_essence_exists_and_is_positive(t)
+	t:assertNotNil(Config.MAX_ESSENCE, "MAX_ESSENCE exists")
+	t:assertPositive(Config.MAX_ESSENCE, "MAX_ESSENCE")
+end
+
+function Tests.test_max_essence_exceeds_all_upgrade_costs(t)
+	local totalUpgradeCost = 0
+	for _, level in Config.LAB_LEVELS do
+		totalUpgradeCost += level.cost
+	end
+	for _, level in Config.CAULDRON_LEVELS do
+		totalUpgradeCost += level.cost
+	end
+	t:assertTrue(
+		Config.MAX_ESSENCE > totalUpgradeCost * 2,
+		"MAX_ESSENCE (" .. Config.MAX_ESSENCE .. ") > 2x total upgrade cost (" .. totalUpgradeCost .. ")"
+	)
+end
+
+function Tests.test_max_essence_is_safe_for_double_precision(t)
+	-- IEEE 754 doubles lose integer precision above 2^53
+	t:assertTrue(Config.MAX_ESSENCE < 2 ^ 53, "MAX_ESSENCE within safe double range")
+end
+
+---------------------------------------------------------------------------
 -- Ingredients: prices and values
 ---------------------------------------------------------------------------
 
@@ -305,6 +333,13 @@ end
 function Tests.test_has_pass_returns_false_when_no_passes_table(t)
 	local data = {}
 	t:assertFalse(GamePasses.hasPass(data, GamePasses.SPEED_BREW), "hasPass no table")
+end
+
+function Tests.test_has_pass_returns_false_for_invalid_id(t)
+	local data = { OwnedPasses = { [tostring(GamePasses.SPEED_BREW)] = true } }
+	t:assertFalse(GamePasses.hasPass(data, -1), "hasPass negative id")
+	t:assertFalse(GamePasses.hasPass(data, 0), "hasPass zero id")
+	t:assertFalse(GamePasses.hasPass(data, 99999999), "hasPass nonexistent id")
 end
 
 ---------------------------------------------------------------------------

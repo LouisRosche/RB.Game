@@ -81,7 +81,7 @@ function BrewingService.brewPotion(player: Player, idx1: number, idx2: number): 
 				displayName = seasonalRecipe.displayName,
 				baseValue = seasonalRecipe.baseValue,
 				color = Color3.fromRGB(255, 200, 100), -- seasonal gold
-				scienceHook = seasonalRecipe.scienceFact or "",
+				scienceHook = seasonalRecipe.scienceHook or "",
 			}
 			isSeasonal = true
 		end
