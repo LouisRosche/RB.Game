@@ -371,7 +371,7 @@ local function createHUD()
 	hudCauldronLabel.Parent = hud
 
 	-- Journal button (always accessible from HUD)
-	local journalBtn = createButton("JournalBtn", "Alchemist's Journal", UDim2.new(1, 0, 0, 28), hud)
+	local journalBtn = createButton("JournalBtn", Strings.JOURNAL, UDim2.new(1, 0, 0, 28), hud)
 	journalBtn.Position = UDim2.new(0, 0, 0, 84)
 	journalBtn.TextSize = 14
 	journalBtn.BackgroundColor3 = Color3.fromRGB(50, 80, 130)
@@ -389,7 +389,7 @@ local function createHUD()
 	end)
 
 	-- Settings button (volume / accessibility controls)
-	local settingsBtn = createButton("SettingsBtn", "⚙ Settings", UDim2.new(1, 0, 0, 26), hud)
+	local settingsBtn = createButton("SettingsBtn", "⚙ " .. Strings.SETTINGS, UDim2.new(1, 0, 0, 26), hud)
 	settingsBtn.Position = UDim2.new(0, 0, 0, 118)
 	settingsBtn.TextSize = 13
 	settingsBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 70)
@@ -407,7 +407,7 @@ local function createHUD()
 	end)
 
 	-- Cosmetic Shop button
-	local cosmeticBtn = createButton("CosmeticBtn", "Cosmetic Shop", UDim2.new(1, 0, 0, 26), hud)
+	local cosmeticBtn = createButton("CosmeticBtn", Strings.COSMETIC_SHOP, UDim2.new(1, 0, 0, 26), hud)
 	cosmeticBtn.Position = UDim2.new(0, 0, 0, 150)
 	cosmeticBtn.TextSize = 13
 	cosmeticBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 120)
@@ -734,7 +734,10 @@ local function populateBrewIngredients()
 					if ing1 and ing2 then
 						local recipe = Recipes.lookup(ing1.Id, ing2.Id)
 						if recipe then
-							brewPreviewLabel.Text = string.gsub(string.gsub(Strings.BREW_PREVIEW, "{potion}", recipe.displayName), "{value}", tostring(recipe.baseValue))
+							brewPreviewLabel.Text = formatString(Strings.BREW_PREVIEW, {
+								potion = recipe.displayName,
+								value = recipe.baseValue,
+							})
 							brewPreviewLabel.TextColor3 = recipe.color
 						else
 							brewPreviewLabel.Text = Strings.UNKNOWN_RECIPE
@@ -918,7 +921,7 @@ local function createSellPanel()
 	)
 
 	-- Sell All button
-	sellAllButton = createButton("SellAllButton", "Sell All", UDim2.new(1, 0, 0, 38), sellPanel)
+	sellAllButton = createButton("SellAllButton", Strings.SELL_ALL, UDim2.new(1, 0, 0, 38), sellPanel)
 	sellAllButton.Position = UDim2.new(0, 0, 1, -42)
 	sellAllButton.Font = FONT_HEADER
 	sellAllButton.TextSize = 18
@@ -966,7 +969,10 @@ local function updateUpgradeButtons()
 		if upgradeLabInfo and nextLab then
 			local currentLab = Config.LAB_LEVELS[labLevel]
 			local extraPlots = nextLab.plots - (currentLab and currentLab.plots or 0)
-			upgradeLabInfo.Text = string.gsub(string.gsub(Strings.UPGRADE_LAB_INFO, "{plots}", tostring(extraPlots)), "{name}", nextLab.name)
+			upgradeLabInfo.Text = formatString(Strings.UPGRADE_LAB_INFO, {
+				plots = extraPlots,
+				name = nextLab.name,
+			})
 		end
 	else
 		if upgradeLabBtn then
@@ -985,7 +991,11 @@ local function updateUpgradeButtons()
 			upgradeCauldronBtn.Visible = true
 		end
 		if upgradeCauldronInfo and nextCauldron then
-			upgradeCauldronInfo.Text = string.gsub(string.gsub(string.gsub(Strings.UPGRADE_CAULDRON_INFO, "{time}", tostring(nextCauldron.brewTime)), "{bonus}", tostring(math.floor((nextCauldron.valueBonus - 1) * 100))), "{name}", nextCauldron.name)
+			upgradeCauldronInfo.Text = formatString(Strings.UPGRADE_CAULDRON_INFO, {
+				time = nextCauldron.brewTime,
+				bonus = math.floor((nextCauldron.valueBonus - 1) * 100),
+				name = nextCauldron.name,
+			})
 		end
 	else
 		if upgradeCauldronBtn then
@@ -1520,7 +1530,7 @@ local function createSettingsPanel()
 	)
 
 	-- Mute all toggle
-	local muteBtn = createButton("MuteBtn", "Mute All", UDim2.new(1, 0, 0, 32), settingsPanel)
+	local muteBtn = createButton("MuteBtn", Strings.MUTE_ALL, UDim2.new(1, 0, 0, 32), settingsPanel)
 	muteBtn.Position = UDim2.new(0, 0, 0, 148)
 	muteBtn.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
 	muteBtn.ZIndex = 12
@@ -1547,7 +1557,7 @@ local function createSettingsPanel()
 	-- Performance Mode toggle — disables bloom, atmosphere, and particles
 	-- on low-end devices. Wired to LightingController + ParticleController
 	-- injected via UIController.setPerformanceControllers().
-	local perfBtn = createButton("PerfModeBtn", "Performance Mode: OFF", UDim2.new(1, 0, 0, 32), settingsPanel)
+	local perfBtn = createButton("PerfModeBtn", Strings.PERF_MODE_OFF, UDim2.new(1, 0, 0, 32), settingsPanel)
 	perfBtn.Position = UDim2.new(0, 0, 0, 190)
 	perfBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 	perfBtn.ZIndex = 12
@@ -1886,12 +1896,17 @@ function UIController.updateState(newState: { [string]: any })
 	if hudLabLabel then
 		local labLevel = playerState.LabLevel or 1
 		local labDef = Config.LAB_LEVELS[labLevel]
-		hudLabLabel.Text = string.gsub(string.gsub(Strings.HUD_LAB, "{name}", labDef and labDef.name or "Lv " .. labLevel), "{plots}", tostring(labDef and labDef.plots or "?"))
+		hudLabLabel.Text = formatString(Strings.HUD_LAB, {
+			name = labDef and labDef.name or "Lv " .. labLevel,
+			plots = labDef and labDef.plots or "?",
+		})
 	end
 	if hudCauldronLabel then
 		local cauldronLevel = playerState.CauldronLevel or 1
 		local cauldronDef = Config.CAULDRON_LEVELS[cauldronLevel]
-		hudCauldronLabel.Text = string.gsub(Strings.HUD_CAULDRON, "{name}", cauldronDef and cauldronDef.name or "Lv " .. cauldronLevel)
+		hudCauldronLabel.Text = formatString(Strings.HUD_CAULDRON, {
+			name = cauldronDef and cauldronDef.name or "Lv " .. cauldronLevel,
+		})
 	end
 
 	-- Update upgrade panel if open
