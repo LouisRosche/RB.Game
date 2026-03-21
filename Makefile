@@ -1,7 +1,7 @@
 # RB.Game — Build & Development Automation
 # Usage: make <target>
 
-.PHONY: help install lint format format-fix rojo rojo-obby test validate check clean
+.PHONY: help install lint format format-fix rojo rojo-obby test validate compliance godot-compliance launch-readiness pre-push check clean
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
@@ -59,10 +59,19 @@ test: ## Run in-Studio tests (manual — see instructions)
 validate: ## Run CI data integrity checks locally
 	bash scripts/validate-data-integrity.sh
 
-compliance: ## Run legal & compliance checks locally
+compliance: ## Run Roblox legal & compliance checks locally
 	bash scripts/validate-compliance.sh
 
-check: lint format validate compliance ## Run all CI checks locally (lint + format + validate + compliance)
+godot-compliance: ## Run Godot compliance checks locally
+	bash scripts/validate-godot-compliance.sh
+
+launch-readiness: ## Run launch readiness tracker locally
+	bash scripts/validate-launch-readiness.sh
+
+pre-push: ## Run fast pre-push safety checks
+	bash scripts/pre-push-check.sh
+
+check: lint format validate compliance godot-compliance launch-readiness ## Run all CI checks locally
 
 # --------------------------------------------------------------------------
 # Housekeeping

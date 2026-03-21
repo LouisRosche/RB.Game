@@ -141,8 +141,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run compliance checks
+      - name: Run Roblox compliance checks
         run: bash scripts/validate-compliance.sh
+
+      - name: Run Godot compliance checks
+        run: bash scripts/validate-godot-compliance.sh
+
+  launch-readiness:
+    name: Launch Readiness Tracker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run launch readiness checks
+        run: bash scripts/validate-launch-readiness.sh
 
   test-coverage:
     name: Test File Validation
