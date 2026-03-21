@@ -221,8 +221,8 @@ local function grantAdReward(player: Player)
 	-- Set cooldown
 	adCooldowns[player.UserId] = os.clock()
 
-	-- Grant Essence reward
-	data.Essence = (data.Essence or 0) + Config.AD_REWARD_ESSENCE
+	-- Grant Essence reward (capped to prevent economy inflation)
+	data.Essence = math.min((data.Essence or 0) + Config.AD_REWARD_ESSENCE, Config.MAX_ESSENCE)
 
 	-- Also activate 2x earnings boost
 	adBoostExpiry[player.UserId] = os.clock() + Config.AD_BOOST_DURATION

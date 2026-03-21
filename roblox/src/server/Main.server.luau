@@ -192,6 +192,7 @@ remotes[Network.PlantSeed].OnServerEvent:Connect(function(player: Player, plotIn
 		return -- reject unknown IDs
 	end
 	plotIndex = math.floor(plotIndex)
+	if plotIndex < 1 then return end
 	GrowthService.plantSeed(player, plotIndex, ingredientId)
 	AnalyticsService.onSeedPlanted(player, ingredientId)
 end)
@@ -201,9 +202,11 @@ remotes[Network.Harvest].OnServerEvent:Connect(function(player: Player, plotInde
 	if isRateLimited(player, Network.Harvest) then return end
 	if typeof(plotIndex) ~= "number" then return end
 	plotIndex = math.floor(plotIndex)
+	if plotIndex < 1 then return end
 
 	local data = DataService.getData(player)
 	if not data then return end
+	if plotIndex > #data.Plots then return end
 
 	local plot = data.Plots[plotIndex]
 	if not plot or plot.State ~= "Ready" then return end
@@ -248,6 +251,7 @@ remotes[Network.BrewPotion].OnServerEvent:Connect(function(player: Player, idx1:
 	if typeof(idx1) ~= "number" or typeof(idx2) ~= "number" then return end
 	idx1 = math.floor(idx1)
 	idx2 = math.floor(idx2)
+	if idx1 < 1 or idx2 < 1 then return end
 	local brewed = BrewingService.brewPotion(player, idx1, idx2)
 	if brewed then
 		AnalyticsService.onPotion(player, brewed.recipeId, brewed.value)
@@ -264,6 +268,7 @@ remotes[Network.SellPotion].OnServerEvent:Connect(function(player: Player, potio
 	if isRateLimited(player, Network.SellPotion) then return end
 	if typeof(potionIndex) ~= "number" then return end
 	potionIndex = math.floor(potionIndex)
+	if potionIndex < 1 then return end
 
 	-- Capture value before sell for analytics
 	local data = DataService.getData(player)

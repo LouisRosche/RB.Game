@@ -95,8 +95,14 @@ func _process(delta: float) -> void:
 # Gold helpers
 # ---------------------------------------------------------------------------
 
+## Hard cap on gold to prevent save file manipulation / overflow.
+const MAX_GOLD := 10_000_000
+
 func add_gold(amount: int) -> void:
-	gold += amount
+	if amount <= 0:
+		push_warning("[GameState] add_gold called with non-positive amount: %d" % amount)
+		return
+	gold = mini(gold + amount, MAX_GOLD)
 	stats["total_gold_earned"] += amount
 	gold_earned.emit(amount)
 	state_changed.emit()

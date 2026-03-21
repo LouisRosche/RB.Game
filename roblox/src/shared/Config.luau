@@ -142,6 +142,10 @@ Config.MAX_POTIONS = 20
 --- Maximum pre-purchased seeds awaiting planting.
 Config.MAX_SEEDS = 12
 
+--- Hard cap on Essence balance. Prevents integer overflow / economy inflation.
+--- 10 million is ~100x the cost of maxing every upgrade; generous but bounded.
+Config.MAX_ESSENCE = 10_000_000
+
 --============================================================================--
 -- Phase 2: Monetisation
 --============================================================================--

@@ -20,6 +20,16 @@ local MonetizationService: any = nil
 
 local EconomyService = {}
 
+--- Clamp Essence additions so the balance never exceeds the hard cap.
+--- Returns the actual amount added (may be less than requested at the cap).
+local function addEssence(data: { [string]: any }, amount: number): number
+	local capped = math.min(amount, Config.MAX_ESSENCE - data.Essence)
+	if capped <= 0 then return 0 end
+	data.Essence += capped
+	data.Stats.TotalEssenceEarned += capped
+	return capped
+end
+
 --- Inject MonetizationService reference. Called from Main.server.luau after
 --- all services are required, before any player joins.
 function EconomyService.init(monetizationServiceRef: any)
@@ -82,6 +92,12 @@ function EconomyService.sellPotion(player: Player, potionIndex: number)
 	local data = DataService.getData(player)
 	if not data then return end
 
+	-- Bounds-check: potionIndex must be a valid 1-based array index
+	if potionIndex < 1 or potionIndex > #data.Potions then
+		DataService.notify(player, "Invalid potion!")
+		return
+	end
+
 	local potion = data.Potions[potionIndex]
 	if not potion then
 		DataService.notify(player, "Invalid potion!")
@@ -91,8 +107,7 @@ function EconomyService.sellPotion(player: Player, potionIndex: number)
 	local baseValue = potion.Value or 0
 	local boostMultiplier = if MonetizationService then MonetizationService.getAdBoostMultiplier(player) else 1.0
 	local value = math.floor(baseValue * boostMultiplier)
-	data.Essence += value
-	data.Stats.TotalEssenceEarned += value
+	addEssence(data, value)
 
 	local displayName = potion.DisplayName or potion.Id
 	table.remove(data.Potions, potionIndex)
@@ -119,8 +134,7 @@ function EconomyService.sellAll(player: Player): number
 		totalValue += math.floor((potion.Value or 0) * boostMultiplier)
 	end
 
-	data.Essence += totalValue
-	data.Stats.TotalEssenceEarned += totalValue
+	addEssence(data, totalValue)
 	data.Potions = {}
 
 	DataService.syncToClient(player)
